@@ -20,6 +20,12 @@ To clone the necessary `frontend` and `backend` repositories, run the following 
 make init
 ```
 
+Use the repository virtualenv for Python tooling:
+
+```sh
+.venv/bin/python
+```
+
 ### Backend Commands (run from `/backend/develop`)
 
 *   **Build:** `make`

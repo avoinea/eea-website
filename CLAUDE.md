@@ -179,6 +179,12 @@ Default: Python 3.12, but supports 3.10, 3.11, 3.12
 make -e PYTHON=python3.11
 ```
 
+Always use the repository virtualenv for Python tooling:
+
+```bash
+.venv/bin/python
+```
+
 ## Testing Strategy
 
 ### Frontend Tests

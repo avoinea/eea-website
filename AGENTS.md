@@ -8,6 +8,7 @@
 - `frontend/`: Volto 17 frontend for Plone 6.1.
 - `backend/`: Plone 6 backend (development in `backend/develop/`).
 - `skills/`: Local Codex skills for this repo.
+- `.venv/`: Local Python virtual environment for tooling (use `.venv/bin/python`).
 
 ## Frontend Conventions
 - Add-ons live in `frontend/src/addons/` and are registered in `frontend/package.json`.

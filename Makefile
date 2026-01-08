@@ -9,6 +9,11 @@ init:
 	@if [ ! -d "$(BACKEND_DIR)" ]; then \
 		git clone https://github.com/eea/eea-website-backend "$(BACKEND_DIR)"; \
 	fi
+	@if [ ! -d ".venv" ]; then \
+		python3 -m venv .venv; \
+	fi
+	@.venv/bin/python -m pip install --upgrade pip
+	@.venv/bin/python -m pip install pyyaml
 
 .PHONY: frontend-start
 frontend-start:
