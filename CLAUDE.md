@@ -4,17 +4,17 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is the EEA (European Environment Agency) Main Website codebase built with **Plone 6.1** and **Volto 17**. The repository contains both frontend (Volto/React) and backend (Plone/Python) components in a monorepo structure.
+This is a generic EEA (European Environment Agency) Plone monorepo built with **Plone 6** and **Volto**. The repository contains both frontend (Volto/React) and backend (Plone/Python) components in a monorepo structure.
 
-- **Frontend**: Modern React-based frontend using Volto 17.23.0
-- **Backend**: Plone 6.1.3 CMS with Python 3.10-3.12
+- **Frontend**: Modern React-based frontend using Volto
+- **Backend**: Plone 6 CMS with Python 3.10-3.12
 - **Architecture**: Headless CMS with REST API communication between frontend and backend
 
 ## Repository Structure
 
 ```
-eea-website/
-├── frontend/           # Volto 17 React frontend
+repo-root/
+├── frontend/           # Volto React frontend
 │   ├── src/
 │   │   ├── addons/    # Local workspace add-ons (development versions)
 │   │   ├── customizations/  # Component shadowing/overrides
@@ -33,13 +33,45 @@ eea-website/
 └── .skills/           # Local Claude Code skills for this project
 ```
 
+## Bootstrap
+
+Run from repo root to clone the frontend/backend and set up `.venv`:
+
+```bash
+make init
+```
+
+This command will:
+1. Clone the frontend repository if not present
+2. Clone the backend repository if not present
+3. Create a Python virtualenv at `.venv/` for monorepo-level tooling
+4. Install basic Python dependencies (pip, pyyaml)
+
+You'll be prompted for the frontend and backend GitHub repo URLs. For non-interactive use:
+
+```bash
+FRONTEND_REPO=<url> BACKEND_REPO=<url> make init
+```
+
+### Root-Level Make Targets
+
+These convenient targets can be run from the repo root to start services:
+
+```bash
+make frontend-start      # Start Volto dev server (same as cd frontend && make start)
+make backend-start       # Start Plone standalone (same as cd backend/develop && make start)
+make frontend-relstorage # Start Volto with RelStorage backend
+make backend-relstorage  # Start Plone with PostgreSQL RelStorage
+make help               # Show available targets
+```
+
 ## Frontend Development
 
 ### Initial Setup
 
 ```bash
 cd frontend
-nvm use 18  # or 20
+nvm use 20  # Node 20 preferred (18 also supported)
 yarn install
 ```
 
@@ -83,14 +115,7 @@ yarn i18n               # Extract and compile i18n messages
 
 ### Working with Add-ons
 
-The project uses **workspace add-ons** in `frontend/src/addons/`. Key add-ons include:
-
-- `@eeacms/volto-eea-website-theme` - Main theme
-- `@eeacms/volto-eea-website-policy` - Site policies and configurations
-- `@eeacms/volto-eea-design-system` - EEA design system components
-- `@eeacms/volto-eea-kitkat` - Core EEA functionality
-- `@eeacms/volto-searchlib` - Search functionality
-- Plus 60+ other specialized add-ons (see `package.json` addons array)
+The project uses **workspace add-ons** in `frontend/src/addons/`. See `frontend/package.json` for the project-specific add-on list.
 
 **Add-on Development Workflow:**
 
@@ -108,8 +133,8 @@ Volto allows overriding core or add-on components via `src/customizations/`:
 
 ### Frontend Architecture Notes
 
-- **Configuration**: Most config happens in add-ons (especially `volto-eea-website-policy`), not in `src/config.js`
-- **Theme**: Uses `@eeacms/volto-eea-website-theme` with design tokens from `@eeacms/volto-design-tokens`
+- **Configuration**: Most config happens in add-ons, not in `src/config.js`
+- **Theme**: Uses the project theme add-on and design tokens as configured
 - **State Management**: Redux (inherited from Volto core)
 - **Styling**: Semantic UI + LESS with custom theme overrides
 - **Build Tool**: Razzle (webpack-based)
@@ -117,12 +142,7 @@ Volto allows overriding core or add-on components via `src/customizations/`:
 
 ### Running Against Different Backends
 
-```bash
-make start              # Default: docker-compose backend
-make staging            # Staging backend: https://staging.eea.europa.eu
-make demo               # Demo backend: https://demo-www.eea.europa.eu
-make relstorage         # Local RelStorage backend on :8080
-```
+Check `frontend/Makefile` for project-specific targets (commonly `make start` and `make relstorage`).
 
 ## Backend Development
 
@@ -164,12 +184,7 @@ bin/zope-testrunner --test-path sources/<package-name>
 - **Configuration**: Add-ons listed in `sources.ini` are checked out to `sources/`
 - **Hot Reload**: Not available by default. After Python changes, restart Plone or use `plone.reload` at http://localhost:8080/@@reload
 - **Testing**: Uses `zope.testrunner` with `plone.app.testing`
-- **Key Backend Add-ons**:
-  - `eea.kitkat` - Core EEA functionality
-  - `eea.dexterity.indicators` - Indicators content type
-  - `eea.dexterity.themes` - Thematic content types
-  - `eea.api.*` - REST API extensions
-  - Plus 15+ other backend packages (see `sources.ini`)
+See `backend/develop/sources.ini` for project-specific backend add-ons.
 
 ### Python Version
 
@@ -179,11 +194,13 @@ Default: Python 3.12, but supports 3.10, 3.11, 3.12
 make -e PYTHON=python3.11
 ```
 
-Always use the repository virtualenv for Python tooling:
+The repository includes a virtualenv at `.venv/` (created during `make init`) for monorepo-level Python tooling. Use it when running Python scripts at the root level:
 
 ```bash
 .venv/bin/python
 ```
+
+Note: The backend has its own separate virtualenv in `backend/develop/` which is used for Plone itself.
 
 ## Testing Strategy
 
@@ -211,26 +228,7 @@ bin/zope-testrunner --test-path sources/<package>
 
 ## Release Management
 
-### Frontend Release
-
-The project uses `release-it` with automated CI/CD via Jenkins:
-
-1. **Beta releases** (from develop branch):
-   ```bash
-   yarn release-beta
-   ```
-
-2. **Production releases** (develop → master PR):
-   - Create PR from develop to master
-   - Jenkins automatically updates version and CHANGELOG.md
-   - On merge, creates GitHub release and triggers Docker image build
-   - Docker images pushed to https://hub.docker.com/r/eeacms/eea-website-frontend
-
-### Version Management
-
-- Version in `package.json` must follow semver: MAJOR.MINOR.PATCH
-- CHANGELOG.md auto-generated from commit messages
-- Automated commits (with [JENKINS] or [YARN]) excluded from changelog
+Release workflows are project-specific. Check the frontend and backend repositories for CI/CD and release automation details.
 
 ## Development Best Practices
 
@@ -258,10 +256,7 @@ The project uses `release-it` with automated CI/CD via Jenkins:
 
 ## Docker & Deployment
 
-Frontend and backend are containerized and deployed via:
-- **Docker**: `eeacms/eea-website-frontend` and `eeacms/eea-website-backend`
-- **Rancher**: EEA's Kubernetes-based deployment platform
-- **CI/CD**: Jenkins at https://ci.eionet.europa.eu
+Docker images and deployment tooling are project-specific. Review the frontend/backend repo docs or CI configuration for details.
 
 ## Important Environment Variables
 

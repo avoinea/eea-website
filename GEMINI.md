@@ -1,11 +1,11 @@
-# EEA Website (Plone 6 / Volto 17)
+# EEA Plone Monorepo (Plone 6 / Volto)
 
 ## Project Overview
 
-This is the monorepo for the EEA (European Environment Agency) website, a modern web platform built on Plone 6.1 and Volto 17. The project is structured as a monorepo that composes the frontend and backend applications from separate Git repositories.
+This is a generic monorepo for EEA (European Environment Agency) Plone projects, built on Plone 6 and Volto. The project is structured as a monorepo that composes the frontend and backend applications from separate Git repositories.
 
-*   **Backend:** A Plone 6.1 application. The development happens in the `backend/` directory, which is a clone of the `eea-website-backend` repository.
-*   **Frontend:** A Volto 17 (React) application. The development happens in the `frontend/` directory, which is a clone of the `eea-website-frontend` repository.
+*   **Backend:** A Plone 6 application. The development happens in the `backend/` directory, which is cloned via `make init`.
+*   **Frontend:** A Volto (React) application. The development happens in the `frontend/` directory, which is cloned via `make init`.
 *   **Skills:** The `.skills/` directory contains context and instructions for AI agents on how to work with this specific repository, separated by roles (backend, frontend).
 
 The architecture emphasizes separation of concerns, with a headless Plone CMS providing content and a modern React-based frontend consuming it.
@@ -18,6 +18,12 @@ To clone the necessary `frontend` and `backend` repositories, run the following 
 
 ```sh
 make init
+```
+
+You'll be prompted for the frontend and backend GitHub repo URLs. For non-interactive use:
+
+```sh
+FRONTEND_REPO=<url> BACKEND_REPO=<url> make init
 ```
 
 Use the repository virtualenv for Python tooling:

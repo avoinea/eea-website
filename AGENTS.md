@@ -1,12 +1,12 @@
 # AGENTS
 
 ## Skills
-- plone-frontend-developer: Senior Plone Volto frontend engineering for debugging add-ons, fixing UI bugs, and handling Plone 6.1 + Volto 17 frontend tasks. (path: .skills/plone-frontend-developer/SKILL.md)
+- plone-frontend-developer: Senior Plone Volto frontend engineering for debugging add-ons, fixing UI bugs, and handling Plone 6 + Volto frontend tasks. (path: .skills/plone-frontend-developer/SKILL.md)
 - plone-backend-developer: Plone backend development for server behavior, add-ons, configuration, and tests in `backend/develop/`. (path: .skills/plone-backend-developer/SKILL.md)
 
 ## Repo Overview
-- `frontend/`: Volto 17 frontend for Plone 6.1.
-- `backend/`: Plone 6 backend (development in `backend/develop/`).
+- `frontend/`: Volto frontend for Plone 6 (cloned during `make init`).
+- `backend/`: Plone 6 backend (development in `backend/develop/`, cloned during `make init`).
 - `.skills/`: Local Codex skills for this repo.
 - `.venv/`: Local Python virtual environment for tooling (use `.venv/bin/python`).
 
@@ -26,3 +26,6 @@
 
 ## Backend Tests
 - Run `bin/zope-testrunner --test-path sources/<package>` from `backend/develop/`.
+
+## Bootstrap
+- Run `make init` from the repo root and provide frontend/backend GitHub repo URLs when prompted (or pass `FRONTEND_REPO`/`BACKEND_REPO` env vars).

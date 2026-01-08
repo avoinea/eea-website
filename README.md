@@ -1,12 +1,12 @@
-# EEA Website
+# EEA Plone Monorepo (AI ready dev environment)
 
-Monorepo for the EEA website built on Plone 6.1 with Volto 17.
+Generic monorepo for EEA Plone projects built on Plone 6 with Volto.
 This is a Plone dev environment that is Codex/Claude/Gemini ready.
 
 ## Repository layout
 
-- `frontend/`: Volto 17 frontend for Plone 6.1
-- `backend/`: Plone 6 backend (development in `backend/develop/`)
+- `frontend/`: Volto frontend for Plone 6 (cloned during `make init`)
+- `backend/`: Plone 6 backend (development in `backend/develop/`, cloned during `make init`)
 - `.skills/`: Local Codex/Claude/Gemini skills for this repo
 
 ## Bootstrap sources
@@ -15,6 +15,12 @@ If you don't already have the frontend/backend checkouts, run:
 
 ```sh
 make init
+```
+
+You'll be prompted for the frontend and backend GitHub repo URLs. For non-interactive use, set:
+
+```sh
+FRONTEND_REPO=<url> BACKEND_REPO=<url> make init
 ```
 
 ## Root make targets
