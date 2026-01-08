@@ -1,13 +1,13 @@
 # AGENTS
 
 ## Skills
-- plone-frontend-developer: Senior Plone Volto frontend engineering for debugging add-ons, fixing UI bugs, and handling Plone 6.1 + Volto 17 frontend tasks. (path: skills/plone-frontend-developer/SKILL.md)
-- plone-backend-developer: Plone backend development for server behavior, add-ons, configuration, and tests in `backend/develop/`. (path: skills/plone-backend-developer/SKILL.md)
+- plone-frontend-developer: Senior Plone Volto frontend engineering for debugging add-ons, fixing UI bugs, and handling Plone 6.1 + Volto 17 frontend tasks. (path: .skills/plone-frontend-developer/SKILL.md)
+- plone-backend-developer: Plone backend development for server behavior, add-ons, configuration, and tests in `backend/develop/`. (path: .skills/plone-backend-developer/SKILL.md)
 
 ## Repo Overview
 - `frontend/`: Volto 17 frontend for Plone 6.1.
 - `backend/`: Plone 6 backend (development in `backend/develop/`).
-- `skills/`: Local Codex skills for this repo.
+- `.skills/`: Local Codex skills for this repo.
 - `.venv/`: Local Python virtual environment for tooling (use `.venv/bin/python`).
 
 ## Frontend Conventions

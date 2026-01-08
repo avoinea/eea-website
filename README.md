@@ -7,7 +7,7 @@ This is a Plone dev environment that is Codex/Claude/Gemini ready.
 
 - `frontend/`: Volto 17 frontend for Plone 6.1
 - `backend/`: Plone 6 backend (development in `backend/develop/`)
-- `skills/`: Local Codex/Claude/Gemini skills for this repo
+- `.skills/`: Local Codex/Claude/Gemini skills for this repo
 
 ## Bootstrap sources
 

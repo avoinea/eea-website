@@ -6,7 +6,7 @@ This is the monorepo for the EEA (European Environment Agency) website, a modern
 
 *   **Backend:** A Plone 6.1 application. The development happens in the `backend/` directory, which is a clone of the `eea-website-backend` repository.
 *   **Frontend:** A Volto 17 (React) application. The development happens in the `frontend/` directory, which is a clone of the `eea-website-frontend` repository.
-*   **Skills:** The `skills/` directory contains context and instructions for AI agents on how to work with this specific repository, separated by roles (backend, frontend).
+*   **Skills:** The `.skills/` directory contains context and instructions for AI agents on how to work with this specific repository, separated by roles (backend, frontend).
 
 The architecture emphasizes separation of concerns, with a headless Plone CMS providing content and a modern React-based frontend consuming it.
 

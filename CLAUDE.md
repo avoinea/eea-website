@@ -30,7 +30,7 @@ eea-website/
 │       ├── sources.ini  # mxdev configuration for backend add-ons
 │       └── bin/       # Python executables (after installation)
 │
-└── skills/            # Local Claude Code skills for this project
+└── .skills/           # Local Claude Code skills for this project
 ```
 
 ## Frontend Development
