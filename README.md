@@ -1,13 +1,13 @@
 # EEA Website
 
 Monorepo for the EEA website built on Plone 6.1 with Volto 17.
-This is a Plone dev environment that is Codex/Claude ready.
+This is a Plone dev environment that is Codex/Claude/Gemini ready.
 
 ## Repository layout
 
 - `frontend/`: Volto 17 frontend for Plone 6.1
 - `backend/`: Plone 6 backend (development in `backend/develop/`)
-- `skills/`: Local Codex/Claude skills for this repo
+- `skills/`: Local Codex/Claude/Gemini skills for this repo
 
 ## Bootstrap sources
 
@@ -44,7 +44,6 @@ Run from `frontend/`:
 Notes:
 
 - Add-ons live in `frontend/src/addons/` and are registered in `frontend/package.json`.
-- Shadow customizations live in `frontend/src/customizations/` and require a server restart.
 
 ## Backend development
 
@@ -60,4 +59,6 @@ Notes:
 
 ## Useful docs
 
-- `AGENTS.md` for repo-specific automation and tooling guidance
+- `AGENTS.md` for repo-specific automation and tooling guidance (OpenAI/Codex)
+- `CLAUDE.md` for repo-specific automation and tooling guidance (Anthropic/Claude)
+- `GEMINI.md` for repo-specific automation and tooling guidance (Google/Gemini)
