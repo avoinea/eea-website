@@ -2,6 +2,10 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## AI Assistant Instructions
+
+- **Always use Context7 MCP** when you need library/API documentation, code generation, setup or configuration steps - do this proactively without waiting for explicit requests.
+
 ## Project Overview
 
 This is a generic EEA (European Environment Agency) Plone monorepo built with **Plone 6** and **Volto**. The repository contains both frontend (Volto/React) and backend (Plone/Python) components in a monorepo structure.

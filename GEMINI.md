@@ -1,5 +1,9 @@
 # EEA Plone Monorepo (Plone 6 / Volto)
 
+## AI Assistant Instructions
+
+- **Always use Context7** when you need library/API documentation, code generation, setup or configuration steps - do this proactively without waiting for explicit requests.
+
 ## Project Overview
 
 This is a generic monorepo for EEA (European Environment Agency) Plone projects, built on Plone 6 and Volto. The project is structured as a monorepo that composes the frontend and backend applications from separate Git repositories.
