@@ -1,8 +1,6 @@
-# AGENTS
+# AGENTS.md
 
 ## AI Assistant Instructions
-
-- **Always use Context7** when you need library/API documentation, code generation, setup or configuration steps - do this proactively without waiting for explicit requests.
 
 ## Skills
 - plone-frontend-developer: Senior Plone Volto frontend engineering for debugging add-ons, fixing UI bugs, and handling Plone 6 + Volto frontend tasks. (path: .skills/plone-frontend-developer/SKILL.md)
@@ -16,17 +14,16 @@
 
 ## Frontend Conventions
 - Add-ons live in `frontend/src/addons/` and are registered in `frontend/package.json`.
-- Shadow customizations live in `frontend/src/customizations/` and require a server restart to pick up new overrides.
 - Preferred runtime: Node 20 with Yarn 3.2.3 (repo allows Node 18 or 20).
 
 ## Frontend Commands
-- Dev: `make start` or `yarn start` (run from `frontend/`).
+- Dev: `make start` (run from `frontend/`).
 - Add-on dev sync: `make develop` (uses `mrs.developer.json`).
 - Tests: `make test src/addons/<addon>` for Jest; Cypress via `make cypress` or `yarn cypress:run`.
 
 ## Backend Conventions
 - Dev workflow runs from `backend/develop/` with `make` then `make start`.
-- Hot reload is not available; restart Plone after Python changes (optional `@@reload` for quick iteration).
+- Hot reload is not available;
 
 ## Backend Tests
 - Run `bin/zope-testrunner --test-path sources/<package>` from `backend/develop/`.
