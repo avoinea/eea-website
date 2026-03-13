@@ -7,6 +7,8 @@
 - plone-backend-developer: Plone backend development for server behavior, add-ons, configuration, and tests in `backend/develop/`. (path: .skills/plone-backend-developer/SKILL.md)
 
 ## Repo Overview
+- `volto/`: Volto 18 Core code
+- `frontend/omelette`: Volto 17 Core code
 - `frontend/`: Volto frontend for Plone 6 (cloned during `make init`).
 - `backend/`: Plone 6 backend (development in `backend/develop/`, cloned during `make init`).
 - `.skills/`: Local Codex skills for this repo.
