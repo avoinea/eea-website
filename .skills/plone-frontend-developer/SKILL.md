@@ -26,8 +26,12 @@ Diagnose and fix Volto/Plone frontend issues with a production-grade workflow. U
 ## Good practices
 
 - For new features, add or update Cypress and/or Jest coverage.
+- When adding Cypress DO NOT use API calls, cypress should test the UI as a user would interact with it, so use the UI to set up the test state.
 - When modifying add-ons, run `make lint` inside the add-on folder.
 - Add-ons live in `frontend/src/addons/`; check each add-on's `make help` for available targets.
+- When developing and add-on, start Volto 18 dev environment with `make; make start` in the add-on folder for faster feedback loops.
+- To start Volto 17 dev environment, run `VOLTO_VERSION=17 make; make start` in the add-on folder.
+- To run cypress tests, use `make cypress=run` in the add-on folder.
 - After defining i18n messages, run `make i18n`.
 - Use Playwright MCP for quick UI verification when needed; Volto hot reload covers most changes.
 - If adding new shadow customizations, ask to restart the frontend server.
