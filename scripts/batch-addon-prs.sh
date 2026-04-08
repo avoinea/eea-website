@@ -29,8 +29,8 @@ Options:
                           (default: volto-18-eslint)
   --base <name>           PR base branch (default: develop)
   --commit-prefix <text>  Commit message prefix
-                          (default: "chore: Volto 18 eslint/jest migration")
-  --sleep-minutes <n>     Sleep duration between add-ons (default: 10)
+                          (default: "chore: Volto 18 eslint/jest migration - refs #301881")
+  --sleep-minutes <n>     Sleep duration between add-ons (default: 7)
   --draft                 Create draft PRs
   --no-pr                 Skip PR creation (only add/commit/push)
   --dry-run               Print actions without executing
@@ -90,13 +90,25 @@ detect_default_base_branch() {
   git remote show origin 2>/dev/null | sed -n '/HEAD branch/s/.*: //p'
 }
 
+is_same_dir() {
+  local left="$1"
+  local right="$2"
+  [[ -d "$left" && -d "$right" ]] || return 1
+  [[ "$(cd "$left" && pwd)" == "$(cd "$right" && pwd)" ]]
+}
+
+is_addon_repo_dir() {
+  local dir="$1"
+  [[ -d "$dir/.git" && -f "$dir/package.json" ]]
+}
+
 collect_addons_from_dir() {
   local dir="$1"
   [[ -d "$dir" ]] || return 0
   local entry
   while IFS= read -r entry; do
     [[ -n "$entry" ]] && ADDONS+=("$entry")
-  done < <(find "$dir" -mindepth 1 -maxdepth 1 -type d -printf '%f\n' | sort)
+  done < <(find "$dir" -mindepth 1 -maxdepth 1 -type d -exec basename {} \; | sort)
 }
 
 while [[ $# -gt 0 ]]; do
@@ -166,9 +178,16 @@ if [[ -n "$ADDONS_FILE" ]]; then
   load_addons_file "$ADDONS_FILE"
 fi
 
+if [[ -d "$ADDONS_ROOT" ]]; then
+  ADDONS_ROOT="$(cd "$ADDONS_ROOT" && pwd)"
+fi
+
 if (( ${#ADDONS[@]} == 0 )); then
-  collect_addons_from_dir "$PWD"
-  if (( ${#ADDONS[@]} == 0 )); then
+  if is_addon_repo_dir "$PWD"; then
+    ADDONS+=("$PWD")
+  elif is_same_dir "$PWD" "$ADDONS_ROOT"; then
+    collect_addons_from_dir "$PWD"
+  else
     collect_addons_from_dir "$ADDONS_ROOT"
   fi
 fi
