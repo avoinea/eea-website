@@ -7,7 +7,7 @@
 - plone-backend-developer: Plone backend development for server behavior, add-ons, configuration, and tests in `backend/develop/`. (path: .skills/plone-backend-developer/SKILL.md)
 
 ## Repo Overview
-- `volto/`: Volto 18 Core code
+- `volto18/`: Volto 18 Core code
 - `volto17/`: Volto 17 Core code
 - `frontend/`: Volto frontend for Plone 6 (cloned during `make init`).
 - `backend/`: Plone 6 backend (development in `backend/develop/`, cloned during `make init`).
@@ -31,4 +31,6 @@
 - Run `bin/zope-testrunner --test-path sources/<package>` from `backend/develop/`.
 
 ## Bootstrap
-- Run `make init` from the repo root and provide frontend/backend GitHub repo URLs when prompted (or pass `FRONTEND_REPO`/`BACKEND_REPO` env vars).
+- Run `make init` from the repo root. It also clones `volto17/` (`https://github.com/plone/volto` branch `17.x.x`) and `volto18/` (`https://github.com/plone/volto` branch `18.x.x`) if missing.
+- Provide frontend/backend GitHub repo URLs when prompted (or pass `FRONTEND_REPO`/`BACKEND_REPO` env vars).
+- Optional Volto override env vars: `VOLTO_REPO`, `VOLTO17_BRANCH`, `VOLTO18_BRANCH`.

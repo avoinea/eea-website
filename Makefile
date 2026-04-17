@@ -1,12 +1,26 @@
 FRONTEND_DIR := frontend
 BACKEND_DIR := backend
+VOLTO17_DIR := volto17
+VOLTO18_DIR := volto18
 FRONTEND_REPO ?=
 BACKEND_REPO ?=
+VOLTO_REPO ?= https://github.com/plone/volto
+VOLTO17_BRANCH ?= 17.x.x
+VOLTO18_BRANCH ?= 18.x.x
 
 .PHONY: init
 init:
 	@FRONTEND_REPO="$(FRONTEND_REPO)"; \
 	BACKEND_REPO="$(BACKEND_REPO)"; \
+	VOLTO_REPO="$(VOLTO_REPO)"; \
+	VOLTO17_BRANCH="$(VOLTO17_BRANCH)"; \
+	VOLTO18_BRANCH="$(VOLTO18_BRANCH)"; \
+	if [ ! -d "$(VOLTO17_DIR)" ]; then \
+		git clone --branch "$$VOLTO17_BRANCH" --single-branch "$$VOLTO_REPO" "$(VOLTO17_DIR)"; \
+	fi; \
+	if [ ! -d "$(VOLTO18_DIR)" ]; then \
+		git clone --branch "$$VOLTO18_BRANCH" --single-branch "$$VOLTO_REPO" "$(VOLTO18_DIR)"; \
+	fi; \
 	if [ ! -d "$(FRONTEND_DIR)" ]; then \
 		if [ -z "$$FRONTEND_REPO" ]; then \
 			printf "Frontend repo URL: "; \
@@ -55,7 +69,7 @@ backend-relstorage:
 help:
 	@printf "%s\n" \
 		"Targets:" \
-		"  init                Prompt for frontend/backend repo URLs and clone if missing" \
+		"  init                Clone volto17/volto18 and prompt for frontend/backend repo URLs" \
 		"  frontend-start      Start Volto frontend" \
 		"  backend-start       Start Plone backend (standalone)" \
 		"  frontend-relstorage Start frontend with RelStorage backend" \

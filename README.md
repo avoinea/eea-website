@@ -5,22 +5,35 @@ This is a Plone dev environment that is Codex/Claude/Gemini ready.
 
 ## Repository layout
 
+- `volto18/`: Volto 18 Core code (cloned during `make init` from `plone/volto` branch `18.x.x`)
+- `volto17/`: Volto 17 Core code (cloned during `make init` from `plone/volto` branch `17.x.x`)
 - `frontend/`: Volto frontend for Plone 6 (cloned during `make init`)
 - `backend/`: Plone 6 backend (development in `backend/develop/`, cloned during `make init`)
 - `.skills/`: Local Codex/Claude/Gemini skills for this repo
 
 ## Bootstrap sources
 
-If you don't already have the frontend/backend checkouts, run:
+If you don't already have the frontend/backend/volto checkouts, run:
 
 ```sh
 make init
 ```
 
+`make init` will also clone these core Volto checkouts if missing:
+
+- `https://github.com/plone/volto` branch `17.x.x` into `volto17/`
+- `https://github.com/plone/volto` branch `18.x.x` into `volto18/`
+
 You'll be prompted for the frontend and backend GitHub repo URLs. For non-interactive use, set:
 
 ```sh
 FRONTEND_REPO=<url> BACKEND_REPO=<url> make init
+```
+
+Optional overrides for the Volto core clone source/branches:
+
+```sh
+VOLTO_REPO=https://github.com/plone/volto VOLTO17_BRANCH=17.x.x VOLTO18_BRANCH=18.x.x make init
 ```
 
 ## Root make targets
