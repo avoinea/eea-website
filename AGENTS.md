@@ -5,6 +5,7 @@
 ## Skills
 - plone-frontend-developer: Senior Plone Volto frontend engineering for debugging add-ons, fixing UI bugs, and handling Plone 6 + Volto frontend tasks. (path: .skills/plone-frontend-developer/SKILL.md)
 - plone-backend-developer: Plone backend development for server behavior, add-ons, configuration, and tests in `backend/develop/`. (path: .skills/plone-backend-developer/SKILL.md)
+- caveman: Ultra-compressed communication mode for token-efficient, terse responses with adjustable intensity levels. (path: .skills/caveman/SKILL.md)
 
 ## Repo Overview
 - `volto18/`: Volto 18 Core code
