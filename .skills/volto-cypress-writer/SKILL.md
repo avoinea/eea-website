@@ -46,6 +46,7 @@ New tests must set up state, navigate, edit, save, and assert through the browse
 - Prefer Cypress retry-ability: `cy.get(...).should(...)`, `cy.contains(...).should(...)`, and URL assertions.
 - Prefer `cy.intercept().as()` and `cy.wait('@alias')` for network-dependent transitions.
 - Avoid arbitrary `cy.wait(ms)`. If a Volto editor limitation requires one, keep it local and add a short comment explaining why.
+- Avoid per-command `{ timeout: ... }`; wait for observable UI or network state instead. If a timeout override is unavoidable, keep it local and document the reason.
 - Split chains after actions before assertions:
 
 ```js
@@ -60,7 +61,7 @@ cy.get('[data-cy="view-page"]').should('be.visible');
 
 - Add-on Cypress config usually sets `baseUrl: 'http://localhost:3000'` and passes Plone API settings through `CYPRESS_API_PATH`, `RAZZLE_DEV_PROXY_API_PATH`, or `RAZZLE_INTERNAL_API_PATH`.
 - Add-on tests normally live beside the add-on, not in root `frontend/cypress/e2e`.
-- Root acceptance tests in `frontend/cypress/e2e` are for broader site checks; use add-on-level suites for add-on behavior.
+- Cypress tests for add-ons must pass against both Volto 18 and Volto 17 unless the user explicitly scopes the task to one version.
 - For block tests, cover the edit flow and the saved view:
   - create or navigate to a page through the UI
   - add the block through the block chooser
@@ -71,33 +72,63 @@ cy.get('[data-cy="view-page"]').should('be.visible');
 
 ## Commands
 
-Run commands from `frontend/src/addons/<addon>` when the add-on has its own Makefile:
+Run add-on Cypress commands from `frontend/src/addons/<addon>` when the add-on has its own Makefile.
+
+Start by checking the add-on's available targets:
 
 ```sh
-make
-make start
+make help
+```
+
+Default Volto 18 flow:
+
+```sh
+make; make start
 make cypress-run
 make cypress-open
 ```
 
-Useful alternatives:
+Volto 17 compatibility flow:
 
 ```sh
-VOLTO_VERSION=17 make
-VOLTO_VERSION=17 make start
+VOLTO_VERSION=17 make; make start
+make cypress-run
+```
+
+`VOLTO_VERSION` selects the add-on environment during `make`; it does not change Cypress itself. Run Cypress against the Volto version that is currently started.
+
+Run one spec from the add-on directory:
+
+```sh
+../../../node_modules/cypress/bin/cypress run --spec "cypress/e2e/<spec>.cy.js"
+```
+
+If the local binary is not convenient, `npx` can run the installed Cypress package:
+
+```sh
+npx cypress run --spec "cypress/e2e/<spec>.cy.js"
+```
+
+Useful debugging and CI-style targets:
+
+```sh
+make shell
+make check-ci
+make cypress-ci
+```
+
+`make shell` opens a shell in the add-on frontend container. `make check-ci` and `make cypress-ci` are common hidden targets in these add-ons; confirm they exist in the target add-on's Makefile before using them.
+
+Useful non-Cypress checks:
+
+```sh
 make lint
+make prettier
+make stylelint
 make test
 ```
 
-Root frontend checks are run from `frontend/`:
-
-```sh
-make cypress
-yarn cypress:run
-make cypress-local
-```
-
-Use the smallest relevant command for verification. For a Cypress-only change, prefer the target add-on's `make cypress-run`.
+Use the smallest relevant command for verification. For a Cypress-only add-on change, prefer the target add-on's `make cypress-run` in both Volto 18 and Volto 17 environments.
 
 ## Review Checklist
 
@@ -105,6 +136,8 @@ Use the smallest relevant command for verification. For a Cypress-only change, p
 - Selectors are stable or wrapped in named helpers.
 - The test asserts both edit-time behavior and saved output when relevant.
 - The suite can run test cases independently.
+- The Cypress behavior works in both Volto 18 and Volto 17, or the version-specific limitation is clearly reported.
 - Network or async transitions wait on observable conditions, not fixed sleeps.
+- Per-command `{ timeout: ... }` overrides are avoided or explicitly justified.
 - Helpers are local to the add-on unless multiple specs in the add-on need them.
 - The command used to verify is reported back to the user.
