@@ -3,17 +3,17 @@
 ## AI Assistant Instructions
 
 ## Skills
-- plone-frontend-developer: Senior Plone Volto frontend engineering for debugging add-ons, fixing UI bugs, and handling Plone 6 + Volto frontend tasks. (path: .skills/plone-frontend-developer/SKILL.md)
-- plone-backend-developer: Plone backend development for server behavior, add-ons, configuration, and tests in `backend/develop/`. (path: .skills/plone-backend-developer/SKILL.md)
-- volto-cypress-writer: Cypress E2E writing and maintenance for Volto add-ons in `frontend/src/addons`, with UI-first setup and project-specific commands. (path: .skills/volto-cypress-writer/SKILL.md)
-- caveman: Ultra-compressed communication mode for token-efficient, terse responses with adjustable intensity levels. (path: .skills/caveman/SKILL.md)
+- plone-frontend-developer: Senior Plone Volto frontend engineering for debugging add-ons, fixing UI bugs, and handling Plone 6 + Volto frontend tasks. (path: .agents/skills/plone-frontend-developer/SKILL.md)
+- plone-backend-developer: Plone backend development for server behavior, add-ons, configuration, and tests in `backend/develop/`. (path: .agents/skills/plone-backend-developer/SKILL.md)
+- volto-cypress-writer: Cypress E2E writing and maintenance for Volto add-ons in `frontend/src/addons`, with UI-first setup and project-specific commands. (path: .agents/skills/volto-cypress-writer/SKILL.md)
+- caveman: Ultra-compressed communication mode for token-efficient, terse responses with adjustable intensity levels. (path: .agents/skills/caveman/SKILL.md)
 
 ## Repo Overview
 - `volto18/`: Volto 18 Core code
 - `volto17/`: Volto 17 Core code
 - `frontend/`: Volto frontend for Plone 6 (cloned during `make init`).
 - `backend/`: Plone 6 backend (development in `backend/develop/`, cloned during `make init`).
-- `.skills/`: Local Codex skills for this repo.
+- `.agents/skills/`: Local agent skills for this repo.
 - `.venv/`: Local Python virtual environment for tooling (use `.venv/bin/python`).
 
 ## Frontend Conventions

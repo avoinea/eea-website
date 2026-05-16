@@ -1,7 +1,7 @@
 # EEA Plone Monorepo (AI ready dev environment)
 
 Generic monorepo for EEA Plone projects built on Plone 6 with Volto.
-This is a Plone dev environment that is Codex/Claude/Gemini ready.
+This is a Plone dev environment that is AI agents ready.
 
 ## Repository layout
 
@@ -9,7 +9,7 @@ This is a Plone dev environment that is Codex/Claude/Gemini ready.
 - `volto17/`: Volto 17 Core code (cloned during `make init` from `plone/volto` branch `17.x.x`)
 - `frontend/`: Volto frontend for Plone 6 (cloned during `make init`)
 - `backend/`: Plone 6 backend (development in `backend/develop/`, cloned during `make init`)
-- `.skills/`: Local Codex/Claude/Gemini skills for this repo
+- `.agents/skills/`: Local agent skills for this repo
 
 ## Bootstrap sources
 
@@ -78,6 +78,4 @@ Notes:
 
 ## Useful docs
 
-- `AGENTS.md` for repo-specific automation and tooling guidance (OpenAI/Codex)
-- `CLAUDE.md` for repo-specific automation and tooling guidance (Anthropic/Claude)
-- `GEMINI.md` for repo-specific automation and tooling guidance (Google/Gemini)
+- `AGENTS.md` for repo-specific agent automation and tooling guidance
