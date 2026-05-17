@@ -7,6 +7,8 @@
 - plone-backend-developer: Plone backend development for server behavior, add-ons, configuration, and tests in `backend/develop/`. (path: .agents/skills/plone-backend-developer/SKILL.md)
 - volto-cypress-writer: Cypress E2E writing and maintenance for Volto add-ons in `frontend/src/addons`, with UI-first setup and project-specific commands. (path: .agents/skills/volto-cypress-writer/SKILL.md)
 - caveman: Ultra-compressed communication mode for token-efficient, terse responses with adjustable intensity levels. (path: .agents/skills/caveman/SKILL.md)
+- grill-me: Interview the user relentlessly about a plan or design until reaching shared understanding, resolving each branch of the decision tree. (path: .agents/skills/grill-me/SKILL.md)
+- handoff: Compact the current conversation into a handoff document for another agent to pick up. (path: .agents/skills/handoff/SKILL.md)
 
 ## Repo Overview
 - `volto18/`: Volto 18 Core code
