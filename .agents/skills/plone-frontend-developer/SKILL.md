@@ -33,7 +33,7 @@ Diagnose and fix Volto/Plone frontend issues with a production-grade workflow. U
 - To start Volto 17 dev environment, run `VOLTO_VERSION=17 make; make start` in the add-on folder.
 - To run cypress tests, use `make cypress=run` in the add-on folder.
 - After defining i18n messages, run `make i18n`.
-- Use Playwright MCP for quick UI verification when needed; Volto hot reload covers most changes.
+- Use playwright-cli for quick UI verification when needed; Volto hot reload covers most changes.
 - If adding new shadow customizations, ask to restart the frontend server.
 
 ## Repo context
