@@ -20,7 +20,7 @@
 
 ## Frontend Conventions
 - Add-ons live in `frontend/src/addons/` and are registered in `frontend/package.json`.
-- Preferred runtime: Node 20 with Yarn 3.2.3 (repo allows Node 18 or 20).
+- Preferred runtime: Node 20 or 22 with Yarn 3.2.3 (see `engines` in `frontend/package.json`).
 
 ## Frontend Commands
 - Dev: `make start` (run from `frontend/`).

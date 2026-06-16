@@ -47,7 +47,7 @@ Run from repo root:
 
 ## Requirements
 
-- Node 20 (repo allows Node 18 or 20)
+- Node 20 or 22 (see `engines` in `frontend/package.json`)
 - Yarn 3.2.3
 - Python environment for Plone backend (see `backend/` docs)
 
