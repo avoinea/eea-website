@@ -69,6 +69,7 @@ Strong success criteria let you loop independently. Weak criteria ("make it work
 ## Repo Overview
 - `.agents/skills/`: Local agent skills for this repo.
 - `.venv/`: Local Python virtual environment for tooling (use `.venv/bin/python`).
+- `volto19/`: Volto 19 Core code
 - `volto18/`: Volto 18 Core code
 - `volto17/`: Volto 17 Core code
 - `frontend/`: Volto frontend for Plone 6 (cloned during `make init`).
@@ -91,6 +92,6 @@ Strong success criteria let you loop independently. Weak criteria ("make it work
 - Run `bin/zope-testrunner --test-path sources/<package>` from `backend/develop/`.
 
 ## Bootstrap
-- Run `make init` from the repo root. It also clones `volto17/` (`https://github.com/plone/volto` branch `17.x.x`) and `volto18/` (`https://github.com/plone/volto` branch `18.x.x`) if missing.
+- Run `make init` from the repo root. It also clones `volto17/` (`https://github.com/plone/volto` branch `17.x.x`), `volto18/` (`https://github.com/plone/volto` branch `18.x.x`), and `volto19/` (`https://github.com/plone/volto` branch `main`) if missing.
 - Provide frontend/backend GitHub repo URLs when prompted (or pass `FRONTEND_REPO`/`BACKEND_REPO` env vars).
-- Optional Volto override env vars: `VOLTO_REPO`, `VOLTO17_BRANCH`, `VOLTO18_BRANCH`.
+- Optional Volto override env vars: `VOLTO_REPO`, `VOLTO17_BRANCH`, `VOLTO18_BRANCH`, `VOLTO19_BRANCH`.

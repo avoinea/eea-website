@@ -2,8 +2,8 @@
 
 ## Environment
 - Plone: 6.1
-- Volto: 17.x (see `frontend/package.json` for exact version)
-- Node: 20 (repo allows 18 or 20)
+- Volto: 18.x (see `frontend/package.json` for exact version)
+- Node: ^20 || ^22 (preferred: 22)
 - Package manager: Yarn 3.2.3
 
 ## Repo layout
@@ -23,6 +23,12 @@
 - Stylelint: `yarn stylelint`
 - Tests: `yarn test`
 - Cypress: `yarn cypress:open` or `yarn cypress:run`
+
+## Reference Volto source
+- `volto17/`: Volto 17 core code (branch `17.x.x`)
+- `volto18/`: Volto 18 core code (branch `18.x.x`)
+- `volto19/`: Volto 19 core code (branch `main`)
+- These are read-only reference clones for AI agents to consult core Volto source.
 
 ## Add-ons
 - Workspace add-ons are in `frontend/src/addons/*` and registered via `frontend/package.json` `addons`.

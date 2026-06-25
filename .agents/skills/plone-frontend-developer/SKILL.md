@@ -1,6 +1,6 @@
 ---
 name: plone-frontend-developer
-description: Senior Plone Volto frontend engineering for debugging Volto add-ons, fixing UI bugs, adjusting blocks/components, and handling all Plone 6.1 + Volto 17 frontend tasks (theme, routing, tokens, build/test issues). Use when the request involves Volto/Plone frontend behavior, add-on code, or UI fixes.
+description: Senior Plone Volto frontend engineering for debugging Volto add-ons, fixing UI bugs, adjusting blocks/components, and handling all Plone 6.1 + Volto 17/18 frontend tasks (theme, routing, tokens, build/test issues). Use when the request involves Volto/Plone frontend behavior, add-on code, or UI fixes.
 ---
 
 # Plone Frontend Developer
@@ -31,6 +31,7 @@ Diagnose and fix Volto/Plone frontend issues with a production-grade workflow. U
 - Add-ons live in `frontend/src/addons/`; check each add-on's `make help` for available targets.
 - When developing and add-on, start Volto 18 dev environment with `make; make start` in the add-on folder for faster feedback loops.
 - To start Volto 17 dev environment, run `VOLTO_VERSION=17 make; make start` in the add-on folder.
+- Volto 17, 18, and 19 core code is available in `volto17/`, `volto18/`, and `volto19/` (read-only reference clones) for consulting core Volto source.
 - To run cypress tests, use `make cypress=run` in the add-on folder.
 - After defining i18n messages, run `make i18n`.
 - Use `playwright-cli` for quick UI verification when needed; Volto hot reload covers most changes.
