@@ -1,0 +1,84 @@
+h1. EEA Website Volto 19 Upgrade Plan
+
+h2. Summary
+
+This ticket tracks the upgrade of the EEA Main Website frontend from Volto 18.35.1 to Volto 19.3.0 and backend from Plone 6.1 to 6.2.1.
+
+The upgrade follows a "regenerate-and-migrate" strategy using Cookieplone to generate a new Volto 19 project, then migrating all project-specific configuration, addons, and customizations.
+
+h2. Scope
+
+* *Frontend* (@./frontend): Volto 18.35.1 -> 19.3.0, yarn -> pnpm 10
+* *Backend* (@./backend): Plone 6.1.x -> 6.2.1 (incremental)
+* *Add-ons*: 64 EEA Volto add-ons, dual-compatible with Volto 18 + 19
+* *CI/CD*: Jenkins, @eeacms/gitflow, Helm charts
+* *Templates*: EEA Cookieplone templates (reusable across all EEA projects)
+
+h2. Key Decisions
+
+| # | Decision | Rationale |
+|---|---|---|
+| 1 | Regenerate-and-migrate with Cookieplone | src/config.js already empty; Volto 19 changes are extensive |
+| 2 | Accept pnpm workspace (packages/website/) | Official Volto 19 approach; Docker/CI work out of the box |
+| 3 | Separate EEA templates (frontend_project + frontend_addon) | Frontend/backend are separate repos; templates reusable |
+| 4 | Phased addon migration, dual V18/V19 compatible | Fix breaking changes first (backward-compatible), then upgrade |
+| 5 | Skip unit tests on V18, Vitest on V19, Cypress on both | Avoid dual Jest+Vitest maintenance; Cypress is primary gate |
+| 6 | Stay with Cypress (not Playwright) | Volto 19 uses Cypress natively; Playwright is separate project |
+| 7 | mrs.developer.json output: packages/ | pnpm workspace convention; tools expect this |
+| 8 | Multi-stage Dockerfile with plone/frontend-builder | Official image, pre-installed pnpm/Node, build caching |
+| 9 | Drop REBUILD from production | Only used in debug pod, not in Jenkins CI/CD |
+| 10 | Keep EEA addon pins in pnpm.overrides, drop security patches | Security patches likely resolved in V19 deps |
+| 11 | Backend: incremental upgrade (base image + constraints) | 4-line Dockerfile, no Cookieplone regeneration needed |
+| 12 | Update eeacms/gitflow to support pnpm (Phase 0) | Add pnpm alongside yarn; update js-release.sh |
+
+h2. Execution Plan (7 phases)
+
+| Phase | Description | Dependencies |
+|---|---|---|
+| Phase 0 | Update @eeacms/gitflow Docker image for pnpm | None |
+| Phase 1 | Fix addon breaking changes (backward-compatible with V18) | None |
+| Phase 2 | Create/update Cookieplone templates | None |
+| Phase 3 | Generate new Volto 19 frontend project, migrate config | Phase 2 |
+| Phase 4 | Addon pnpm migration + publish new npm versions | Phases 0, 3 |
+| Phase 5 | Backend upgrade to Plone 6.2 (incremental) | None (parallel) |
+| Phase 6 | Cutover - merge, build, deploy, update Helm charts | Phases 3, 4, 5 |
+
+*Phases 0, 1, 2, and 5 can run in parallel.*
+
+h2. Addon Breaking Changes
+
+| Change | Addons affected |
+|---|---|
+| @<img> -> <Image>@ component | 5 (volto-eea-chatbot, volto-eea-design-system, volto-eea-website-theme, volto-nextcloud-video-block, volto-object-widget) |
+| @razzle-dev-utils -> conditional require@ | 2 (volto-searchlib, volto-eea-chatbot) |
+| @babel.config.js -> @plone/volto/babel@ | All addons with babel.config.js |
+| @superagent 3 -> 10@ error handling | 5 (volto-datablocks, volto-datahub, volto-eea-chatbot, volto-eea-website-theme, volto-plotlycharts) |
+| @react-dnd/react-sortable-hoc -> dnd-kit@ | 1 (volto-eea-website-theme) |
+| @Language settings from backend API@ | 3 (volto-eea-website-policy, volto-eea-design-system, volto-eea-website-theme) |
+| @Jest -> Vitest@ | All addons with tests |
+
+h2. Target Versions
+
+| Component | Current | Target |
+|---|---|---|
+| Volto | 18.35.1 | 19.3.0 |
+| Plone | 6.1.3/6.1.4 | 6.2.1 |
+| Package manager | yarn 3.2.3 | pnpm 10.x |
+| Node.js | 22 | 22 (no change) |
+| Docker base image | node:22-slim | plone/frontend-builder:19.3.0 |
+
+h2. Documentation
+
+Full documentation in @./docs/@ folder:
+* @01-overview.md@ - Why, scope, constraints
+* @02-strategy.md@ - Regenerate-and-migrate approach
+* @03-frontend-project-structure.md@ - pnpm workspace layout
+* @04-cookieplone-templates.md@ - EEA templates
+* @05-addon-migration.md@ - Phased addon migration
+* @06-testing-strategy.md@ - Cypress + Vitest
+* @07-build-and-deployment.md@ - Dockerfile, Jenkinsfile, Helm
+* @08-package-manager-migration.md@ - yarn -> pnpm
+* @09-volto19-breaking-changes.md@ - All breaking changes
+* @10-backend-upgrade.md@ - Plone 6.2
+* @11-execution-plan.md@ - Step-by-step plan
+* @12-decision-log.md@ - All decisions with rationale
