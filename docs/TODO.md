@@ -51,19 +51,29 @@ This file tracks execution progress across all 7 phases. Update checkboxes as wo
 ## Phase 2: Create/update Cookieplone templates
 
 - [x] Update `cookieplone-templates/templates/frontend_addon/`:
-  - [x] Jenkinsfile — dual Volto 19 (current, full testing) + Volto 18-yarn (previous, Cypress only), uses upstream Makefile targets (`format`, `lint`, `ci-test`, `ci-acceptance-test`), `--workdir=/app` for V19
+  - [x] **Makefile** — custom EEA Makefile (replaces upstream), slim 24-target Makefile with pnpm, ports 3000/8080, EEA target names (`ci-fix`, `test-ci`, `start-ci`, `check-ci`, `cypress-ci`), `RAZZLE_INTERNAL_API_PATH` exported, Vitest coverage/junit flags, curl-based `check-ci`, `--project` + absolute `specPattern` for cypress
+  - [x] **docker-compose.yml** — backend-only (`eeacms/plone-backend` on port 8080 with `eea.kitkat:testing`)
+  - [x] Jenkinsfile — dual Volto 19 (current, EEA Makefile targets) + Volto 18-yarn (previous, yarn directly), based on existing EEA V18 Jenkinsfile with V19 path swaps (`/app` workdir, `/app/packages/$GIT_NAME/` for coverage/junit, `/app/cypress/` for cypress results), three separate lint stages
   - [x] Dockerfile — CI test image with Chromium, handles both V18 (`/setupAddon`) and V19 (copy to `packages/` + `pnpm install`)
-  - [x] `pre_prompt.sh` hook — strips `initialize_ci`/`initialize_documentation`, converts `cookiecutter.json` → `cookieplone.json` v2 with EEA constants hidden (author, email, github_organization), appends `cypress`/`cypress-open`/`cypress-run` + `lint-fix`/`prettier-fix`/`stylelint-fix`/`i18n` Makefile aliases
-  - [x] `post_gen_project.py` hook — patches generated addon package.json with lint-staged config, husky + lint-staged devDependencies, `prepare: husky install` script
+  - [x] `pre_prompt.sh` hook — strips `initialize_ci`/`initialize_documentation`, converts `cookiecutter.json` → `cookieplone.json` v2 with EEA constants hidden. No longer appends Makefile targets.
+  - [x] `post_gen_project.py` hook — patches addon package.json with lint-staged config, husky + lint-staged + `@cypress/code-coverage` + `@vitest/coverage-v8` devDependencies, `prepare: "cd ../.. && husky install || true"` script
   - [x] `cookiecutter.json` — EEA defaults, `_copy_without_render` for betterleaks.yml, no docs subtemplate
+  - [x] Cypress support files (EEA override):
+    - [x] `cypress/support/commands.js` — EEA commands (autologin, createContent, removeContent, setWorkflow, Slate helpers, navigate, getIfExists)
+    - [x] `cypress/support/e2e.js` — `@cypress/code-coverage/support`, `slateBeforeEach`/`slateAfterEach`
+    - [x] `cypress/tests/example.cy.js` — EEA-style test (block basics)
+  - [x] `.husky/pre-commit` — moved to repo root (not addon package), `pnpm lint-staged` (skips in CI)
+  - [x] `src/config/settings.test.ts` — example Vitest test
   - [x] DEVELOP.md — updated for Volto 19 defaults
   - [x] LICENSE.md — EEA MIT license
   - [x] RELEASE.md — EEA release instructions (pnpm-based)
   - [x] `.gitleaks.toml` — EEA security scanning config
   - [x] `.github/workflows/betterleaks.yml` — GitHub Actions secret scanning (copied without Jinja2 rendering)
   - [x] `.release-it.json` override — EEA auto-changelog version (not towncrier)
-  - [x] `.husky/pre-commit` — `pnpm lint-staged` (skips in CI)
-- [x] Create `cookieplone-templates/templates/frontend_project/` (self-contained, 36 files):
+  - [x] All files have trailing newlines
+  - [x] Test: `cookieplone@2.0.0b3 frontend_addon --no-input` generates valid addon — `make install`, `make test`, `make test-ci`, `make cypress-run` all verified
+  - [ ] Test: interactive mode shows correct prompts (6 for addon, 3 for project)
+  - [ ] Verify: V18-yarn stage in Jenkinsfile works — `npx cypress run` in V18 Docker image (addon doesn't have `cypress:run` script; `npx` must find cypress binary via V18's `/setupAddon && yarn install`)
   - [x] `cookiecutter.json` — EEA defaults, 3 visible prompts (title, description, volto_version), derived frontend_addon_name, versions via filters
   - [x] `hooks/pre_prompt.sh` — converts cookiecutter.json → cookieplone.json v2, hides EEA constants + computed fields
   - [x] `package.json` — Volto 19 scripts (pnpm --filter @plone/volto), workspace:* deps, pnpm config, drop release-it
@@ -88,6 +98,7 @@ This file tracks execution progress across all 7 phases. Update checkboxes as wo
   - [x] `LICENSE.md` (EEA MIT), `README.md` (project docs)
   - [x] `.gitleaks.toml`, `.github/workflows/betterleaks.yml` (security scanning)
   - [x] Project addon package (`packages/volto-{slug}/`): package.json, src/index.ts, src/config/settings.ts, tsconfig.json, vitest.config.mjs, babel.config.js, locales/, .gitignore
+  - [x] Project addon package (`packages/volto-{slug}/`): package.json, src/index.ts, src/config/settings.ts, tsconfig.json, vitest.config.mjs, babel.config.js, locales/, .gitignore
 - [x] Update `cookieplone-config.json`:
   - [x] Added `frontend_project` template
   - [x] Hidden non-EEA groups (documentation, ci, ide, devops, agents, sub_templates) via `"hidden": true`
@@ -99,7 +110,7 @@ This file tracks execution progress across all 7 phases. Update checkboxes as wo
 - [x] Test: `cookieplone@2.0.0b3 frontend_project --no-input` generates valid project structure (35 files)
 - [ ] Test: interactive mode shows correct prompts (6 for addon, 3 for project)
 
-**Status**: Both templates complete and tested with --no-input. Interactive mode testing pending.
+**Status**: Templates complete and tested with --no-input (`make install`, `make test`, `make test-ci`, `make cypress-run` all verified). Interactive mode + V18-yarn CI stage verification pending.
 **Can run in parallel with**: Phases 0, 1, 5
 **Blocks**: Phase 3
 

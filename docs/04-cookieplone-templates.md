@@ -8,91 +8,86 @@ We create and maintain EEA-specific Cookieplone templates that extend the upstre
 - Docker Hub registry (`eeacms/`)
 - EEA author/email defaults
 - Documentation and VSCode config always included
+- Ports 3000 (Volto) / 8080 (Plone) — not upstream's 55001
 
-## Template: `frontend_addon` (update existing)
+## Template: `frontend_addon` (updated for Volto 19)
 
-The existing `frontend_addon` template in `cookieplone-templates/` needs updating for dual Volto 18/19 support.
+### Custom EEA Makefile (replaces upstream)
 
-### Changes needed
+A slim EEA Makefile is provided as a template file, replacing the upstream's bloated ~160-line Makefile. Key differences from upstream:
 
-1. **Jenkinsfile** — add a Volto 19 testing stage alongside the existing Volto 18 stage:
-   - Volto 18 pipeline: Cypress only (no unit tests)
-   - Volto 19 pipeline: Vitest + Cypress
-   - Both use `eeacms/volto-project-ci` Docker images
+- **Ports**: `RAZZLE_INTERNAL_API_PATH?=http://localhost:8080/Plone` (not 55001)
+- **No docker-compose for frontend**: local pnpm dev workflow (`pnpm start`)
+- **Backend via docker-compose**: `docker-compose.yml` with `eeacms/plone-backend` on port 8080
+- **EEA target names**: `ci-fix`, `test-ci`, `start-ci`, `check-ci`, `cypress-ci` (not upstream `format`, `ci-test`, `acceptance-frontend-prod-start`, `ci-acceptance-test`)
+- **Cypress**: `pnpm --filter @plone/volto exec cypress` with `--project $(CURRENT_DIR)` and absolute `specPattern`
+- **Vitest**: `test-ci` passes `--coverage --coverage.reporter=lcov --reporter=junit --outputFile=junit.xml`
+- **`check-ci`**: curl-based wait (no `wait-on` dependency)
+- **24 targets** total — no storybook, multilingual, guillotina, subpath, deployment bloat
 
-2. **`babel.config.js`** — use `require('@plone/volto/babel')` instead of `['razzle']` (works in both V18 + V19)
+### Jenkinsfile (based on existing EEA V18 pattern)
 
-3. **Vitest config** — generate `vitest.config.mjs` for Volto 19 addon testing
+The Jenkinsfile uses EEA target names and minimal V19 path swaps from the V18 EEA Jenkinsfile:
 
-4. **`cookiecutter.json`** — already has Volto version selection via `__test_framework` variable
+| What | V18 EEA | V19 EEA |
+|---|---|---|
+| `--workdir` | `/app/src/addons/$GIT_NAME` | `/app` |
+| Fix `docker cp` | `/app/src/addons/$GIT_NAME/src` | `/app/packages/$GIT_NAME/src` |
+| Fix `git add` | `src/` | `packages/$GIT_NAME/src/` |
+| Coverage `docker cp` | `/app/coverage` | `/app/packages/$GIT_NAME/coverage` |
+| junit `docker cp` | `/app/junit.xml` | `/app/packages/$GIT_NAME/junit.xml` |
+| Cypress results `docker cp` | `/app/src/addons/$GIT_NAME/cypress/` | `/app/cypress/` |
+| SonarQube sources | `./src` | `./packages/$GIT_NAME/src` |
 
-### What stays the same
-- `DEVELOP.md` with EEA development instructions
-- EEA organization defaults
-- No GitHub Actions
-- Documentation and VSCode always included
+- `CURRENT_VOLTO = "19"`, `PREVIOUS_VOLTO = "18-yarn"`
+- Three separate lint stages: ES lint, Style lint, Prettier
+- `RAZZLE_INTERNAL_API_PATH` passed as Docker env var (not make argument)
+- V18-yarn stage uses `yarn start` + `npx cypress run` directly (our V19 Makefile uses pnpm, not available in V18 image)
+- **TODO for next agent**: Verify V18-yarn stage works — the generated addon doesn't have `cypress:run` in its package.json, and `npx cypress run` needs to find the cypress binary in the V18 image
 
-## Template: `frontend_project` (create new)
+### Cypress support (EEA override)
 
-A new standalone EEA `frontend_project` template that generates a complete frontend repo (not combined with backend).
+- `cypress/support/commands.js` — EEA commands: `autologin`, `createContent`, `removeContent`, `setWorkflow`, `waitForResourceToLoad`, Slate editor helpers, `navigate`, `getIfExists`
+- `cypress/support/e2e.js` — `@cypress/code-coverage/support`, `slateBeforeEach`/`slateAfterEach`
+- `cypress/tests/example.cy.js` — EEA-style test (block basics with Slate)
+- **Not** the upstream pattern (Volto's `add-commands` + `reset-fixture`)
 
-### Template structure
-```
-cookieplone-templates/
-├── cookieplone-config.json          # Add frontend_project entry
-└── templates/
-    ├── frontend_addon/               # Existing (updated)
-    │   ├── cookiecutter.json
-    │   └── {{ cookiecutter.__folder_name }}/
-    │       ├── Jenkinsfile            # Updated for dual V18/V19
-    │       └── DEVELOP.md
-    └── frontend_project/              # NEW
-        ├── cookiecutter.json
-        └── {{ cookiecutter.__folder_name }}/
-            ├── Jenkinsfile            # EEA CI (Bundlewatch, Docker build, gitflow)
-            ├── Dockerfile             # Multi-stage with plone/frontend-builder
-            ├── Makefile                # EEA targets (develop, relstorage, staging, demo, cypress)
-            └── entrypoint.sh           # Sentry upload at startup (no REBUILD)
-```
+### Hooks
 
-### What the template bakes in (reusable across all EEA projects)
-- Jenkinsfile with EEA CI pattern (Bundlewatch stage, Docker build, gitflow release, SonarQube)
-- Docker Hub registry default (`eeacms/`)
-- EEA npm scope (`@eeacms/`), GitHub org (`eea`)
-- Multi-stage Dockerfile with `plone/frontend-builder`
-- Makefile with EEA targets
-- `entrypoint.sh` with Sentry upload (no REBUILD)
-- `.bundlewatch.config.json` pattern
-- No GitHub Actions, no Ansible
+- `pre_prompt.sh` — converts `cookiecutter.json` → `cookieplone.json` v2, hides EEA constants. No longer appends Makefile targets (Makefile is now a template file).
+- `post_gen_project.py` — patches addon `package.json`:
+  - `lint-staged` config (calls `make lint-fix`, `make prettier-fix`, `make stylelint-fix`, `make i18n`)
+  - `prepare: "cd ../.. && husky install || true"` (runs from addon package, goes to repo root, fails silently in monorepo)
+  - DevDependencies: `husky`, `lint-staged`, `@cypress/code-coverage`, `@vitest/coverage-v8` (same version as `vitest`)
 
-### What stays per-project (filled in during migration)
-- Specific addon list in `volto.config.js`
-- `mrs.developer.json` with project addons
-- Custom `razzle.config.js` additions (compression, handsontable)
-- Project-specific Jenkins env vars (SonarQube tags, stack IDs)
-- Cypress tests and fixtures
-- Locales, public assets, theme files
+### .husky/pre-commit
 
-## cookieplone-config.json update
+Lives at the **repo root** (not inside the addon package), since husky v8 expects hooks at the git root.
 
-Add `frontend_project` to the templates section:
-```json
-"templates": {
-  "frontend_addon": { ... },
-  "frontend_project": {
-    "path": "./templates/frontend_project",
-    "title": "EEA Frontend Project for Plone",
-    "description": "Create a Volto frontend project with EEA conventions"
-  }
-}
-```
+### Example Vitest test
+
+`src/config/settings.test.ts` — simple test verifying `install(config)` returns config unchanged.
+
+### docker-compose.yml
+
+Backend only: `eeacms/plone-backend` on port 8080 with `PROFILES: "eea.kitkat:testing"`.
+
+`make start` starts both: `docker compose up -d backend && pnpm start`.
+
+## Template: `frontend_project`
+
+Unchanged from previous session — see TODO.md Phase 2 for details.
+
+## cookieplone-config.json
+
+Extends `gh:plone/cookieplone-templates` tag `20260320.1`. Hides all non-EEA groups and templates. Only `frontend_addon` and `frontend_project` are visible.
 
 ## Usage
 
 ```bash
-# Generate a new EEA frontend project
-COOKIEPLONE_REPOSITORY=gh:eea/cookieplone-templates cookieplone frontend_project
-
 # Generate a new EEA Volto add-on
-COOKIEPLONE_REPOSITORY=gh:eea/cookieplone-templates cookieplone frontend_addon
+COOKIEPLONE_REPOSITORY=gh:eea/cookieplone-templates uvx cookieplone@2.0.0b3 frontend_addon
+
+# Generate a new EEA frontend project
+COOKIEPLONE_REPOSITORY=gh:eea/cookieplone-templates uvx cookieplone@2.0.0b3 frontend_project
 ```
