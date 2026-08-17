@@ -24,7 +24,17 @@ Before implementing:
 
 Ask yourself: "Would a senior engineer say this is overcomplicated?" If yes, simplify.
 
-### 3. Surgical Changes
+### 3. Always End Files With a Newline
+
+**Every file you create or edit must end with a trailing newline.**
+
+Before committing, verify:
+```bash
+find . -type f -not -path "./.git/*" -exec sh -c 'tail -c1 "$1" | xxd -p | grep -v "0a" && echo "  MISSING in $1"' _ {} \;
+```
+If any files are listed, fix them with `echo "" >> <file>`.
+
+### 4. Surgical Changes
 
 **Touch only what you must. Clean up only your own mess.**
 
@@ -40,7 +50,7 @@ When your changes create orphans:
 
 The test: Every changed line should trace directly to the user's request.
 
-### 4. Goal-Driven Execution
+### 5. Goal-Driven Execution
 
 **Define success criteria. Loop until verified.**
 
