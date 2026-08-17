@@ -4,13 +4,13 @@ This file tracks execution progress across all 7 phases. Update checkboxes as wo
 
 ## Phase 0: Update gitflow Docker image for pnpm
 
-- [ ] Add `pnpm` to `eea.docker.gitflow/Dockerfile` alongside `yarn`
-- [ ] Update `eea.docker.gitflow/src/js-release.sh` — detect pnpm vs yarn via `packageManager` field
-- [ ] Update `eea.docker.gitflow/src/frontend-release.sh` — detect pnpm if needed
+- [x] Add `pnpm` to `eea.docker.gitflow/Dockerfile` alongside `yarn` (Node 18, 20, 22)
+- [x] Update `eea.docker.gitflow/src/js-release.sh` — detect pnpm vs yarn via `packageManager` field (helper function, install/update/lockfile/publish sections)
+- [x] Update `eea.docker.gitflow/src/frontend-release.sh` — detect pnpm for deduplicate + lockfile
 - [ ] Build and push new `eeacms/gitflow` image
 - [ ] Verify: a Volto 18 addon can still be released via the updated image
 
-**Status**: Not started
+**Status**: Code changes complete. Build/push/verify pending operational execution.
 **Can run in parallel with**: Phases 1, 2, 5
 **Blocks**: Phase 4
 
@@ -18,31 +18,31 @@ This file tracks execution progress across all 7 phases. Update checkboxes as wo
 
 ## Phase 1: Fix addon breaking changes (backward-compatible with V18)
 
-- [ ] Fix `<img>` → `<Image>` component in 5 addons:
-  - [ ] volto-eea-chatbot (tests)
-  - [ ] volto-eea-design-system (stories)
-  - [ ] volto-eea-website-theme (Image.jsx, LeadImage/Edit.jsx, Image/Edit.jsx)
-  - [ ] volto-nextcloud-video-block (tests)
-  - [ ] volto-object-widget (tests)
-- [ ] Fix `razzle-dev-utils` → conditional require in 2 addons:
-  - [ ] volto-searchlib/razzle.extend.js
-  - [ ] volto-eea-chatbot/razzle.extend.js
-- [ ] Fix `babel.config.js` → `require('@plone/volto/babel')` in all addons
-- [ ] Fix superagent error handling in 5 addons:
-  - [ ] volto-datablocks
-  - [ ] volto-datahub
-  - [ ] volto-eea-chatbot
-  - [ ] volto-eea-website-theme
-  - [ ] volto-plotlycharts
-- [ ] Fix react-dnd/react-sortable-hoc in volto-eea-website-theme (add as dependency)
-- [ ] Fix language settings in 3 addons (read from backend API):
-  - [ ] volto-eea-website-policy/src/index.js
-  - [ ] volto-eea-design-system/src/ui/Header/Header.jsx
-  - [ ] volto-eea-website-theme (AlternateHrefLangs.jsx, Header.jsx)
-- [ ] Clean up commented-out razzle-dev-utils in volto-globalsearch
+- [x] Fix `<img>` → `<Image>` component in 5 addons:
+  - [x] volto-eea-chatbot (tests) — already exempt by ESLint override for `*.test.*` files
+  - [x] volto-eea-design-system (stories) — already exempt by ESLint override for `*.stories.*` files
+  - [x] volto-eea-website-theme (Image.jsx, LeadImage/Edit.jsx, Image/Edit.jsx) — already has `eslint-disable` comments
+  - [x] volto-nextcloud-video-block (tests) — already exempt by ESLint override
+  - [x] volto-object-widget (tests) — already exempt by ESLint override
+- [x] Fix `razzle-dev-utils` → conditional require in 2 addons:
+  - [x] volto-searchlib/razzle.extend.js
+  - [x] volto-eea-chatbot/razzle.extend.js
+- [x] Fix `babel.config.js` → `require('@plone/volto/babel')` in all addons (64 files updated)
+- [x] Fix superagent error handling in 5 addons — already safe (all usages use defensive patterns):
+  - [x] volto-datablocks (commented out, no change needed)
+  - [x] volto-datahub (already checks `resp && resp.body`)
+  - [x] volto-eea-chatbot (uses async/await with try/catch)
+  - [x] volto-eea-website-theme (uses promise `.then()/.catch()`)
+  - [x] volto-plotlycharts (uses promise `.then()/.catch()`)
+- [x] Fix react-dnd/react-sortable-hoc in volto-eea-website-theme (added `react-dnd` + `react-dnd-html5-backend` as deps, registered `reactDnd` + `reactDndHtml5Backend` in `config.settings.loadables`)
+- [x] Fix language settings in 3 addons — already backward-compatible:
+  - [x] volto-eea-website-policy/src/index.js — already sets config values explicitly
+  - [x] volto-eea-design-system/src/ui/Header/Header.jsx — receives `isMultilingual` as prop
+  - [x] volto-eea-website-theme (AlternateHrefLangs.jsx, Header.jsx) — reads from config.settings which volto-eea-website-policy sets
+- [x] Clean up commented-out razzle-dev-utils in volto-globalsearch
 - [ ] Verify: all addons pass on Volto 18 CI (Cypress)
 
-**Status**: Not started
+**Status**: Code changes complete across all 64 addon repos. CI verification pending.
 **Can run in parallel with**: Phases 0, 2, 5
 **Blocks**: Phase 4 (addons must be V19-compatible before pnpm migration)
 
@@ -50,23 +50,56 @@ This file tracks execution progress across all 7 phases. Update checkboxes as wo
 
 ## Phase 2: Create/update Cookieplone templates
 
-- [ ] Update `cookieplone-templates/templates/frontend_addon/`:
-  - [ ] Add Volto 19 Jenkins testing stage (Vitest + Cypress)
-  - [ ] Update `babel.config.js` to use `require('@plone/volto/babel')`
-  - [ ] Add `vitest.config.mjs` template
-  - [ ] Update `cookiecutter.json` if needed
-- [ ] Create `cookieplone-templates/templates/frontend_project/`:
-  - [ ] `cookiecutter.json` with EEA defaults
-  - [ ] `Jenkinsfile` (EEA CI: Bundlewatch, Docker build, gitflow, SonarQube)
-  - [ ] `Dockerfile` (multi-stage with `plone/frontend-builder`)
-  - [ ] `Makefile` (EEA targets: develop, relstorage, staging, demo, cypress)
-  - [ ] `entrypoint.sh` (Sentry upload, no REBUILD)
-  - [ ] `.bundlewatch.config.json` pattern
-- [ ] Update `cookieplone-templates/cookieplone-config.json` with `frontend_project` entry
-- [ ] Test: `cookieplone frontend_project --no-input` generates valid structure
-- [ ] Test: `cookieplone frontend_addon --no-input` generates valid addon
+- [x] Update `cookieplone-templates/templates/frontend_addon/`:
+  - [x] Jenkinsfile — dual Volto 19 (current, full testing) + Volto 18-yarn (previous, Cypress only), uses upstream Makefile targets (`format`, `lint`, `ci-test`, `ci-acceptance-test`), `--workdir=/app` for V19
+  - [x] Dockerfile — CI test image with Chromium, handles both V18 (`/setupAddon`) and V19 (copy to `packages/` + `pnpm install`)
+  - [x] `pre_prompt.sh` hook — strips `initialize_ci`/`initialize_documentation`, converts `cookiecutter.json` → `cookieplone.json` v2 with EEA constants hidden (author, email, github_organization), appends `cypress`/`cypress-open`/`cypress-run` + `lint-fix`/`prettier-fix`/`stylelint-fix`/`i18n` Makefile aliases
+  - [x] `post_gen_project.py` hook — patches generated addon package.json with lint-staged config, husky + lint-staged devDependencies, `prepare: husky install` script
+  - [x] `cookiecutter.json` — EEA defaults, `_copy_without_render` for betterleaks.yml, no docs subtemplate
+  - [x] DEVELOP.md — updated for Volto 19 defaults
+  - [x] LICENSE.md — EEA MIT license
+  - [x] RELEASE.md — EEA release instructions (pnpm-based)
+  - [x] `.gitleaks.toml` — EEA security scanning config
+  - [x] `.github/workflows/betterleaks.yml` — GitHub Actions secret scanning (copied without Jinja2 rendering)
+  - [x] `.release-it.json` override — EEA auto-changelog version (not towncrier)
+  - [x] `.husky/pre-commit` — `pnpm lint-staged` (skips in CI)
+- [x] Create `cookieplone-templates/templates/frontend_project/` (self-contained, 36 files):
+  - [x] `cookiecutter.json` — EEA defaults, 3 visible prompts (title, description, volto_version), derived frontend_addon_name, versions via filters
+  - [x] `hooks/pre_prompt.sh` — converts cookiecutter.json → cookieplone.json v2, hides EEA constants + computed fields
+  - [x] `package.json` — Volto 19 scripts (pnpm --filter @plone/volto), workspace:* deps, pnpm config, drop release-it
+  - [x] `volto.config.js` — project addon registered, empty theme
+  - [x] `pnpm-workspace.yaml` — core/packages/*, packages/*, packages/**/packages/*
+  - [x] `mrs.developer.json` — core entry only (fetches Volto into core/)
+  - [x] `.npmrc` — public-hoist-pattern for babel-preset-razzle
+  - [x] `.pnpmfile.cjs` — pnpm catalog hook (reads core/catalog.json)
+  - [x] `.eslintrc.js` — AddonRegistry-based, auto-resolves addon aliases, packages/** ignore patterns
+  - [x] `jsconfig.json` — @plone/volto path alias to core/packages/volto/src
+  - [x] `babel.config.js` — require('@plone/volto/babel')
+  - [x] `cypress.config.js` — minimal config, placeholder baseUrl
+  - [x] `Makefile` — develop (missdev + pnpm install + build:deps + husky), install, build, start, relstorage, staging, demo, cypress, cypress-open, bundlewatch, help
+  - [x] `scripts/husky.sh` — installs git hooks in packages/* (pnpm exec husky install)
+  - [x] `Dockerfile` — multi-stage with plone/frontend-builder, no make develop, pnpm install + build:deps + build
+  - [x] `.dockerignore` — excludes core/, fetched addons (packages/* except project addon), node_modules, etc.
+  - [x] `Jenkinsfile` — EEA CI: Bundlewatch, Pull Request, Release, Build & Push, Release catalog, Upgrade demo, SonarQube tags
+  - [x] `entrypoint.sh` (Sentry upload, no REBUILD)
+  - [x] `.bundlewatch.config.json` pattern
+  - [x] `.gitignore` — core/, packages/* (except project addon), node_modules, build, etc.
+  - [x] `.editorconfig`, `.prettierignore`, `.eslintignore`
+  - [x] `LICENSE.md` (EEA MIT), `README.md` (project docs)
+  - [x] `.gitleaks.toml`, `.github/workflows/betterleaks.yml` (security scanning)
+  - [x] Project addon package (`packages/volto-{slug}/`): package.json, src/index.ts, src/config/settings.ts, tsconfig.json, vitest.config.mjs, babel.config.js, locales/, .gitignore
+- [x] Update `cookieplone-config.json`:
+  - [x] Added `frontend_project` template
+  - [x] Hidden non-EEA groups (documentation, ci, ide, devops, agents, sub_templates) via `"hidden": true`
+  - [x] Hidden non-EEA templates (backend_addon, monorepo_addon, seven_addon, project, classic_project) via `"hidden": true` in templates section
+  - [x] Menu shows only: Add-ons (→ frontend_addon) and Projects (→ frontend_project)
+- [x] Update README.md with full documentation
+- [x] All files have trailing newlines
+- [x] Test: `cookieplone@2.0.0b3 frontend_addon --no-input` generates valid addon with all EEA files + refinements
+- [x] Test: `cookieplone@2.0.0b3 frontend_project --no-input` generates valid project structure (35 files)
+- [ ] Test: interactive mode shows correct prompts (6 for addon, 3 for project)
 
-**Status**: Not started
+**Status**: Both templates complete and tested with --no-input. Interactive mode testing pending.
 **Can run in parallel with**: Phases 0, 1, 5
 **Blocks**: Phase 3
 
@@ -115,16 +148,17 @@ This file tracks execution progress across all 7 phases. Update checkboxes as wo
 
 ## Phase 5: Backend upgrade to Plone 6.2 (parallel)
 
-- [ ] Update `backend/Dockerfile` base image to `eeacms/plone-backend:6.2.1-<n>`
-- [ ] Update `PLONE_VERSION=6.2.1` in `backend/develop/Makefile`
-- [ ] Update constraints URL to 6.2.1
+- [x] Update `backend/Dockerfile` base image — added TODO comment (pending EEA 6.2.x image publication)
+- [x] Update `PLONE_VERSION=6.2.1` in `backend/develop/Makefile`
+- [x] Update constraints URL to 6.2.1 (automatic via `$(PLONE_VERSION)` variable)
+- [x] Add `horse-with-no-namespace` to `requirements.txt` (preemptive, per Plone 6.2 recommendation)
+- [ ] Update Dockerfile base image to `eeacms/plone-backend:6.2.1-<n>` (when EEA publishes image)
 - [ ] Run backend tests, check for namespace errors
-- [ ] Add `horse-with-no-namespace` to `requirements.txt` if needed
-- [ ] Update EEA backend package versions as needed
 - [ ] Run Plone upgrade steps in Add-ons control panel
+- [ ] Update EEA backend package versions as needed
 - [ ] Verify: backend tests pass, Plone 6.2 site works with Volto 19 frontend
 
-**Status**: Not started
+**Status**: Partially complete. Blocked on EEA 6.2.x backend Docker image publication.
 **Can run in parallel with**: Phases 0, 1, 2, 3, 4
 **Blocks**: Phase 6
 
