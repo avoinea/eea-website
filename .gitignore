@@ -10,3 +10,5 @@ volto-addon-template
 cookieplone-templates
 cookieplone
 eea.docker.gitflow
+frontend-builder
+volto-test-addon
