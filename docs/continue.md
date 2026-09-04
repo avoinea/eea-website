@@ -1,5 +1,7 @@
 # Continue — Next Steps for Agents
 
+> Plone Conf 2026 talk prep has its own continue file: `./continue-ploneconf.md` (this file is migration-only).
+
 ## Current state
 
 Phases 0, 1, 2 (frontend_addon), and 5 (partial) are **code complete**. Phase 2's frontend_project template is created but untested. See `./docs/TODO.md` for checkbox-level detail and `./docs/session-progress.md` for a full session log with key learnings.

@@ -1,5 +1,7 @@
 # HANDOFF — Volto 19 Upgrade (Session 2)
 
+> Talk prep (Plone Conf 2026) handoff: `./HANDOFF-PLONECONF.md` — this file is migration-only.
+
 ## What was done this session
 
 ### `volto-test-addon` → Volto 19 (PR #15, green)
