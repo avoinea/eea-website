@@ -13,3 +13,9 @@ eea.docker.gitflow
 frontend-builder
 volto-test-addon
 helm-charts
+
+# pnpm store fallback (created when the global store is on a different device)
+.pnpm-store/
+
+# cookieplone transient answers file (stays in cwd when generation fails to move it)
+.cookieplone_answers_*.json
