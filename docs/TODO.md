@@ -110,6 +110,7 @@ This file tracks execution progress across all 7 phases. Update checkboxes as wo
 - [x] Test: `cookieplone@2.0.0b3 frontend_project --no-input` generates valid project structure (35 files)
 - [x] `frontend_project` template aligned with the proven `eea-website-frontend` implementation (2026-09-09): missdev Docker build + SSR dependency check, „Volto frontend checks” Jenkins stage, EEA scripts, `razzle.extend.js`, no `jsconfig.json`, no storybook — validated by `--no-input` generation (all rendered files syntax-checked)
 - [ ] Test: interactive mode shows correct prompts (6 for addon, 3 for project)
+- [x] Both templates generated and run end-to-end (2026-09-09, cookieplone-templates `87cdc91`): addon `make install`/`make test`/`make test-ci` all pass (junit + coverage); project `pnpm install`/`build:deps`/`make check` exit 0; fixed the generated `.npmrc` hoisting bug (system eslint resolution) + addon post_gen gaps (test scripts, towncrier removal)
 
 **Status**: Templates complete and tested with --no-input (`make install`, `make test`, `make test-ci`, `make cypress-run` all verified). Interactive mode + V18-yarn CI stage verification pending.
 **Can run in parallel with**: Phases 0, 1, 5

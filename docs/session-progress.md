@@ -185,3 +185,19 @@ Key learnings (new):
 - cookieplone answers-file move fails across devices (sandbox artifact only, harmless)
 - The upstream `frontend_project` template (Aug 18 state) generated a broken Docker build for any project with add-ons in `mrs.developer.json` (no missdev) — fixed by aligning with the proven implementation
 - Sandbox has no `uvx`; installed `cookieplone==2.0.0b3` via `pip3 install --user --break-system-packages` (Python 3.14) and ran `~/.local/bin/cookieplone` with `COOKIEPLONE_REPOSITORY=$(pwd)/cookieplone-templates`
+
+## Session 6 addendum (2026-09-09) — both templates generated and run end-to-end
+
+After the push, both templates were generated with `cookieplone@2.0.0b3 --no-input` (local `cookieplone-templates`) and verified functionally:
+
+**`frontend_addon`** (generated `volto-add-on`):
+- Root shell package.json matches the real add-ons 1:1; Jenkinsfile dual V19/V18 ✓; Makefile EEA targets ✓
+- Found + fixed template gaps (commit `87cdc91`): post_gen hook now adds `test`/`test:fix`/`release-beta`/`release-major-beta` scripts to the nested package.json and removes `towncrier.toml` + `news/` (EEA uses `.release-it.json` auto-changelog) — the nested package.json now matches the 67 restructured add-ons
+- `make install` ✅ (missdev fetched core, pnpm install, build:deps) — needed `CYPRESS_INSTALL_BINARY=0`: the sandbox proxy returns 403 for download.cypress.io (environment-only)
+- `make test` ✅ (1/1 vitest), `make test-ci` ✅ (junit.xml + v8 coverage report written)
+
+**`frontend_project`** (generated `eea-website-frontend`):
+- Found + fixed a real template bug (commit `87cdc91`): the generated `.npmrc` had only the upstream `public-hoist-pattern[]=*babel-preset-razzle`, so `eslint`/`prettier`/`stylelint` were **not hoisted** and `pnpm lint` resolved to the system eslint (crash: `context.getPhysicalFilename is not a function`). The template now ships the full EEA `.npmrc` (hoist list + `engine-strict=true`) and declares the eslint/stylelint stack in root devDependencies (mirroring `eea-website-frontend`)
+- Verified: missdev → core@19.4.0; `pnpm install` ✓; `pnpm build:deps` ✓ (registry + components); **`make check` exit 0** (eslint, prettier, stylelint, typecheck, vitest)
+
+**Sandbox-only notes (not template issues)**: cypress + sentry-cli binary downloads blocked by proxy (403) → use `CYPRESS_INSTALL_BINARY=0` and, if installing with `--ignore-scripts`, run `pnpm rebuild lightningcss-cli` afterwards (the lightningcss binary needs its install script to replace the Windows placeholder stub). Transient git clone failures of plone/volto through the proxy need a retry.
