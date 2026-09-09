@@ -167,6 +167,8 @@ This file tracks execution progress across all 7 phases. Update checkboxes as wo
   - `@eeacms/volto-eea-website-theme`: repo 4.4.0 vs npm 4.5.0 (2026-08-27)
   - `@eeacms/volto-group-block`: repo 10.0.3 vs npm 10.1.0 (2026-08-26)
   - `@eeacms/volto-taxonomy`: repo 6.0.2 vs npm 6.0.5 (2026-08-20)
+- [ ] Fix `.husky/pre-commit` in all 67 add-on repos — `pnpm lint-staged` resolves only from the nested package, so every local commit fails the hook (fixed in the template: root -dev shell declares `lint-staged`, commit `968aa91`)
+- [ ] Sync `volto19` branches with `develop` (merge, not rebase — branches are pushed/referenced): sweep 2026-09-09 → **51 SYNCED** (develop is an ancestor, merge = no-op), **13 DIVERGED** (merge + conflict resolution needed: the 8 npm-published + searchlib, block-divider, columns-block, statistic-block), **3 NO-DEVELOP** (volto-subsites/authomatic/rss-provider — external branching). Pilot validated on volto-accordion-block (merge commit `1c0af61`, recipe in session-progress.md)
 - [ ] Verify add-on CI (V18 + V19 pipelines) passes for all 67 add-ons
 - [ ] Update `mrs.developer.json` branches → tags/V19-compatible releases (also stabilizes the frontend `--frozen-lockfile` against moving branch heads)
 - [ ] Fix `frontend/scripts/release.py` — broken under the new layout (reads `jsconfig.json` + `src/<path>`, both gone); needs a rewrite against `mrs.developer.json` + `packages/` (+ nested add-on versions). Same for `make release` in the frontend.
