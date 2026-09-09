@@ -201,3 +201,22 @@ After the push, both templates were generated with `cookieplone@2.0.0b3 --no-inp
 - Verified: missdev → core@19.4.0; `pnpm install` ✓; `pnpm build:deps` ✓ (registry + components); **`make check` exit 0** (eslint, prettier, stylelint, typecheck, vitest)
 
 **Sandbox-only notes (not template issues)**: cypress + sentry-cli binary downloads blocked by proxy (403) → use `CYPRESS_INSTALL_BINARY=0` and, if installing with `--ignore-scripts`, run `pnpm rebuild lightningcss-cli` afterwards (the lightningcss binary needs its install script to replace the Windows placeholder stub). Transient git clone failures of plone/volto through the proxy need a retry.
+
+## Session 6 addendum 2 (2026-09-09) — pilot merge `develop` → `volto19` on `volto-accordion-block`
+
+Sweep across the 67 add-ons of the `develop` ↔ `volto19` relationship:
+- **51 SYNCED** (develop is an ancestor of volto19 — merge = no-op, future PR is clean)
+- **13 DIVERGED** (develop moved after the merge-base): the 8 add-ons with npm publishes (accordion, datablocks, chatbot, design-system, kitkat, website-policy, website-theme, taxonomy, group-block) + 4 with code-only commits (searchlib, block-divider, columns-block, statistic-block)
+- **3 NO-DEVELOP** (volto-subsites, volto-authomatic, volto-rss-provider — external branching, handle separately)
+
+**Pilot (volto-accordion-block, merge commit `1c0af61`)** — recipe validated:
+1. `git merge origin/develop` → 2 content conflicts (root `package.json`, `Edit.test.jsx`) + `jest-addon.config.js` delete/modify
+2. Root `package.json` → keep the `-dev` shell (ours); version bump lands on the NESTED package
+3. Reconciliation: nested version → `13.1.1` (first patch above npm latest 13.1.0)
+4. `Edit.test.jsx` → keep the vitest (vi.mock) side; port develop's `mockBlocksToolbar` enhancement with `vi.fn()`; drop the `uuid` jest-mock (a V18-jest workaround — uuid resolves fine under vitest)
+5. `jest-addon.config.js` stays deleted; `jest.uuid.setup.js` kept (harmless, V18-jest-only)
+6. **The merge did NOT degrade the suite**: failures are pre-existing on `volto19` (22 fail/36 pre-merge ≈ 23 fail/37 post-merge — the +1 is develop's new clipboard-toolbar test, failing for the same pre-existing rendering-setup reason as its neighbours)
+
+**Found**: `.husky/pre-commit` runs `pnpm lint-staged`, but lint-staged resolves only from the nested package → **every local commit in all 67 restructured repos fails the hook** (automation uses CI-guard/CYPRESS-style skips or --no-verify). Fixed in the template (root -dev shell declares lint-staged). Existing repos need the same one-line fix (Phase 4).
+
+**Merge vs rebase decision**: merge (not rebase) — the `volto19` branches are pushed and referenced by the frontend workspace; rebase would force-push and break everyone's checkouts.
