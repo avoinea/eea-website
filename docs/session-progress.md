@@ -220,3 +220,31 @@ Sweep across the 67 add-ons of the `develop` ↔ `volto19` relationship:
 **Found**: `.husky/pre-commit` runs `pnpm lint-staged`, but lint-staged resolves only from the nested package → **every local commit in all 67 restructured repos fails the hook** (automation uses CI-guard/CYPRESS-style skips or --no-verify). Fixed in the template (root -dev shell declares lint-staged). Existing repos need the same one-line fix (Phase 4).
 
 **Merge vs rebase decision**: merge (not rebase) — the `volto19` branches are pushed and referenced by the frontend workspace; rebase would force-push and break everyone's checkouts.
+
+## Session 6 addendum 3 (2026-09-09) — all 12 DIVERGED add-ons merged
+
+Recipe applied to all remaining DIVERGED repos (merge `origin/develop` → `volto19`, conflicts resolved, `--no-verify` while the hook fix propagates):
+
+| Add-on | Merge | Version reconcile (nested > npm latest) |
+|---|---|---|
+| volto-datablocks | `14e5d04` | 8.0.3 → **9.0.2** (> npm 9.0.1) |
+| volto-group-block | `b5d79b9` | 10.0.3 → **10.1.1** (> npm 10.1.0) |
+| volto-eea-website-policy | `86dd96b` | 4.0.3 → **4.0.5** (> npm 4.0.4) |
+| volto-eea-website-theme | `84cef72` | 4.4.0 → **4.5.1** (> npm 4.5.0) |
+| volto-taxonomy | `606e542` | 6.0.2 → **6.0.6** (> npm 6.0.5) |
+| volto-eea-kitkat | `46773ba` | 33.1.1 → **33.2.1** (> npm 33.2.0) |
+| volto-eea-design-system | `6998bd237` | 1.60.8 → **1.61.2** (> npm 1.61.1) |
+| volto-eea-chatbot | `b24be04` | 3.0.1 → **4.1.1** (> npm 4.1.0) |
+| volto-statistic-block | `2b58792` | no conflict (locale-only) |
+| volto-searchlib | `3cb05ca` | in sync (no bump) |
+| volto-block-divider | `4ef5b91` | in sync (no bump) |
+| volto-columns-block | `cde98bc` | in sync (no bump) |
+
+Conflict-resolution pattern (validated across all):
+- root `package.json` → ours (`-dev` shell) + `lint-staged` in root devDependencies (hook fix)
+- `jest-addon.config.js` → stays deleted
+- test files → keep the volto19 vitest side, port develop's newer intent converted `jest.*` → `vi.*` (jest-mock uuid workarounds are V18-jest-only and get dropped; develop's enhanced mocks/asserts get ported)
+- `chatbot`: develop deleted the `halloumi` module files + `dummy/` fixtures (refactor) → deletions honored; `halloumi/middleware.test.js` survives on develop (took theirs, converted)
+- `website-theme`: 10 develop-added customization/test files accepted at the renamed locations (incl. `formUI.js` reducer)
+
+Pre-existing test failures (useContext-null / intl invariant, e.g. accordion 23/37, datablocks 4 files) are NOT merge-caused — verified by running the pre-merge state (22/36). They need per-addon test-setup debugging (Phase 4 "verify CI" work) or differ in the CI environment.
