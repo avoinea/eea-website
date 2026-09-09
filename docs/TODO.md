@@ -157,23 +157,23 @@ This file tracks execution progress across all 7 phases. Update checkboxes as wo
 - [x] Restructure all 67 add-ons to the Volto 19 workspace layout (root `-dev` shell + nested `packages/<addon>/`), on `volto19` branches, pushed (2026-09-04, `880de8c` + Betterleaks fix `1a71c5c` per repo)
   - [x] Each add-on: dual Jenkinsfile (`CURRENT_VOLTO=19` + `PREVIOUS_VOLTO=18`, both pnpm), EEA Makefile (`/dev/tcp` check-ci, junit), Dockerfile overlay on `eeacms/frontend-builder`, `vitest.config.mjs`, `packageManager: pnpm@10.20.0`, `.gitleaks.toml`
 - [x] Frontend `pnpm-lock.yaml` regenerated for the restructured workspaces + `--frozen-lockfile` verified (2026-09-09, commit `6d58e97`)
-- [ ] Reconcile versions — 9 add-ons have `npm latest` > `volto19` branch version (npm publishes from Aug 20–Sep 8 were made **before** the Sep 4 restructure, which reset the `package.json` versions):
-  - `@eeacms/volto-accordion-block`: repo 13.0.3 vs npm 13.1.0 (2026-08-27)
-  - `@eeacms/volto-datablocks`: repo 8.0.3 vs npm 9.0.1 (2026-08-20)
-  - `@eeacms/volto-eea-chatbot`: repo 3.0.1 vs npm 4.1.0 (2026-08-31)
-  - `@eeacms/volto-eea-design-system`: repo 1.60.8 vs npm 1.61.1 (2026-09-08)
-  - `@eeacms/volto-eea-kitkat`: repo 33.1.1 vs npm 33.2.0 (2026-08-27)
-  - `@eeacms/volto-eea-website-policy`: repo 4.0.3 vs npm 4.0.4 (2026-08-20)
-  - `@eeacms/volto-eea-website-theme`: repo 4.4.0 vs npm 4.5.0 (2026-08-27)
-  - `@eeacms/volto-group-block`: repo 10.0.3 vs npm 10.1.0 (2026-08-26)
-  - `@eeacms/volto-taxonomy`: repo 6.0.2 vs npm 6.0.5 (2026-08-20)
-- [ ] Fix `.husky/pre-commit` in all 67 add-on repos — `pnpm lint-staged` resolves only from the nested package, so every local commit fails the hook (fixed in the template: root -dev shell declares `lint-staged`, commit `968aa91`)
-- [ ] Sync `volto19` branches with `develop` (merge, not rebase — branches are pushed/referenced): sweep 2026-09-09 → **51 SYNCED** (develop is an ancestor, merge = no-op), **13 DIVERGED** (merge + conflict resolution needed: the 8 npm-published + searchlib, block-divider, columns-block, statistic-block), **3 NO-DEVELOP** (volto-subsites/authomatic/rss-provider — external branching). Pilot validated on volto-accordion-block (merge commit `1c0af61`, recipe in session-progress.md)
-- [ ] Verify add-on CI (V18 + V19 pipelines) passes for all 67 add-ons
-- [ ] Update `mrs.developer.json` branches → tags/V19-compatible releases (also stabilizes the frontend `--frozen-lockfile` against moving branch heads)
+- [x] Reconcile versions (bumps committed on `volto19`, 2026-09-09, during the develop merges) — nested versions now above `npm latest`; **npm publish from `volto19` still pending** (via release-it/gitflow once CI is green):
+  - `@eeacms/volto-accordion-block`: 13.0.3 → **13.1.1** (> npm 13.1.0)
+  - `@eeacms/volto-datablocks`: 8.0.3 → **9.0.2** (> npm 9.0.1)
+  - `@eeacms/volto-eea-chatbot`: 3.0.1 → **4.1.1** (> npm 4.1.0)
+  - `@eeacms/volto-eea-design-system`: 1.60.8 → **1.61.2** (> npm 1.61.1)
+  - `@eeacms/volto-eea-kitkat`: 33.1.1 → **33.2.1** (> npm 33.2.0)
+  - `@eeacms/volto-eea-website-policy`: 4.0.3 → **4.0.5** (> npm 4.0.4)
+  - `@eeacms/volto-eea-website-theme`: 4.4.0 → **4.5.1** (> npm 4.5.0)
+  - `@eeacms/volto-group-block`: 10.0.3 → **10.1.1** (> npm 10.1.0)
+  - `@eeacms/volto-taxonomy`: 6.0.2 → **6.0.6** (> npm 6.0.5)
+- [ ] Fix `.husky/pre-commit` in all 67 add-on repos — `pnpm lint-staged` resolves only from the nested package, so every local commit fails the hook (fixed in the template: root -dev shell declares `lint-staged`, commit `968aa91`; existing repos pending — declined in-session)
+- [x] Sync `volto19` branches with `develop` (merge, not rebase — branches are pushed/referenced): sweep 2026-09-09 → **51 SYNCED** (develop is an ancestor, merge = no-op), **13 DIVERGED all merged** (accordion `1c0af61` pilot; datablocks `14e5d04`, group-block `b5d79b9`, website-policy `86dd96b`, website-theme `84cef72`, taxonomy `606e542`, kitkat `46773ba`, design-system `6998bd237`, chatbot `b24be04`, statistic-block `2b58792`, searchlib `3cb05ca`, block-divider `4ef5b91`, columns-block `cde98bc`), **3 NO-DEVELOP** (volto-subsites/authomatic/rss-provider — external branching, handle separately). Recipe in session-progress.md addendum 3
+- [ ] Verify add-on CI (V18 + V19 pipelines) passes for all 67 add-ons — known pre-existing test failures on the DIVERGED repos (useContext-null / intl invariant, ~4 files per add-on, verified pre-merge-identical) need per-addon test-setup debugging or a CI-environment difference (full-icu/network)
+- [ ] Update `mrs.developer.json` branches → tags/V19-compatible releases — now unblocked by the version reconciliation (also stabilizes the frontend `--frozen-lockfile` against moving branch heads)
 - [ ] Fix `frontend/scripts/release.py` — broken under the new layout (reads `jsconfig.json` + `src/<path>`, both gone); needs a rewrite against `mrs.developer.json` + `packages/` (+ nested add-on versions). Same for `make release` in the frontend.
 
-**Status**: Add-on repo restructuring complete and pushed; npm publishes partially done (58/67 in sync); version reconciliation + tags + CI verification pending.
+**Status**: Restructuring + develop-merges + version bumps complete and pushed; pending: npm publish from `volto19`, hook fix in existing repos, CI verification, tags.
 **Depends on**: Phases 0, 3
 **Blocks**: Phase 6
 

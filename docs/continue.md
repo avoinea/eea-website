@@ -4,20 +4,23 @@
 
 ## Current state
 
-Updated 2026-09-09 (Session 6 — docs sync + alignment fixes). Full detail: `./TODO.md`, `./session-progress.md`, `./12-decision-log.md` (amendments + Q26–Q29).
+Updated 2026-09-09 (Session 6, final — docs sync + merges + template verification). Full detail: `./TODO.md`, `./session-progress.md`, `./12-decision-log.md` (amendments + Q26–Q29), `./HANDOFF.md` (full repo state).
 
 ### What's done
 - **Phase 0**: gitflow Docker image supports pnpm (branch `pnpm-support`, pushed, clean). Image build/push still operational.
 - **Phase 1**: All 64 addon repos have backward-compatible V19 fixes. CI verification on V18 still pending.
-- **Phase 2**: `frontend_addon` + `frontend_project` cookieplone templates complete. **`frontend_project` now aligned with the proven `eea-website-frontend` implementation** (`e32ed29`) and validated by generation.
+- **Phase 2**: templates complete + **verified end-to-end** (addon install/test/test-ci pass; project install/build:deps/check exit 0); `.npmrc` hoist bug + addon post_gen gaps fixed (`87cdc91`); hook fix in template (`968aa91`).
 - **Phase 3** ✅ (Aug 21–26): `frontend/` migrated in place to the Volto 19 pnpm workspace on branch `volto19` (core@19.3.0, project add-on `packages/eea-website-frontend/`, missdev Docker build + SSR dependency check, „Volto 19 frontend checks” Jenkins stage, REBUILD dropped).
-- **Phase 4** 🔶 (Sep 4): all 67 add-ons restructured + pushed on `volto19` branches (workspace layout, dual V18/V19 pnpm Jenkinsfiles, vitest). npm publishes partially done; 9 add-ons have `npm latest` > repo version.
+- **Phase 4** 🔶: all 67 add-ons restructured + pushed; **all 13 DIVERGED repos merged with `develop` + versions reconciled above npm latest** (accordion `1c0af61`, datablocks `14e5d04` → 9.0.2, group-block `b5d79b9` → 10.1.1, website-policy `86dd96b` → 4.0.5, website-theme `84cef72` → 4.5.1, taxonomy `606e542` → 6.0.6, kitkat `46773ba` → 33.2.1, design-system `6998bd237` → 1.61.2, chatbot `b24be04` → 4.1.1, statistic-block `2b58792`, searchlib `3cb05ca`, block-divider `4ef5b91`, columns-block `cde98bc`). Merged test failures are pre-existing (verified vs pre-merge state).
 - **Phase 5**: Backend Makefile + requirements updated (blocked on EEA 6.2.x Docker image).
-- **Frontend lockfile**: regenerated + `--frozen-lockfile` verified (2026-09-09).
+- **Frontend lockfile**: regenerated + `--frozen-lockfile` verified (2026-09-09, `6d58e97`).
+- **REBUILD removed**: frontend `e3c598c` + helm-charts `2b0617ce` (Q11 conforms).
+- **All commits pushed** (verified: frontend, cookieplone-templates, helm-charts; root has 1 docs commit — `8173a61` — push on next push round).
 
 ### What's pending
-- Push the local commits from this session (frontend `e3c598c` + `6d58e97`, cookieplone-templates `38c2abd` + `e32ed29`, helm-charts `2b0617ce`) and watch Jenkins (frontend + add-on pipelines V18/V19)
-- Reconcile the 9 npm-vs-repo version mismatches (TODO Phase 4)
+- **Watch CI** after the pushes: frontend „Volto 19 frontend checks” (`volto19`) + 13 add-on dual pipelines (V18 + V19) — the merged test failures (useContext-null/intl on ~4 files per add-on) are pre-existing; per-addon test-setup debugging needed
+- **Hook fix batch**: lint-staged in the root -dev shell for the existing 67 repos (template fixed in `968aa91`)
+- **npm publish** the reconciled versions from `volto19` (via release-it/gitflow when CI is green)
 - Switch `mrs.developer.json` to tags (stabilizes the frontend frozen lockfile)
 - Rewrite `frontend/scripts/release.py` for the new layout (`make release` broken)
 - Phase 2 interactive-mode prompt testing; V18-yarn stage verification for add-on Jenkinsfiles
@@ -27,16 +30,17 @@ Updated 2026-09-09 (Session 6 — docs sync + alignment fixes). Full detail: `./
 
 ## What to do next
 
-### 1. Push this session's commits (you, from a machine with credentials)
+### 1. One small push left (root repo)
 
 ```bash
-cd frontend && git push origin volto19                       # e3c598c, 6d58e97
-cd ../helm-charts && git push origin main                    # 2b0617ce
-cd ../cookieplone-templates && git push origin main          # 38c2abd, e32ed29
-# root repo: docs update commit
+cd /Users/alin/sandbox/eea-website-volto19 && git push origin main   # 8173a61 (gitignore)
 ```
 
-### 2. Phase 4 follow-ups (next coding session)
+### 2. Watch CI on the pushed branches
+
+The 13 add-on dual pipelines (V18 + V19) + the frontend „Volto 19 frontend checks” stage run on push. The known pre-existing test failures (useContext-null / intl invariant on rendering tests, ~4 files per DIVERGED add-on) need per-addon test-setup debugging — verified NOT merge-caused (pre-merge state fails identically).
+
+### 3. Phase 4 follow-ups (next coding session)
 
 ```bash
 # Reconcile versions, then switch mrs.developer.json to tags:
