@@ -134,3 +134,54 @@
 - `plone/frontend-builder:19` has no `/setupAddon` script (unlike 18-yarn) — Dockerfile must copy addon to `/app/packages/` manually
 - `_copy_without_render` in cookiecutter.json prevents Jinja2 rendering of files with `${{ }}` syntax (GitHub Actions)
 - All template files need trailing newlines to avoid git diff noise
+
+---
+
+# Sessions reconstructed on 2026-09-09 (docs were last written on Session 2, Aug 18)
+
+The sections below document work done **after** Session 2 that was missing from this log, plus the current session. Everything below was reconstructed from git history and verified against the working trees.
+
+## Session 3 (2026-08-21 → 08-26) — `frontend/` migrated to the Volto 19 pnpm workspace
+
+Commits on `frontend/` branch `volto19` (eea-website-frontend): `626c966` (volto19 project), `788c05c` (fix betterleaks), `648ffa4` (volto19 frontend), `02cfc72`/`a12cea3`/`a54cd6e` (fix ci), `d0074c4`/`26c6f21` (fix).
+
+- Full pnpm workspace: `core/` at Volto 19.3.0 (exact tag), 67 add-on checkouts on `volto19` branches, project add-on `packages/eea-website-frontend/` (npm name `eea-website-frontend`, unscoped)
+- `razzle.extend.js` in the project add-on — the **official Volto 19 mechanism** (`AddonRegistry.getAddonExtenders()`); compression (gzip + brotli via new `compression-webpack-plugin` API), handsontable `IgnorePlugin`, `performance.hints: false` for the node target (CI promoted asset-size hints to errors)
+- Dockerfile: missdev inside the build, `--frozen-lockfile`, prod prune + `pnpm rebuild @sentry/cli` + `check-server-dependencies.cjs` gate; runtime from `plone/frontend-prod-config:19`
+- CI-fix commits solved: missing prod deps in the SSR bundle (postcss, react-is, wikibase-sdk), `@sentry/cli` postinstall dropped by `--ignore-scripts` (hence the rebuild + `test -x sentry-cli`), Dockerfile copy list
+- `VOLTOCONFIG=$(pwd)/volto.config.js` in root scripts — needed because `pnpm --filter @plone/volto` runs with `core/packages/volto` as cwd
+- `.eslintrc.js` switched to AddonRegistry-based aliases; `jsconfig.json` dropped
+- EEA helper scripts (`scripts/`) migrated off `yarn`/`src/addons` (none remain)
+
+## Session 4 (2026-08-20 → 09-08) — npm publishes for the add-ons
+
+At least 9 add-ons were published to npm (dates from registry metadata) **before** the Sep 4 restructuring, which reset their `package.json` versions:
+datablocks 9.0.1 (Aug 20), website-policy 4.0.4 (Aug 20), taxonomy 6.0.5 (Aug 20), group-block 10.1.0 (Aug 26), accordion-block 13.1.0 + kitkat 33.2.0 + website-theme 4.5.0 (Aug 27), chatbot 4.1.0 (Aug 31), design-system 1.61.1 (Sep 8).
+Result: `npm latest` > `volto19` branch version for 9 add-ons — reconciliation open (see TODO Phase 4).
+
+## Session 5 (2026-09-04) — all 67 add-ons restructured + talk prep
+
+- Every add-on repo got `880de8c` "chore: migrate add-on to Volto 19 structure" + `1a71c5c` "fix: satisfy Betterleaks scan", pushed to `volto19`, working trees clean and in sync with origin
+- New layout per add-on: root `-dev` shell (`@eeacms/<name>-dev`, packageManager pnpm@10.20.0) + nested `packages/<addon>/` (main `src/index.js`, vitest.config.mjs, peerDeps react/react-dom), dual Jenkinsfile (`CURRENT_VOLTO=19` pnpm + `PREVIOUS_VOLTO=18` pnpm), EEA Makefile (`/dev/tcp` check-ci), Dockerfile overlay on `eeacms/frontend-builder`, `.gitleaks.toml`, cypress junit
+- Root repo: Plone Conf 2026 talk prep committed (`b51ee6f`) — separate from the migration
+
+## Session 6 (2026-09-09, current) — docs sync + alignment fixes
+
+Ground-truth audit (git history + npm registry + template diffing), then:
+
+1. **`frontend/` (branch `volto19`)**:
+   - `e3c598c` — drop REBUILD from `entrypoint.sh`
+   - `6d58e97` — regenerate `pnpm-lock.yaml` for the restructured add-on workspaces; **`pnpm install --frozen-lockfile` verified passing** (12m16s, pnpm 10.20.0)
+2. **`helm-charts/`**: `2b0617ce` — drop `REBUILD=True` from `debug-deployment.yaml`
+3. **`cookieplone-templates/`**: `38c2abd` (pending prompt/doc wording) + `e32ed29` — `frontend_project` template aligned with the proven implementation; validated by generating a project with `cookieplone@2.0.0b3 --no-input` (structure + syntax checks pass; Volto version resolves 19.4.0 via `latest_volto`)
+4. **`docs/`**: TODO.md rewritten to reality (Phase 3 done, Phase 4 partially, Phase 6 REBUILD done), decision log amendments + Q26–Q28, HANDOFF/continue updated
+
+Key learnings (new):
+
+- `razzle.extend.js` from a registered add-on is auto-loaded by Volto core's `razzle.config.js` via `registry.getAddonExtenders()` — the old `razzle.config.js`-spread pattern from the V18 era is obsolete; Q9's premise was wrong
+- `scripts/release.py` is **broken** under the new layout (reads `jsconfig.json` + `src/<path>`; both gone) — `make release` in the frontend fails; needs a rewrite against `mrs.developer.json` + `packages/`
+- REBUILD is structurally incompatible with the new debug pod: PVC on `/app/packages` would shadow the baked project add-on, and the 3Gi debug pod cannot fit the frontend build — dropped (Q11 now conforms)
+- Lockfile spans moving branch heads (`develop: true`): any add-on dep change breaks `--frozen-lockfile` until tags are pinned (Q26)
+- cookieplone answers-file move fails across devices (sandbox artifact only, harmless)
+- The upstream `frontend_project` template (Aug 18 state) generated a broken Docker build for any project with add-ons in `mrs.developer.json` (no missdev) — fixed by aligning with the proven implementation
+- Sandbox has no `uvx`; installed `cookieplone==2.0.0b3` via `pip3 install --user --break-system-packages` (Python 3.14) and ran `~/.local/bin/cookieplone` with `COOKIEPLONE_REPOSITORY=$(pwd)/cookieplone-templates`

@@ -10,7 +10,7 @@ This file tracks execution progress across all 7 phases. Update checkboxes as wo
 - [ ] Build and push new `eeacms/gitflow` image
 - [ ] Verify: a Volto 18 addon can still be released via the updated image
 
-**Status**: Code changes complete. Build/push/verify pending operational execution.
+**Status**: Code changes complete (branch `pnpm-support`, pushed, clean). Build/push/verify pending operational execution.
 **Can run in parallel with**: Phases 1, 2, 5
 **Blocks**: Phase 4
 
@@ -108,6 +108,7 @@ This file tracks execution progress across all 7 phases. Update checkboxes as wo
 - [x] All files have trailing newlines
 - [x] Test: `cookieplone@2.0.0b3 frontend_addon --no-input` generates valid addon with all EEA files + refinements
 - [x] Test: `cookieplone@2.0.0b3 frontend_project --no-input` generates valid project structure (35 files)
+- [x] `frontend_project` template aligned with the proven `eea-website-frontend` implementation (2026-09-09): missdev Docker build + SSR dependency check, „Volto frontend checks” Jenkins stage, EEA scripts, `razzle.extend.js`, no `jsconfig.json`, no storybook — validated by `--no-input` generation (all rendered files syntax-checked)
 - [ ] Test: interactive mode shows correct prompts (6 for addon, 3 for project)
 
 **Status**: Templates complete and tested with --no-input (`make install`, `make test`, `make test-ci`, `make cypress-run` all verified). Interactive mode + V18-yarn CI stage verification pending.
@@ -116,42 +117,60 @@ This file tracks execution progress across all 7 phases. Update checkboxes as wo
 
 ---
 
-## Phase 3: Generate new Volto 19 frontend project
+**Status**: Templates complete and tested with --no-input (`make install`, `make test`, `make test-ci`, `make cypress-run` all verified). `frontend_project` aligned with the proven implementation + re-validated by generation (2026-09-09). Interactive mode + V18-yarn CI stage verification pending.
+**Can run in parallel with**: Phases 0, 1, 5
+**Blocks**: Phase 3
 
-- [ ] Run `cookieplone frontend_project` with EEA defaults (Volto 19.3.0)
-- [ ] Copy over project-specific config:
-  - [ ] `mrs.developer.json` (change output to `packages/`)
-  - [ ] `volto.config.js` with 26 project-level addons
-  - [ ] Custom `razzle.config.js` (compression plugins + handsontable fix)
-  - [ ] `.bundlewatch.config.json`
-  - [ ] Cypress config, tests, fixtures (update paths: `src/addons/` → `packages/`)
-  - [ ] `locales/` directory
-  - [ ] `public/` directory
-  - [ ] `theme/` directory
-  - [ ] EEA scripts (`update.sh`, `status.sh`, `pull.sh`, `pull-requests.py`, `release.py`)
-- [ ] Configure `pnpm.overrides` (24 EEA addon pins + React + react-refresh)
-- [ ] Update Makefile (yarn → pnpm, drop workspace protocol scripts)
-- [ ] Update Dockerfile (multi-stage with `plone/frontend-builder:19.3.0`)
-- [ ] Update Jenkinsfile (Bundlewatch stage: yarn → pnpm)
-- [ ] Update `entrypoint.sh` (drop REBUILD, keep Sentry, `yarn` → `pnpm`/`node`)
-- [ ] Verify: `pnpm install && pnpm build` succeeds
-- [ ] Verify: `pnpm start` serves the site against a backend
+---
 
-**Status**: Not started
+## Phase 3: Generate new Volto 19 frontend project ✅ (done 2026-08-21/26 on branch `volto19`)
+
+> Updated 2026-09-09: the migration was done **in place** on the `volto19` branch (not via template generation); the `frontend_project` template was aligned to match it on 2026-09-09 (commit `e32ed29` in cookieplone-templates).
+
+- [x] Migrate `frontend/` to the Volto 19 pnpm workspace:
+  - [x] `core/` checkout at Volto **19.3.0** (exact tag) + `pnpm-workspace.yaml` (`core/packages/*`, `packages/*`, `packages/**/packages/*`)
+  - [x] `mrs.developer.json` — core output `./`, all add-ons `output: packages`, branch `volto19`
+  - [x] Project add-on `packages/eea-website-frontend/` (src, locales, public, scripts, `razzle.extend.js`, vitest.config.mjs; npm name `eea-website-frontend`, peer `@plone/volto >=19 <20`)
+  - [x] `volto.config.js` (27 addons) + `VOLTOCONFIG` env in root scripts
+  - [x] `razzle.extend.js` (gzip + brotli via new `compression-webpack-plugin` API + handsontable IgnorePlugin + node-target `performance.hints: false`) — loaded via `AddonRegistry.getAddonExtenders()` (the official Volto 19 mechanism, not `razzle.config.js`)
+  - [x] `.bundlewatch.config.json`, `.nvmrc` (22), `.release-it.json`, `.storybook/` (kept from master)
+  - [x] `cypress/` (smoke + acceptance), `cypress.eeacms.json` + `cypress.slate.json`, root `cypress.config.js` (junit + code-coverage + fail-fast)
+  - [x] EEA scripts migrated to pnpm/packages (`scripts/`: update.sh, status.sh, pull.sh, release.py, pull-requests.py, pull-requests-volto.py, husky.sh)
+  - [x] `pnpm.overrides` — all 67 add-on pins as `workspace:*` + react/react-dom 18.2.0 + react-refresh + chalk 4.1.2
+  - [x] Makefile (ci-install/check/ci-i18n/build/bundlewatch/relstorage/staging/demo/update/status/pull) — `missdev --no-config --output=packages`
+  - [x] Dockerfile: `plone/frontend-builder:19.3.0` + missdev + `--frozen-lockfile` + prod prune + `pnpm rebuild @sentry/cli` + `check-server-dependencies.cjs` gate; runtime `plone/frontend-prod-config:19` + corepack pnpm
+  - [x] Jenkinsfile: „Volto 19 frontend checks” stage (ci-install → check → ci-i18n → build → bundlewatch + Docker build + wait-on + cypress:smoke); Build & Push extended to branch `volto19`
+  - [x] `entrypoint.sh`: Sentry upload; **REBUILD dropped** (2026-09-09, commit `e3c598c`)
+  - [x] `scripts/check-server-dependencies.cjs` — verifies the SSR bundle's production deps after prune (caught: postcss, react-is, wikibase-sdk, @sentry/cli)
+- [x] Verify: `pnpm install --frozen-lockfile` passes against the restructured add-on workspaces (2026-09-09, 12m16s, pnpm 10.20.0, commit `6d58e97`)
+- [ ] Verify: full `pnpm build` + `pnpm start` locally (build exercised by the CI-fix commits on Aug 25–26; Jenkins status on `volto19` not checkable from this sandbox)
+
+**Status**: Done. Lockfile regenerated + committed for the restructured workspaces.
 **Depends on**: Phase 2
 **Blocks**: Phase 4, Phase 6
 
 ---
 
-## Phase 4: Addon pnpm migration + npm publish
+## Phase 4: Addon pnpm migration + npm publish 🔶 (repo restructuring done; reconcile + publish pending)
 
-- [ ] Update each addon's `package.json` (pnpm-compatible devDependencies, `packageManager` field)
-- [ ] Drop Jest config, add `vitest.config.mjs` in each addon
-- [ ] Publish new npm versions of the 26 published addons
-- [ ] Update `mrs.developer.json` branches/tags to V19-compatible releases
-- [ ] Verify: Volto 19 CI pipeline (Vitest + Cypress) passes for all addons
+- [x] Restructure all 67 add-ons to the Volto 19 workspace layout (root `-dev` shell + nested `packages/<addon>/`), on `volto19` branches, pushed (2026-09-04, `880de8c` + Betterleaks fix `1a71c5c` per repo)
+  - [x] Each add-on: dual Jenkinsfile (`CURRENT_VOLTO=19` + `PREVIOUS_VOLTO=18`, both pnpm), EEA Makefile (`/dev/tcp` check-ci, junit), Dockerfile overlay on `eeacms/frontend-builder`, `vitest.config.mjs`, `packageManager: pnpm@10.20.0`, `.gitleaks.toml`
+- [x] Frontend `pnpm-lock.yaml` regenerated for the restructured workspaces + `--frozen-lockfile` verified (2026-09-09, commit `6d58e97`)
+- [ ] Reconcile versions — 9 add-ons have `npm latest` > `volto19` branch version (npm publishes from Aug 20–Sep 8 were made **before** the Sep 4 restructure, which reset the `package.json` versions):
+  - `@eeacms/volto-accordion-block`: repo 13.0.3 vs npm 13.1.0 (2026-08-27)
+  - `@eeacms/volto-datablocks`: repo 8.0.3 vs npm 9.0.1 (2026-08-20)
+  - `@eeacms/volto-eea-chatbot`: repo 3.0.1 vs npm 4.1.0 (2026-08-31)
+  - `@eeacms/volto-eea-design-system`: repo 1.60.8 vs npm 1.61.1 (2026-09-08)
+  - `@eeacms/volto-eea-kitkat`: repo 33.1.1 vs npm 33.2.0 (2026-08-27)
+  - `@eeacms/volto-eea-website-policy`: repo 4.0.3 vs npm 4.0.4 (2026-08-20)
+  - `@eeacms/volto-eea-website-theme`: repo 4.4.0 vs npm 4.5.0 (2026-08-27)
+  - `@eeacms/volto-group-block`: repo 10.0.3 vs npm 10.1.0 (2026-08-26)
+  - `@eeacms/volto-taxonomy`: repo 6.0.2 vs npm 6.0.5 (2026-08-20)
+- [ ] Verify add-on CI (V18 + V19 pipelines) passes for all 67 add-ons
+- [ ] Update `mrs.developer.json` branches → tags/V19-compatible releases (also stabilizes the frontend `--frozen-lockfile` against moving branch heads)
+- [ ] Fix `frontend/scripts/release.py` — broken under the new layout (reads `jsconfig.json` + `src/<path>`, both gone); needs a rewrite against `mrs.developer.json` + `packages/` (+ nested add-on versions). Same for `make release` in the frontend.
 
-**Status**: Not started
+**Status**: Add-on repo restructuring complete and pushed; npm publishes partially done (58/67 in sync); version reconciliation + tags + CI verification pending.
 **Depends on**: Phases 0, 3
 **Blocks**: Phase 6
 
@@ -177,14 +196,14 @@ This file tracks execution progress across all 7 phases. Update checkboxes as wo
 
 ## Phase 6: Cutover
 
-- [ ] Merge new frontend to `master`/`develop`
+- [ ] Merge new frontend to `master`/`develop` (note: `volto19` branch is at 6.6.0 while `master` is at 6.7.0 — expect CHANGELOG/version conflicts)
 - [ ] Build and push new Docker images (Jenkins via gitflow)
 - [ ] Deploy to demo, verify end-to-end
 - [ ] Update Helm charts:
-  - [ ] Remove `REBUILD` env var from debug deployment (`debug-deployment.yaml`)
-  - [ ] Update volume mount path: `src/addons/` → `packages/` in `debug-deployment.yaml`
+  - [x] Remove `REBUILD` env var from debug deployment (`debug-deployment.yaml`, commit `2b0617ce` on 2026-09-09; `entrypoint.sh` REBUILD dropped in frontend `e3c598c`)
+  - [ ] Update volume mount path: `src/addons/` → `packages/` in `debug-deployment.yaml` — **caveat**: mounting a PVC directly on `/app/packages` shadows the baked project add-on (`packages/eea-website-frontend`, not fetched by missdev). The debug flow needs a redesign (e.g. PVC mounted elsewhere + per-add-on copy/symlink, or debug on the baked image build). Blocked until that design is decided.
 - [ ] Deploy to production
 - [ ] Monitor for issues
 
-**Status**: Not started
+**Status**: Not started (REBUILD removal done). Debug-pod redesign pending decision.
 **Depends on**: Phases 3, 4, 5
