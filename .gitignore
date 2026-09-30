@@ -10,6 +10,7 @@ volto-addon-template
 cookieplone-templates
 cookieplone
 eea.docker.gitflow
+eea.agent.skills
 frontend-builder
 volto-test-addon
 helm-charts
