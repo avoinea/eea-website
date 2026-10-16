@@ -2,6 +2,14 @@
 
 ## Prioritar (sesiunea următoare)
 
+## Campanie batch-uri (repo-uri verzi)
+
+- [x] **Batch 1 VERDE**: `volto-citation` (`2fc4ae1`), `volto-toolbar-actions` (`25bd898`), `volto-eea-versions` (`8df9b27`) — per repo: scoatere praguri coverage (0 teste), cleanup tolerant la 404, scos importul stale `cypress-fail-fast`.
+- [ ] **Batch 2** (candidați): `volto-embed-content`, `volto-redirector`, `volto-design-tokens` — de confirmat înainte ce alte teste reale mai pică.
+- [ ] **Mini-val fail-fast**: importul stale `cypress-fail-fast` (fără plugin înregistrat + fără dependință declarată) există în: `volto-anchors`, `volto-block-data-table`, `volto-block-image-cards`, `volto-block-toc`, `volto-controlpanel`, `volto-design-tokens`, `volto-eea-chatbot`, `volto-eea-kitkat`, `volto-embed-content`, `volto-embed-static-content`, `volto-embed`, `volto-flourish`, `volto-nextcloud-video-block`, `volto-redirector`, `volto-redmine-helpdesk`, `volto-widget-theme-picker` (cele 3 din batch 1 sunt rezolvate).
+- [ ] De documentat de ce `/Plone/cypress` dispare înainte de cleanup-ul din afterEach (subagent local pe citation, în curs).
+
+
 - [ ] **Re-verificare finală Jenkins** pe repo-urile re-pushuite în sesiunea 2 (rezultate parțiale în `REPORT.md`):
   - [x] `volto-columns-block` (`e544509`) — ✅ verde complet
   - [ ] `volto-slate-label` (`7cdbac4`) — V18 integrare ✅ 2/2; rebuild triggerat după „Agent was removed"

@@ -73,3 +73,33 @@ Repro live a bug-ului (înainte de fix): navigare `/live-check/live-page` + `app
 | `volto-searchlib` `bdd6708` | Jenkins a picat pe infrastructură („Agent was removed" la docker build) → rebuild triggerat; unit preexistent |
 | `volto-group-block` `01688ee` (+ auto `64f5128`) | Lint reparat; acum pică unit stage pe datorii preexistente (reporter junit nu afișează detaliile) |
 | `volto-globalsearch` `9ac1e33` | V19 unit ✅ 108; build-ul razzle eșuează preexistent: `Cannot find module 'razzle-dev-utils/makeLoaderFinder'` (cerut de `@eeacms/volto-eea-chatbot@4.1.0/razzle.extend.js`) — expus după ce lint-ul a trecut |
+
+## Campanie „verde pe repo-uri" — Batch 1 (2026-10-16 ~18:30)
+
+Regulă: verde = toate check-urile Jenkins de pe HEAD sunt `success` (ambele
+stage-uri Volto 18/19, unit, lint, secrets). Eșecurile de infrastructură se
+re-rulează; dacă persistă, se raportează separat.
+
+**Batch 1: 3/3 VERZI**
+
+| Repo | Commit | Rezultat |
+|---|---|---|
+| `volto-citation` | `2fc4ae1` | V18 1/1, V19 1/1, unit, Jenkins Success |
+| `volto-toolbar-actions` | `25bd898` | V18 1/1, V19 1/1, unit, Jenkins Success |
+| `volto-eea-versions` | `8df9b27` | V18 1/1, V19 1/1, unit, Jenkins Success |
+
+Trei fix-uri per repo (toate pe datorii preexistente de migrare):
+
+1. `vitest.config.mjs` — scoaterea pragurilor de coverage 5% la repo-urile fără
+   teste (praguri aplicate pe raport gol; precedent `volto-eea-map` `b08feb2`).
+2. `cypress/support/commands.js` — `failOnStatusCode: false` la cleanup-ul
+   `removeContent` (afterEach-ul șterge `/Plone/cypress` și primea 404; cauza
+   pentru care folderul dispare înainte de cleanup rămâne de documentat).
+3. `cypress/support/e2e.js` — scos importul stale `cypress-fail-fast`:
+   migrarea `5091a33` a șters `require('cypress-fail-fast/plugin')(on, config)`
+   din `cypress.config.js` și dependința din `package.json`, dar a păstrat
+   importul → toate `cy.task('failFastShouldSkip')` / `failFastFailedTests`
+   picau hook-urile. Importul stale există în **19 repo-uri** (listă în `TODO.md`).
+
+Candidat batch 2: `volto-embed-content`, `volto-redirector`, `volto-design-tokens`
+(din lista fail-fast); de verificat înainte dacă mai au și teste reale picate.
