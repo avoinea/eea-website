@@ -1,0 +1,128 @@
+### eea/countup (d254502 fix: sonarqube coverage on Volto 19)
+    Jenkins :: Testing/Volto 18/Integration tests: error in 'sh' step
+### eea/volto-anchors (e749c96 fix: sonarqube coverage on Volto 19)
+    Tests / Testing / Volto 19 / Integration tests :: failed: 3
+    Tests / Testing / Volto 18 / Integration tests :: failed: 3
+    Jenkins :: Testing/Volto 18/Integration tests: warning in 'junit' step
+### collective/volto-authomatic (b42b3f2 fix: sonarqube coverage on Volto 19)
+    unit (22.x, 19.3.0)
+    codeanalysis (20.x)
+    unit (22.x, 18.35.1)
+### eea/volto-banner (9d99702 fix: sonarqube coverage on Volto 19)
+    Jenkins :: Testing/Volto 18/Integration tests: error in 'sh' step
+### eea/volto-block-data-table (201e67c fix: sonarqube coverage on Volto 19)
+    Tests / Testing / Volto 18 / Integration tests :: failed: 6
+    Jenkins :: Testing/Volto 18/Integration tests: warning in 'junit' step
+### eea/volto-block-divider (9e05db4 fix: sonarqube coverage on Volto 19)
+    Jenkins :: Testing/Volto 18/Integration tests: error in 'sh' step
+### eea/volto-block-image-cards (271eab1 fix: sonarqube coverage on Volto 19)
+    Tests / Testing / Volto 19 / Integration tests :: failed: 9
+    Tests / Testing / Volto 18 / Integration tests :: failed: 9
+    Jenkins :: Testing/Volto 18/Integration tests: warning in 'junit' step
+### eea/volto-block-style (ce50068 fix: sonarqube coverage on Volto 19)
+    Jenkins :: Testing/Volto 18/Integration tests: error in 'sh' step
+### eea/volto-block-toc (1dd0802 fix: sonarqube coverage on Volto 19)
+    Tests / Testing / Volto 18 / Integration tests :: failed: 3
+    Jenkins :: Testing/Volto 18/Integration tests: warning in 'junit' step
+### eea/volto-citation (8881556 fix: sonarqube coverage on Volto 19)
+    Tests / Testing / Volto 18 / Integration tests :: failed: 3
+    Jenkins :: Testing/Volto 18/Integration tests: warning in 'junit' step
+### eea/volto-columns-block (3b5856c fix: sonarqube coverage on Volto 19)
+    Jenkins :: Testing/Volto 19/Unit tests: error in 'sh' step
+### eea/volto-controlpanel (6a09b26 fix: sonarqube coverage on Volto 19)
+    Tests / Testing / Volto 19 / Integration tests :: failed: 6
+    Tests / Testing / Volto 18 / Integration tests :: failed: 5
+    Jenkins :: Testing/Volto 18/Integration tests: warning in 'junit' step
+### eea/volto-datablocks (462e410 fix: sonarqube coverage on Volto 19)
+    Jenkins :: Testing/Volto 19/Unit tests: error in 'sh' step
+### eea/volto-datahub (9049281 fix: sonarqube coverage on Volto 19)
+    Jenkins :: Testing/Volto 18/Integration tests: error in 'sh' step
+### eea/volto-design-tokens (91f10c2 fix: sonarqube coverage on Volto 19)
+    Tests / Testing / Volto 19 / Integration tests :: failed: 3
+    Tests / Testing / Volto 18 / Integration tests :: failed: 3
+    Jenkins :: Testing/Volto 18/Integration tests: warning in 'junit' step
+### eea/volto-editing-progress (16a3762 fix: sonarqube coverage on Volto 19)
+    Tests / Testing / Volto 19 / Integration tests :: Editing Progress Workflow.should configure editing progress and verify progress bar failed
+    Tests / Testing / Volto 18 / Integration tests :: Editing Progress Workflow.should configure editing progress and verify progress bar failed
+    Jenkins :: Testing/Volto 18/Integration tests: warning in 'junit' step
+### eea/volto-eea-chatbot (792170a style: Automated code fix)
+    Tests / Testing / Volto 18 / Integration tests :: failed: 3
+    Jenkins :: Testing/Volto 18/Integration tests: warning in 'junit' step
+### eea/volto-eea-design-system (755ba5f79 fix: sonarqube coverage on Volto 19)
+    Jenkins :: Testing/Volto 19/Unit tests: error in 'sh' step
+### eea/volto-eea-kitkat (2a88f70 fix: sonarqube coverage on Volto 19)
+    Tests / Testing / Volto 19 / Integration tests :: failed: 30
+    Tests / Testing / Volto 18 / Integration tests :: failed: 30
+    Jenkins :: Testing/Volto 18/Integration tests: warning in 'junit' step
+### eea/volto-eea-map (d2790a8 fix: sonarqube coverage on Volto 19)
+    Jenkins :: Testing/Volto 19/Unit tests: error in 'sh' step
+### eea/volto-eea-versions (c1a3596 fix: sonarqube coverage on Volto 19)
+    Tests / Testing / Volto 18 / Integration tests :: failed: 3
+    Jenkins :: Testing/Volto 18/Integration tests: warning in 'junit' step
+### eea/volto-eea-website-policy (94724d4 fix: sonarqube coverage on Volto 19)
+    Jenkins :: Testing/Volto 19/Integration tests: error in 'sh' step
+### eea/volto-eea-website-theme (1f72175 fix: sonarqube coverage on Volto 19)
+    Jenkins :: Testing/Volto 18/Build test image: error in 'sh' step
+### eea/volto-embed-content (4a45e61 fix: sonarqube coverage on Volto 19)
+    Jenkins :: Testing/Volto 18/Integration tests: error in 'sh' step
+### eea/volto-embed-static-content (05b8d5f fix: sonarqube coverage on Volto 19)
+    Tests / Testing / Volto 18 / Integration tests :: failed: 6
+    Jenkins :: Testing/Volto 18/Integration tests: warning in 'junit' step
+### eea/volto-embed (637e3a9 fix: sonarqube coverage on Volto 19)
+    Tests / Testing / Volto 19 / Integration tests :: failed: 3
+    Tests / Testing / Volto 18 / Integration tests :: failed: 3
+    Jenkins :: Testing/Volto 18/Integration tests: warning in 'junit' step
+### eea/volto-flourish (02b11ed fix: sonarqube coverage on Volto 19)
+    Tests / Testing / Volto 19 / Integration tests :: failed: 3
+    Tests / Testing / Volto 18 / Integration tests :: failed: 3
+    Jenkins :: Testing/Volto 18/Integration tests: warning in 'junit' step
+### eea/volto-globalsearch (4bc3ddf fix: sonarqube coverage on Volto 19)
+    Jenkins :: Testing/Volto 19/ES lint: error in 'sh' step
+### eea/volto-group-block (2664c9e fix: sonarqube coverage on Volto 19)
+    Tests / Testing / Volto 18 / Integration tests :: Group Block: View Mode Tests.persists nested content after edit-view-edit cycles failed
+    Jenkins :: Testing/Volto 18/Integration tests: warning in 'junit' step
+### eea/volto-hero-block (077c6e4 fix: sonarqube coverage on Volto 19)
+    Tests / Testing / Volto 19 / Integration tests :: Hero Block: Add and configure.Add Block: Hero failed
+    Jenkins :: Testing/Volto 19/Integration tests: warning in 'junit' step
+### eea/volto-nextcloud-video-block (e87a2ba fix: sonarqube coverage on Volto 19)
+    Tests / Testing / Volto 19 / Integration tests :: failed: 6
+    Tests / Testing / Volto 18 / Integration tests :: failed: 6
+    Jenkins :: Testing/Volto 18/Integration tests: warning in 'junit' step
+### eea/volto-object-widget (9d2a906 fix: sonarqube coverage on Volto 19)
+    Tests / Testing / Volto 18 / Integration tests :: failed: 12
+    Jenkins :: Testing/Volto 18/Integration tests: warning in 'junit' step
+### eea/volto-plotlycharts (8ee65b1 fix: sonarqube coverage on Volto 19)
+    Jenkins :: Testing/Volto 18/Integration tests: error in 'sh' step
+### eea/volto-redirector (2b2bf13 fix: sonarqube coverage on Volto 19)
+    Jenkins :: Testing/Volto 18/Integration tests: error in 'sh' step
+### eea/volto-redmine-helpdesk (c818325 fix: sonarqube coverage on Volto 19)
+    Tests / Testing / Volto 18 / Integration tests :: failed: 6
+    Tests / Testing / Volto 19 / Integration tests :: failed: 6
+    Jenkins :: Testing/Volto 18/Integration tests: warning in 'junit' step
+### collective/volto-rss-provider (6fa2c1c fix: sonarqube coverage on Volto 19)
+    unit (22.x, 18.35.1)
+    unit (22.x, 19.3.0)
+### eea/volto-searchlib (d40877b fix: sonarqube coverage on Volto 19)
+    Jenkins :: Testing/Volto 19/ES lint: error in 'sh' step
+### eea/volto-slate-zotero (fd16bd6 fix: sonarqube coverage on Volto 19)
+    Tests / Testing / Volto 19 / Integration tests :: Slate citations.adds a citation from a Zotero subcollection failed
+    Jenkins :: Testing/Volto 19/Integration tests: warning in 'junit' step
+### collective/volto-subsites (e1a95c4 fix: sonarqube coverage on Volto 19)
+    unit (22.x, 19.3.0)
+    unit (22.x, 18.35.1)
+### eea/volto-tabs-block (fabd3f4 fix: sonarqube coverage on Volto 19)
+    Tests / Testing / Volto 18 / Integration tests :: Blocks Tests.Add Tabs Block Horizontal failed
+    Jenkins :: Testing/Volto 18/Integration tests: warning in 'junit' step
+### eea/volto-taxonomy (9b27ffc fix: sonarqube coverage on Volto 19)
+    Jenkins :: Testing/Volto 18/Integration tests: error in 'sh' step
+### eea/volto-toolbar-actions (48e67a4 fix: sonarqube coverage on Volto 19)
+    Tests / Testing / Volto 18 / Integration tests :: failed: 3
+    Jenkins :: Testing/Volto 18/Integration tests: warning in 'junit' step
+### eea/volto-widget-geolocation (ed56b3b fix: sonarqube coverage on Volto 19)
+    Scan for secrets
+### eea/volto-widget-temporal-coverage (6aa807d fix: sonarqube coverage on Volto 19)
+    Jenkins :: Testing/Volto 18/Integration tests: error in 'sh' step
+### eea/volto-widget-theme-picker (6b8ccf7 fix: sonarqube coverage on Volto 19)
+    Tests / Testing / Volto 19 / Integration tests :: failed: 3
+    Tests / Testing / Volto 18 / Integration tests :: failed: 3
+    Jenkins :: Testing/Volto 18/Integration tests: warning in 'junit' step
