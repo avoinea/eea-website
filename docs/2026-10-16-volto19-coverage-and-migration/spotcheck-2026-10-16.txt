@@ -1,0 +1,63 @@
+countup|FAIL|Jenkins [Testing/Volto 18/Integration tests: error in 'sh' step]
+volto-accordion-block|OK  |9 checks green
+volto-anchors|FAIL|Tests / Testing / Volto 18 / Integration tests [failed: 3]; Tests / Testing / Volto 19 / Integration tests [failed: 3]; Jenkins [Testing/Volto 18/Integration tests: warning in 'junit' step]
+volto-banner|FAIL|Jenkins [Testing/Volto 18/Integration tests: error in 'sh' step]
+volto-block-data-figure|OK  |5 checks green
+volto-block-data-table|FAIL|Tests / Testing / Volto 18 / Integration tests [failed: 6]; Jenkins [Testing/Volto 18/Integration tests: warning in 'junit' step]
+volto-block-divider|FAIL|Jenkins [Testing/Volto 18/Integration tests: error in 'sh' step]
+volto-block-image-cards|FAIL|Tests / Testing / Volto 18 / Integration tests [failed: 9]; Tests / Testing / Volto 19 / Integration tests [failed: 9]; Jenkins [Testing/Volto 18/Integration tests: warning in 'junit' step]
+volto-block-style|FAIL|Jenkins [Testing/Volto 18/Integration tests: error in 'sh' step]
+volto-block-toc|FAIL|Tests / Testing / Volto 18 / Integration tests [failed: 3]; Jenkins [Testing/Volto 18/Integration tests: warning in 'junit' step]
+volto-call-to-action-block|OK  |5 checks green
+volto-citation|FAIL|Tests / Testing / Volto 18 / Integration tests [failed: 3]; Jenkins [Testing/Volto 18/Integration tests: warning in 'junit' step]
+volto-columns-block|FAIL|Tests / Testing / Volto 19 / Integration tests [Columns Block: Settings Tests.toggles reverse wrap in view mode across edit-view cycle failed]; Jenkins [Testing/Volto 19/Integration tests: warning in 'junit' step]
+volto-controlpanel|FAIL|Tests / Testing / Volto 18 / Integration tests [failed: 5]; Tests / Testing / Volto 19 / Integration tests [failed: 6]; Jenkins [Testing/Volto 18/Integration tests: warning in 'junit' step]
+volto-corsproxy|OK  |5 checks green
+volto-datablocks|RUN |pending: Jenkins
+volto-datahub|FAIL|Jenkins [Testing/Volto 18/Integration tests: error in 'sh' step]
+volto-description-block|OK  |5 checks green
+volto-design-tokens|FAIL|Tests / Testing / Volto 18 / Integration tests [failed: 3]; Tests / Testing / Volto 19 / Integration tests [failed: 3]; Jenkins [Testing/Volto 18/Integration tests: warning in 'junit' step]
+volto-editing-progress|FAIL|Tests / Testing / Volto 18 / Integration tests [Editing Progress Workflow.should configure editing progress and verify progress bar failed]; Tests / Testing / Volto 19 / Integration tests [Editing Progress Workflow.should configure editing progress and verify progress bar failed]; Jenkins [Testing/Volto 18/Integration tests: warning in 'junit' step]
+volto-eea-chatbot|FAIL|Tests / Testing / Volto 18 / Integration tests [failed: 3]; Jenkins [Testing/Volto 18/Integration tests: warning in 'junit' step]
+volto-eea-design-system|OK  |8 checks green
+volto-eea-kitkat|FAIL|Tests / Testing / Volto 19 / Integration tests [failed: 30]; Tests / Testing / Volto 18 / Integration tests [failed: 30]; Jenkins [Testing/Volto 18/Integration tests: warning in 'junit' step]
+volto-eea-map|OK  |5 checks green
+volto-eea-versions|FAIL|Tests / Testing / Volto 18 / Integration tests [failed: 3]; Jenkins [Testing/Volto 18/Integration tests: warning in 'junit' step]
+volto-eea-website-policy|FAIL|Jenkins [Testing/Volto 19/Integration tests: error in 'sh' step]
+volto-eea-website-theme|FAIL|Jenkins [Testing/Volto 18/Build test image: error in 'sh' step]
+volto-embed-content|FAIL|Jenkins [Testing/Volto 18/Integration tests: error in 'sh' step]
+volto-embed-static-content|FAIL|Tests / Testing / Volto 18 / Integration tests [failed: 6]; Jenkins [Testing/Volto 18/Integration tests: warning in 'junit' step]
+volto-embed|FAIL|Tests / Testing / Volto 19 / Integration tests [failed: 3]; Tests / Testing / Volto 18 / Integration tests [failed: 3]; Jenkins [Testing/Volto 18/Integration tests: warning in 'junit' step]
+volto-flourish|FAIL|Tests / Testing / Volto 19 / Integration tests [failed: 3]; Tests / Testing / Volto 18 / Integration tests [failed: 3]; Jenkins [Testing/Volto 18/Integration tests: warning in 'junit' step]
+volto-globalsearch|FAIL|Jenkins [Aborted]
+volto-group-block|FAIL|Jenkins [Testing/Volto 19/ES lint: error in 'sh' step]
+volto-hero-block|FAIL|Tests / Testing / Volto 19 / Integration tests [Hero Block: Add and configure.Add Block: Hero failed]; Jenkins [Testing/Volto 19/Integration tests: warning in 'junit' step]
+volto-listing-block|OK  |5 checks green
+volto-matomo|OK  |5 checks green
+volto-metadata-block|OK  |5 checks green
+volto-nextcloud-video-block|FAIL|Tests / Testing / Volto 19 / Integration tests [failed: 6]; Tests / Testing / Volto 18 / Integration tests [failed: 6]; Jenkins [Testing/Volto 18/Integration tests: warning in 'junit' step]
+volto-object-widget|FAIL|Tests / Testing / Volto 18 / Integration tests [failed: 12]; Jenkins [Testing/Volto 18/Integration tests: warning in 'junit' step]
+volto-plotlycharts|FAIL|Jenkins [Testing/Volto 18/Integration tests: error in 'sh' step]
+volto-quote-block|OK  |5 checks green
+volto-redirector|FAIL|Jenkins [Testing/Volto 18/Integration tests: error in 'sh' step]
+volto-redmine-helpdesk|FAIL|Tests / Testing / Volto 18 / Integration tests [failed: 6]; Tests / Testing / Volto 19 / Integration tests [failed: 6]; Jenkins [Testing/Volto 18/Integration tests: warning in 'junit' step]
+volto-resize-helper|OK  |5 checks green
+volto-searchlib|FAIL|Jenkins [Testing/Volto 19/Unit tests: error in 'sh' step]
+volto-sentry-rancher-config|OK  |5 checks green
+volto-slate-footnote|OK  |5 checks green
+volto-slate-label|FAIL|Tests / Testing / Volto 18 / Integration tests [Slate label.allows removing a label failed]; Jenkins [Testing/Volto 18/Integration tests: warning in 'junit' step]
+volto-slate-metadata-mentions|OK  |5 checks green
+volto-slate-zotero|FAIL|Tests / Testing / Volto 19 / Integration tests [failed: 2, passed: 7]; Jenkins [Testing/Volto 19/Integration tests: warning in 'junit' step]
+volto-statistic-block|OK  |5 checks green
+volto-tableau|OK  |5 checks green
+volto-tabs-block|OK  |5 checks green
+volto-tags-block|OK  |5 checks green
+volto-taxonomy|FAIL|Jenkins [Testing/Volto 18/Integration tests: error in 'sh' step]
+volto-timeline-block|OK  |5 checks green
+volto-toolbar-actions|FAIL|Tests / Testing / Volto 18 / Integration tests [failed: 3]; Jenkins [Testing/Volto 18/Integration tests: warning in 'junit' step]
+volto-widget-dataprovenance|OK  |5 checks green
+volto-widget-geolocation|RUN |pending: Jenkins
+volto-widget-temporal-coverage|FAIL|Jenkins [Testing/Volto 18/Integration tests: error in 'sh' step]
+volto-widget-theme-picker|FAIL|Tests / Testing / Volto 18 / Integration tests [failed: 3]; Tests / Testing / Volto 19 / Integration tests [failed: 3]; Jenkins [Testing/Volto 18/Integration tests: warning in 'junit' step]
+volto-widget-toggle|OK  |5 checks green
+volto-workflow-progress|OK  |5 checks green

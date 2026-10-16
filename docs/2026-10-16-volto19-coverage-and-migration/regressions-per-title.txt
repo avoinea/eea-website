@@ -1,0 +1,21 @@
+### volto-columns-block (base=3b5856c)
+< Jenkins :: Testing/Volto 19/Unit tests: error in 'sh' step
+> Jenkins :: Testing/Volto 19/Integration tests: warning in 'junit' step
+> Tests / Testing / Volto 19 / Integration tests :: Columns Block: Settings Tests.toggles reverse wrap in view mode across edit-view cycle failed
+### volto-globalsearch (base=4bc3ddf)
+< Jenkins :: Testing/Volto 19/ES lint: error in 'sh' step
+> Jenkins :: Aborted
+### volto-group-block (base=2664c9e)
+< Jenkins :: Testing/Volto 18/Integration tests: warning in 'junit' step
+< Tests / Testing / Volto 18 / Integration tests :: Group Block: View Mode Tests.persists nested content after edit-view-edit cycles failed
+> Jenkins :: Testing/Volto 19/ES lint: error in 'sh' step
+### volto-searchlib (base=d40877b)
+< Jenkins :: Testing/Volto 19/ES lint: error in 'sh' step
+> Jenkins :: Testing/Volto 19/Unit tests: error in 'sh' step
+### volto-slate-label (base=9eea633)
+< 
+> Jenkins :: Testing/Volto 18/Integration tests: warning in 'junit' step
+> Tests / Testing / Volto 18 / Integration tests :: Slate label.allows removing a label failed
+### volto-slate-zotero (base=fd16bd6)
+< Tests / Testing / Volto 19 / Integration tests :: Slate citations.adds a citation from a Zotero subcollection failed
+> Tests / Testing / Volto 19 / Integration tests :: failed: 2, passed: 7

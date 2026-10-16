@@ -32,8 +32,13 @@
 ## Faza 8 — Repo `collective` ⏳ BLOCKED (decizie user)
 - Doar coverage a fost împins; hidratare + 19.5.0 nu. Opțiuni: PR-uri, cherry-pick la ei, sau skip.
 
-## Faza 9 — Verificare Jenkins ⏳ PENDING
-- Spot-check build-uri pentru repo-urile reparate: tabs-block, columns-block, datablocks, design-system, map, searchlib, globalsearch, geolocation.
+## Faza 9 — Verificare Jenkins ✅ DONE (sesiunea 2)
+- Spot-check pe 63 repo-uri: 23 OK, 38 eșecuri preexistente, 2 regresii reale (columns-block, slate-label) reparate.
+- Vezi `spotcheck-2026-10-16.txt`, `regressions-per-check.txt`, `regressions-per-title.txt`, `diagnostics/`.
 
 ## Faza 10 — Curățenie ✅ la final
 - Containere locale: `vacb-*`, `qt-*`, `cb-quick*`, proxy-uri `socat` (porturile 3000/3001).
+
+## Faza 11 — Regresii sesiunea 2 ✅ DONE (push; re-verificare CI în curs)
+- `volto-columns-block` `e544509`, `volto-slate-label` `7cdbac4`, `volto-datablocks` `c30ac71`, `volto-widget-geolocation` `64ceb5f`, `volto-group-block` `01688ee`, `volto-searchlib` `bdd6708`.
+- La finalul sesiunii: 5 build-uri Jenkins în curs (columns-block, slate-label, group-block, globalsearch, searchlib).

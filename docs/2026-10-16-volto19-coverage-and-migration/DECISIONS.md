@@ -31,3 +31,20 @@
    - volto-searchlib: alias eslint `@eeacms/search` → `searchlib` local.
    - volto-globalsearch: devDep `@eeacms/search@^0.2.31` + ignore eslint pentru `^@eeacms/search/lib/`.
    - volto-widget-geolocation: comentariu `betterleaks:allow` mutat pe linia semnalată (false positive preexistent).
+
+7. **Regresia datablocks = lock WebDAV, nu selector.**
+   - Odată ce hidratarea e reparată, `slateBeforeEach` chiar montează editorul, care blochează pagina (`@lock`); `cy.request PATCH` din teste primea 403 „Resource is locked”.
+   - **Ales:** `DELETE /@lock` înainte de PATCH (`c30ac71`), cu `failOnStatusCode: false` pentru backend-uri fără endpoint. Verificat local pe `eeacms/plone-backend` (403 → unlock → 204) și pe Jenkins (5/5).
+
+8. **Regresia columns-block = test care depinde de selecția implicită a blocului.**
+   - `.columns-header` are `onClick={this.openColumnsSettings}` (doar schimbă tab-ul sidebar-ului), nu selectează blocul Volto; pe un `/edit` încărcat direct blocul nu e selectat implicit, deci `SidebarPortal` nu randează formularul cu `input#field-reverseWrap`.
+   - **Ales:** fix test-side (`e544509`) — click pe `.block.columnsBlock` înainte de `openColumnsSettings`. Alternativa add-on (selectarea blocului în `openColumnsSettings`) e o schimbare de produs, lăsată pentru owner.
+
+9. **Regresia slate-label = comportament Volto 18.35.1, nu add-on.**
+   - După crearea label-ului, un `setBaseAndExtent` simplu nu mai ajunge în `editor.selection` pe slate-react 0.98.4 (lipsesc fix-urile `handlePointerDown`/`pendingPointerSelection` din 18.36.0), deci toolbar-ul contextual nu se randează. Încărcarea directă `/edit` expune diferența.
+   - **Ales:** fix test-side (`7cdbac4`) — repetă secvența cu pointer real care deschide toolbar-ul și prima dată. Alternativa (revert la `visit` + `navigate`) reintroduce cursa de hidratare.
+   - Observație de hardening (neblocantă): `LabelWrapper.jsx` nu împrăștie `{...attributes}` pe `<label>`.
+
+10. **searchlib unit = stub `localStorage` în Volto 19.5.**
+    - `test-setup-globals.js` face `vi.stubGlobal('localStorage', { getItem: vi.fn(), ... })`; testele `aiSummaryToggle` citesc mereu default-ul.
+    - **Ales:** stub in-memory în `packages/volto-searchlib/vitest.setup.jsx` (`bdd6708`), care rulează după setup-ul Volto. Restul eșecurilor unit (ChatbotAnswer, TopFilterLayout) sunt preexistente și neatinse.

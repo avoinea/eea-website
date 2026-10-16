@@ -47,3 +47,17 @@ Repro live a bug-ului (înainte de fix): navigare `/live-check/live-page` + `app
 - `/tmp/mass-update.log`, `/tmp/replicate-run.log`, `/tmp/full-retries0-fixed.log`, `/tmp/unit-final-lcov.info`, `/tmp/cypress-cov4-lcov.info`, `/tmp/checks-summary.txt` (copiat în folder).
 - Scripturile în `scripts/`.
 - Verificarea finală (0 anomalii) a rulat pe 62 repo-uri EEA: tag 19.5.0, hidratare aplicată, worktree curat, fără commit-uri nepushate.
+
+## Sesiunea 2 — spot-check Jenkins + regresii (2026-10-16, ~17:00-17:30)
+
+- Spot-check complet pe 63 repo-uri EEA (HEAD-ul `chore: update Volto to 19.5.0` de pe fiecare `volto19`): 23 OK, 38 FAIL, 2 în curs la ora verificării (17:15) — vezi `spotcheck-2026-10-16.txt`.
+- Clasificare per-check față de ultimul commit anterior care are check-runs (nu față de `checks-summary.txt`, care era incomplet) — vezi `regressions-per-check.txt` și `regressions-per-title.txt`:
+  - **Doar 2 regresii reale** cauzate de valul masiv:
+    - `volto-columns-block` — `Tests / Testing / Volto 19 / Integration tests` (test latent, stage-ul Volto 19 nu rulase niciodată înainte pentru că unit-ul pica primul). Fix `e544509`: click explicit pe `.block.columnsBlock` înainte de deschiderea settings-urilor (`.columns-header` doar schimbă tab-ul sidebar-ului, nu selectează blocul). Detalii: `diagnostics/columns-block.md`.
+    - `volto-slate-label` — `Tests / Testing / Volto 18 / Integration tests` + `Jenkins`. Fix `7cdbac4`: re-selecție cu pointer real (`setSlateCursor(...).dblclick()`) înainte de „Remove label"; cauza de fond: Volto 18.35.1 / slate-react 0.98.4 nu mapează un `setBaseAndExtent` după re-render, iar încărcarea directă a rutei `/edit` expune asta. Detalii: `diagnostics/slate-label.md`.
+- Reparate + verificate verde pe Jenkins:
+  - `volto-datablocks` `c30ac71` — `DELETE /@lock` înainte de PATCH (editorul chiar se montează acum și blochează pagina). Jenkins: 5/5 ambele stage-uri, 71 unit, success.
+  - `volto-widget-geolocation` `64ceb5f` — allowlist `betterleaks` pe `SearchWidget.jsx` (finding-ul e pe linia atribuirii, comentariul inline nu era suficient). Jenkins: 26/26 ambele stage-uri, 46 unit, success.
+  - `volto-group-block` `01688ee` — `});` orfan în `Edit.test.jsx` (syntax error preexistent din migrare) care rupea ES lint pe Volto 19.
+- Eșecuri preexistente nou-expuse (nu regresii): `volto-searchlib` unit (vezi `diagnostics/searchlib.md`; fix localStorage `bdd6708`), `volto-slate-zotero` (al doilea test Zotero, „collections"), `volto-globalsearch` (build abortat → rebuild triggerat pe `9ac1e33`).
+- La finalul sesiunii erau în curs de re-verificare pe Jenkins: `volto-columns-block`, `volto-slate-label`, `volto-group-block`, `volto-globalsearch`, `volto-searchlib`.
