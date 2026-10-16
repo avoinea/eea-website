@@ -119,7 +119,7 @@ trunchiază la ~64KB.
 | `volto-embed-content` | `dd20bcd` | V18/V19 integrare ✅, V19 unit ✅, Jenkins Success |
 | `volto-redirector` | `7abd242` | V18/V19 integrare ✅, V19 unit ✅, Jenkins Success |
 | `volto-hero-block` | `bf51532` | V18/V19 integrare ✅, V19 unit ✅, Jenkins Success |
-| `volto-globalsearch` | `913da0e` | V18/V19 integrare ✅, V19 unit ✅, Jenkins Success |
+| `volto-globalsearch` | `1c6e077` | V18/V19 integrare ✅, V19 unit ✅, Jenkins Success |
 | `volto-eea-website-policy` | `eba9445` | V18/V19 integrare ✅, V19 unit ✅, Jenkins Success |
 
 ### Cauze și fix-uri
@@ -139,11 +139,35 @@ trunchiază la ~64KB.
 - `razzle-dev-utils/makeLoaderFinder` (`volto-globalsearch`, `volto-eea-website-policy`):
   cauza NU e în cele două repo-uri — `@eeacms/volto-eea-chatbot@4.1.x` (publicat,
   tras tranzitiv prin `volto-searchlib`) încă face `require` la numele legacy,
-  iar Volto 19 folosește `@plone/razzle-dev-utils`, nerezolvabil sub node_modules
-  strict pnpm. Workaround `913da0e`/`eba9445`: `postinstall` care linkează
-  `node_modules/razzle-dev-utils` la pachetul din core (validat local cu un layout
-  pnpm simulat). **De fond: release chatbot** (fix-ul try/catch există deja pe
-  branch-ul `volto19`) + scoaterea shim-ului.
+  iar Volto 19 folosește `@plone/razzle-dev-utils`. Prima variantă (shim de
+  `node_modules` în `postinstall`, `913da0e`/`eba9445`) a fost înlocuită cu un
+  **pin git** în `pnpm.overrides` (globalsearch `8814f9b`, policy `859ddb9`):
+  `github:eea/volto-eea-chatbot#volto19&path:/packages/volto-eea-chatbot`
+  (pnpm suportă `#branch&path:` pentru subdirectoare de monorepo).
+  Ca pin-ul să funcționeze a fost nevoie de aceeași modificare în ambele
+  dependințe (chatbot `720e124`, searchlib `2cdbd19`): `prepare`-ul de husky
+  mutat din pachet (`husky:install`, chemat din `prepare`-ul root) — pnpm
+  tratează pachetele cu `prepare` ca build-required și rulează `pnpm install`
+  în checkout-ul git, care pică pe devDeps `workspace:*` (`@plone/scripts`
+  etc.); reprodus pe pnpm 9.15.9 și 10.20.0 (`ERR_PNPM_PREPARE_PACKAGE`).
+  Lanțul pică pe rând: după ce chatbot a fost reparat, a urmat
+  `@eeacms/volto-searchlib@5.0.0` (publicat) cu exact același require legacy,
+  deci a fost pin-uit și el (`6e0e839`/`3b118aa`).
+  **Unpin după release-urile majore** ale celor două (vezi `TODO.md`).
+
+- `volto-globalsearch` a mai avut nevoie de un fix după pin-uri: testul V19 pica
+  determinist cu React #423 (eroare la hidratare) în `slateBeforeEach`. Diagnostic:
+  - Nu se reproducea în build izolat local (repo în afara monorepo-ului) — pin-urile
+    și lock-ul sunt OK.
+  - Se reproducea când în arborele de rezoluție exista o a doua instanță React
+    (local: node_modules-ul monorepo-ului părinte).
+  - Imaginea de bază `eeacms/frontend-builder:19` are un `node_modules` scris de un
+    pnpm mai vechi (naming `react-dom@18.2.0_react@18.2.0`); `pnpm install` peste el
+    cu pnpm 10 adaugă aceleași pachete cu naming-ul nou
+    (`react-dom@18.2.0(react@18.2.0)`) → bundle-ul poate lua două instanțe React →
+    invalid hook → #423 la hidratare.
+  - Fix `1c6e077`: `rm -rf /app/node_modules` înainte de `pnpm install` în Dockerfile
+    (install curat, o singură instanță React). Verificat verde pe Jenkins #16.
 - `volto-embed-content` V18 integrare — două cauze suprapuse:
   1. `check-ci` aștepta portul 3000 cu `timeout 600`; build-ul de producție
      instrumentat e borderline (382s OK / 608s timeout) → urcat la 1200 (`36f669a`).
@@ -154,6 +178,27 @@ trunchiază la ~64KB.
 
 ### Capcane noi
 
+- Store amestecat pnpm 9 vs pnpm 10 în imaginea de bază: `pnpm install` peste un
+  `node_modules` vechi poate lăsa două instanțe React în bundle (naming de peer
+  contexts diferit) → hidratare pică cu React #423, deși codul e corect. Fix:
+  install curat (`rm -rf node_modules`) în Dockerfile. Simptom de recunoscut:
+  „Cannot read properties of null (reading 'useEffect')” în dev, #423 în prod.
+- `@eeacms/volto-searchlib/razzle.extend.js` alias-ează `@eeacms/search` la
+  `../searchlib` (subdirectorul din același pachet) — deci și `searchlib/**`
+  (pachetul frate) ajunge în bundle, chiar dacă `volto-searchlib/src` e aproape
+  neschimbat.
+- `prepare` în `package.json`-ul unui pachet monorepo ⇒ pnpm îl consideră
+  „build-required” la install din git (`packageShouldBeBuilt`) și rulează
+  `pnpm install` în checkout — care pică pe devDeps `workspace:*`. Nu e nevoie de
+  build pentru addon-urile care livrează sursa.
+- Lock-urile din addon-uri erau deja în urmă față de core-ul 19.5.0 (`a424fdb`):
+  `--frozen-lockfile` pica și **înainte** de modificările noastre
+  (`browserslist ^4.28.2` vs `^4.28.7`, lipsesc devDeps-uri din root); CI-ul
+  instalează oricum non-frozen și rezolvă în imagine. Refresh-ul de lock
+  (`f19fbe5`, `144558e`) le face din nou coerente (frozen check ✅).
+- Imaginea de CI `eeacms/frontend-builder:19` are core-ul Volto **exact la
+  commit-ul tag-ului 19.5.0** (`a424fdb`) — deci regen-ul local de lock (cu
+  `core` clonat în repo, gitignored) e determinist și aliniat cu CI.
 - Makefile-ul are `.SILENT:` → comenzile nu apar în `docker logs`, deci nu poți
   verifica din log ce env a folosit build-ul.
 - `NODE_OPTIONS=--max-old-space-size=<sub implicit>` nu scade (și nu schimbă)
