@@ -5,8 +5,9 @@
 ## Campanie batch-uri (repo-uri verzi)
 
 - [x] **Batch 1 VERDE**: `volto-citation` (`2fc4ae1`), `volto-toolbar-actions` (`25bd898`), `volto-eea-versions` (`8df9b27`) — per repo: scoatere praguri coverage (0 teste), cleanup tolerant la 404, scos importul stale `cypress-fail-fast`.
-- [ ] **Batch 2** (candidați): `volto-embed-content`, `volto-redirector`, `volto-design-tokens` — de confirmat înainte ce alte teste reale mai pică.
-- [ ] **Mini-val fail-fast**: importul stale `cypress-fail-fast` (fără plugin înregistrat + fără dependință declarată) există în: `volto-anchors`, `volto-block-data-table`, `volto-block-image-cards`, `volto-block-toc`, `volto-controlpanel`, `volto-design-tokens`, `volto-eea-chatbot`, `volto-eea-kitkat`, `volto-embed-content`, `volto-embed-static-content`, `volto-embed`, `volto-flourish`, `volto-nextcloud-video-block`, `volto-redirector`, `volto-redmine-helpdesk`, `volto-widget-theme-picker` (cele 3 din batch 1 sunt rezolvate).
+- [x] **Batch 2 extins VERDE (6 repo-uri)**: `volto-design-tokens` (`003edec`), `volto-embed-content` (`dd20bcd`), `volto-redirector` (`7abd242`), `volto-hero-block` (`bf51532`), `volto-globalsearch` (`913da0e`), `volto-eea-website-policy` (`eba9445`) — detalii în `REPORT.md`. Fix-uri noi: `react-portal` → `createPortal` (redirector), selector dual V18/V19 la widget-ul de styling (hero-block), `check-ci` 600→1200 + heap Node 8G la build-ul V18 (embed-content), shim `razzle-dev-utils` în postinstall (globalsearch/policy).
+- [ ] **Release chatbot** (blochează eliminarea shim-ului): fix-ul din `razzle.extend.js` (try `@plone/razzle-dev-utils` / fallback legacy) există deja pe branch-ul `volto19` (v4.1.6), dar CI-ul chatbot e roșu (fail-fast stale la V18 integrare + 35 lint warnings); după release + bump în globalsearch/policy, scoate `razzle-dev-utils-shim.js` + `postinstall` din cele două repo-uri.
+- [ ] **Mini-val fail-fast**: importul stale `cypress-fail-fast` (fără plugin înregistrat + fără dependință declarată) există în: `volto-anchors`, `volto-block-data-table`, `volto-block-image-cards`, `volto-block-toc`, `volto-controlpanel`, `volto-eea-chatbot`, `volto-eea-kitkat`, `volto-embed-static-content`, `volto-embed`, `volto-flourish`, `volto-nextcloud-video-block`, `volto-redmine-helpdesk`, `volto-widget-theme-picker` (cele 3 din batch 1 și cele 3 din batch 2 sunt rezolvate).
 - [ ] De documentat de ce `/Plone/cypress` dispare înainte de cleanup-ul din afterEach (subagent local pe citation, în curs).
 
 
@@ -22,6 +23,7 @@
 ## Secundar
 
 - [ ] `volto-slate-zotero`: pe lângă testul „adds a citation from a Zotero subcollection" (precedent), pică determinist și „adds Zotero citations from collections and reuses the same footnote index for duplicates" (Volto 19). De decis dacă e efect de timing (hidratare) sau problema de fond a pane-ului Zotero.
+- [ ] `volto-eea-chatbot`: CI roșu — fail-fast stale (V18 integrare) + 35 lint warnings (`--max-warnings=0`); de reparat înainte de release-ul 4.1.6.
 - [ ] `volto-searchlib`: `ChatbotAnswer.test.jsx` (11) + `TopFilterLayout.test.jsx` (1) — datorii preexistente (vezi `diagnostics/searchlib.md`).
 - [ ] `volto-slate-label`: `LabelWrapper.jsx` nu împrăștie `{...attributes}` pe `<label>` (hardening non-blocant) — vezi `diagnostics/slate-label.md`.
 - [ ] Template `cookieplone-templates`: dacă vrea userul, release/cherry-pick din `next`.

@@ -103,3 +103,60 @@ Trei fix-uri per repo (toate pe datorii preexistente de migrare):
 
 Candidat batch 2: `volto-embed-content`, `volto-redirector`, `volto-design-tokens`
 (din lista fail-fast); de verificat înainte dacă mai au și teste reale picate.
+
+## Campanie „verde pe repo-uri" — Batch 2 extins, 6 repo-uri (2026-10-16 ~19:30-21:40)
+
+Userul a extins batch-ul de la 3 la 6 repo-uri. Starea reală s-a verificat direct din
+Jenkins (`wfapi/describe` + log-ul per nod, prin sesiunea Chrome autentificată),
+fiindcă check-urile per-stage pot fi fals `success`, iar aggregate-ul GitHub se
+trunchiază la ~64KB.
+
+**Rezultat: 6/6 VERZI**
+
+| Repo | HEAD | Rezultat |
+|---|---|---|
+| `volto-design-tokens` | `003edec` | V18/V19 integrare ✅, V19 unit ✅, Jenkins Success |
+| `volto-embed-content` | `dd20bcd` | V18/V19 integrare ✅, V19 unit ✅, Jenkins Success |
+| `volto-redirector` | `7abd242` | V18/V19 integrare ✅, V19 unit ✅, Jenkins Success |
+| `volto-hero-block` | `bf51532` | V18/V19 integrare ✅, V19 unit ✅, Jenkins Success |
+| `volto-globalsearch` | `913da0e` | V18/V19 integrare ✅, V19 unit ✅, Jenkins Success |
+| `volto-eea-website-policy` | `eba9445` | V18/V19 integrare ✅, V19 unit ✅, Jenkins Success |
+
+### Cauze și fix-uri
+
+- `cypress-fail-fast` stale (`cypress/support/e2e.js`) și cleanup 404
+  (`removeContent` + `failOnStatusCode: false`) — `volto-design-tokens`,
+  `volto-embed-content`, `volto-redirector` (aceleași tipare ca batch 1).
+- praguri de coverage pe raport gol — `volto-embed-content`, `volto-redirector`.
+- `react-portal` nedeclarat: build-ul V18 pica pe `Can't resolve 'react-portal'`
+  (`Redirects.jsx` îl importa, dar pachetul nu mai vine tranzitiv în Volto 18/ppnpm).
+  Fix `7abd242`: `createPortal` din `react-dom` (peer dep deja declarat) — fără
+  modificări de lockfile.
+- selector drift Volto 19 la widget-ul de styling: `.align-widget` +
+  `.align-buttons button` → wrapper `widget` + radio group `.buttons-widget`
+  (`input[aria-label]`). Fix `bf51532`: selector dual V18+V19 în același `cy.get`
+  (testul rulează pe ambele stage-uri).
+- `razzle-dev-utils/makeLoaderFinder` (`volto-globalsearch`, `volto-eea-website-policy`):
+  cauza NU e în cele două repo-uri — `@eeacms/volto-eea-chatbot@4.1.x` (publicat,
+  tras tranzitiv prin `volto-searchlib`) încă face `require` la numele legacy,
+  iar Volto 19 folosește `@plone/razzle-dev-utils`, nerezolvabil sub node_modules
+  strict pnpm. Workaround `913da0e`/`eba9445`: `postinstall` care linkează
+  `node_modules/razzle-dev-utils` la pachetul din core (validat local cu un layout
+  pnpm simulat). **De fond: release chatbot** (fix-ul try/catch există deja pe
+  branch-ul `volto19`) + scoaterea shim-ului.
+- `volto-embed-content` V18 integrare — două cauze suprapuse:
+  1. `check-ci` aștepta portul 3000 cu `timeout 600`; build-ul de producție
+     instrumentat e borderline (382s OK / 608s timeout) → urcat la 1200 (`36f669a`).
+  2. Apoi SSR build V18 a murit cu `ERR_WORKER_OUT_OF_MEMORY`. Limita unui
+     worker-thread derivă din heap-ul principal și e `max(implicit, cerut)`:
+     implicitul e ~4G, iar `--max-old-space-size=4096` era no-op; la 8192 a trecut
+     (`dd20bcd`).
+
+### Capcane noi
+
+- Makefile-ul are `.SILENT:` → comenzile nu apar în `docker logs`, deci nu poți
+  verifica din log ce env a folosit build-ul.
+- `NODE_OPTIONS=--max-old-space-size=<sub implicit>` nu scade (și nu schimbă)
+  limita worker-threads; doar o valoare peste implicit o ridică.
+- Cel mai rapid diagnostic Jenkins: `wfapi/describe` → `stageFlowNodes` →
+  `/execution/node/<id>/log/`, din sesiunea Chrome deja logată.
