@@ -12,14 +12,18 @@
   - `volto-group-block` `01688ee` — `});` orfan în `Edit.test.jsx` (rupea ES lint Volto 19).
 - `volto-searchlib` `bdd6708` — localStorage in-memory în `vitest.setup.jsx`; restul eșecurilor unit sunt preexistente (`diagnostics/searchlib.md`).
 - `volto-globalsearch` — build abortat; rebuild triggerat pe `9ac1e33`.
-- La finalul sesiunii erau în curs de re-verificare pe Jenkins: columns-block, slate-label, group-block, globalsearch, searchlib.
+- Rezultate Jenkins finale (parțiale, 17:40):
+  - ✅ verzi: `volto-columns-block` `e544509` (6/6 × 2 stage-uri, unit 18) și `volto-datablocks` `c30ac71`, `volto-widget-geolocation` `64ceb5f`.
+  - `volto-slate-label` `7cdbac4`: V18 integrare ✅ 2/2 (fix-ul funcționează); build-ul a picat pe infrastructură („Agent was removed”) → rebuild triggerat.
+  - `volto-searchlib` `bdd6708`: „Agent was removed” la docker build → rebuild triggerat; unit are datorii preexistente.
+  - `volto-group-block` (auto `64f5128`): lint reparat; unit stage pică preexistent (fără detalii, reporter junit).
+  - `volto-globalsearch` `9ac1e33`: V19 unit ✅ 108; build razzle pică preexistent pe `razzle-dev-utils/makeLoaderFinder` (cerut de `@eeacms/volto-eea-chatbot@4.1.0`).
 - Rămâne **decizia userului** pentru repo-urile `collective` (authomatic, rss-provider, sentry, subsites): PR / push direct / skip.
 
 ## Ce face următorul agent, în ordine
 
-1. Verifică Jenkins pe cele 5 repo-uri re-pushuite (checks + titluri vs. baseline):
-   `bash /tmp/jenkins-spotcheck.sh` (dacă mai există) sau direct
-   `gh api repos/eea/<repo>/commits/<sha>/check-runs?per_page=100`.
+1. Verifică starea finală a rebuild-urilor `volto-slate-label` și `volto-searchlib` (triggered 17:40, după „Agent was removed”) și decid pentru `volto-globalsearch`/`volto-group-block` (eșecuri preexistente de dependințe/unit).
+   `bash /tmp/jenkins-spotcheck.sh` (dacă mai există) sau direct `gh api repos/eea/<repo>/commits/<sha>/check-runs?per_page=100` (SHA din `git ls-remote`, nu din ref-ul local — Jenkins poate push-a auto-fixuri).
 2. Cere userului decizia pentru repo-urile `collective` și aplică opțiunea aleasă (hidratare + `mrs` 19.5.0; coverage e deja împins).
 3. Dacă e nevoie, continuă catalogul de eșecuri preexistente rămase (vezi `TODO.md` + `regressions-*.txt`).
 

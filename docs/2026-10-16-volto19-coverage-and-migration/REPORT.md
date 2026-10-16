@@ -61,3 +61,15 @@ Repro live a bug-ului (înainte de fix): navigare `/live-check/live-page` + `app
   - `volto-group-block` `01688ee` — `});` orfan în `Edit.test.jsx` (syntax error preexistent din migrare) care rupea ES lint pe Volto 19.
 - Eșecuri preexistente nou-expuse (nu regresii): `volto-searchlib` unit (vezi `diagnostics/searchlib.md`; fix localStorage `bdd6708`), `volto-slate-zotero` (al doilea test Zotero, „collections"), `volto-globalsearch` (build abortat → rebuild triggerat pe `9ac1e33`).
 - La finalul sesiunii erau în curs de re-verificare pe Jenkins: `volto-columns-block`, `volto-slate-label`, `volto-group-block`, `volto-globalsearch`, `volto-searchlib`.
+
+### Rezultate finale build-uri re-pushuite (2026-10-16 ~17:40)
+
+| Repo | Rezultat Jenkins |
+|---|---|
+| `volto-columns-block` `e544509` | ✅ **VERDE** — V18 integrare 6/6, V19 integrare 6/6, unit 18, Jenkins Success |
+| `volto-datablocks` `c30ac71` | ✅ **VERDE** — V18 5/5, V19 5/5, unit 71, Jenkins Success |
+| `volto-widget-geolocation` `64ceb5f` | ✅ **VERDE** — V18 26/26, V19 26/26, unit 46, Jenkins Success |
+| `volto-slate-label` `7cdbac4` | V18 integrare ✅ 2/2 (fix-ul funcționează); Jenkins a picat pe infrastructură („Agent was removed" la unit tests) → rebuild triggerat |
+| `volto-searchlib` `bdd6708` | Jenkins a picat pe infrastructură („Agent was removed" la docker build) → rebuild triggerat; unit preexistent |
+| `volto-group-block` `01688ee` (+ auto `64f5128`) | Lint reparat; acum pică unit stage pe datorii preexistente (reporter junit nu afișează detaliile) |
+| `volto-globalsearch` `9ac1e33` | V19 unit ✅ 108; build-ul razzle eșuează preexistent: `Cannot find module 'razzle-dev-utils/makeLoaderFinder'` (cerut de `@eeacms/volto-eea-chatbot@4.1.0/razzle.extend.js`) — expus după ce lint-ul a trecut |

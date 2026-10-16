@@ -2,12 +2,12 @@
 
 ## Prioritar (sesiunea următoare)
 
-- [ ] **Re-verificare finală Jenkins** pe cele 5 repo-uri re-pushuite în sesiunea 2:
-  - `volto-columns-block` (`e544509`) — fix selectare bloc
-  - `volto-slate-label` (`7cdbac4`) — fix re-selecție pointer
-  - `volto-group-block` (`01688ee`) — fix lint `});`
-  - `volto-globalsearch` (rebuild pe `9ac1e33`) — build abortat
-  - `volto-searchlib` (`bdd6708`) — fix localStorage; restul e preexistent
+- [ ] **Re-verificare finală Jenkins** pe repo-urile re-pushuite în sesiunea 2 (rezultate parțiale în `REPORT.md`):
+  - [x] `volto-columns-block` (`e544509`) — ✅ verde complet
+  - [ ] `volto-slate-label` (`7cdbac4`) — V18 integrare ✅ 2/2; rebuild triggerat după „Agent was removed"
+  - [ ] `volto-searchlib` (`bdd6708`) — rebuild triggerat după „Agent was removed" la build image; unit preexistent (ChatbotAnswer 11, TopFilterLayout 1)
+  - [ ] `volto-group-block` (`64f5128` auto) — lint reparat; unit stage pică preexistent (fără detalii în junit)
+  - [ ] `volto-globalsearch` (`9ac1e33`) — V19 unit ✅ 108; build razzle pică preexistent pe `razzle-dev-utils/makeLoaderFinder`
 - [ ] **Repo `collective`** (authomatic, rss-provider, sentry, subsites): decizie user — PR / push direct / skip; au doar coverage împins, nu și hidratare + `mrs` 19.5.0.
 - [ ] (opțional) Continuă catalogul de eșecuri preexistente rămase: `checks-summary.txt`, `regressions-per-check.txt`, `regressions-per-title.txt` (hero-block, anchors, kitkat, object-widget, block-image-cards, redmine-helpdesk, etc.).
 
