@@ -8,7 +8,8 @@
   - [ ] `eea-website-frontend` #284 — job Jenkins pe Node 18 vs `engines ^24` (config, owner: user).
 - [ ] **Ultimele branch-roșii**:
   - [ ] `volto-group-block` — V18: selectează explicit blocul înainte de a-i deschide setările în ciclul 2 (`03-block-group-view.cy.js`, test-only).
-  - [ ] `volto-eea-website-theme` #395 — V18 image: mută `@plone/babel-preset-razzle` (registry) în `package.json`-ul rădăcină și scoate `workspace:*` din addon (hoist pattern-ul `*babel-preset-razzle` există deja în `.npmrc`), sau pin + regen lockfile cu core complet; apoi V18 integrare (timeout 1800).  - [ ] `volto-object-widget` — cauză confirmată: migrarea a pierdut `RAZZLE_CI=true` din `Makefile` (`develop` îl seta de 2×), iar `packages/volto-object-widget/src/index.js:38` înregistrează blocul demo doar atunci → 1 test pică și lasă fixture-ul `/Plone/cypress` în urmă, ceea ce cascadează în celelalte 11 (400 „id invalid - it is already in use").
+  - [ ] `volto-eea-website-theme` #395 — V18 image: mută `@plone/babel-preset-razzle` (registry) în `package.json`-ul rădăcină și scoate `workspace:*` din addon (hoist pattern-ul `*babel-preset-razzle` există deja în `.npmrc`), sau pin + regen lockfile cu core complet; apoi V18 integrare (timeout 1800).
+  - [x] `volto-object-widget` — REZOLVAT: migrarea pierduse `RAZZLE_CI=true` din `Makefile` (`develop` îl seta de 2×), iar `src/index.js:38` înregistrează blocul demo doar atunci → 1 test pica și lăsa fixture-ul `/Plone/cypress` în urmă, cascadă în celelalte 11 (400 „id invalid - it is already in use"); plus `vi.mock` care întorcea `undefined` în `JsonWidget.test.jsx`.
   - [x] `volto-searchlib` — REZOLVAT (vezi „Închis în sesiune").
   - [ ] `volto-slate-zotero` (V19 integrare: 2/9 — comportament de produs).
 - [ ] **Design-system: release + unpin** — scoate pinul DS din `volto-datahub` (`fd7fd5c`) după release (fix focus variables e pe branch-ul `volto19`, `973ebb1f6`).
