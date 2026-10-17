@@ -205,3 +205,19 @@ trunchiază la ~64KB.
   limita worker-threads; doar o valoare peste implicit o ridică.
 - Cel mai rapid diagnostic Jenkins: `wfapi/describe` → `stageFlowNodes` →
   `/execution/node/<id>/log/`, din sesiunea Chrome deja logată.
+
+## Mini-val fail-fast — batch A (2026-10-17)
+
+Trei repo-uri din lista celor 13, aceeași clasă: import stale `cypress-fail-fast`
+în `cypress/support/e2e.js`, cu plugin-ul deregistrat și dependința scoasă de
+migrarea pe Volto 19 (`failFastShouldSkip` / `failFastFailedTests` picau
+„before each” hook-urile). Fix: scos comentariul + importul (fix de 2 linii).
+
+| Repo | Commit | V18 integrare | V19 integrare | Unit |
+| --- | --- | --- | --- | --- |
+| `volto-anchors` | `eb350f8` | 1/1 | 1/1 | 16 |
+| `volto-controlpanel` | `a4f118d` | 9/9 | 9/9 | 3 |
+| `volto-flourish` | `3444c74` | 1/1 | 1/1 | 4 |
+
+Toate check-urile `success` (inclusiv agregatul `Jenkins` + secrets);
+`jenkins-stage-scan.sh` pe `output.summary`: `none`. Rămân 10 (vezi `TODO.md`).
