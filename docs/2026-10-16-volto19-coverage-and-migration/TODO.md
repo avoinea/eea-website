@@ -8,25 +8,43 @@
 - [x] **Batch 2 extins VERDE (6 repo-uri)**: `volto-design-tokens` (`003edec`), `volto-embed-content` (`dd20bcd`), `volto-redirector` (`7abd242`), `volto-hero-block` (`bf51532`), `volto-globalsearch` (`8814f9b`), `volto-eea-website-policy` (`859ddb9`) — detalii în `REPORT.md`. Fix-uri noi: `react-portal` → `createPortal` (redirector), selector dual V18/V19 la widget-ul de styling (hero-block), `check-ci` 600→1200 + heap Node 8G la build-ul V18 (embed-content), pin `razzle-dev-utils`→chatbot git (globalsearch/policy).
 - [x] **Pin chatbot + searchlib** (înlocuiește shim-ul de node_modules): globalsearch `6e0e839` + `1c6e077`, policy `3b118aa` — `pnpm.overrides`: `@eeacms/volto-eea-chatbot` și `@eeacms/volto-searchlib`, ambele `github:eea/<repo>#volto19&path:/packages/<repo>`; scos `razzle-dev-utils-shim.js` + `postinstall`. Chatbot `720e124` + searchlib `2cdbd19`: scos `prepare` din pachet (mutat ca `husky:install`, chemat din `prepare`-ul root) — altfel pnpm rulează `pnpm install` în checkout-ul git și pică pe devDeps `workspace:*`. Lanțul pică pe rând: după chatbot a urmat searchlib (publicat) cu același require legacy. Include refresh de lock (`f19fbe5`, `144558e`) — lock-urile erau deja în urmă față de core-ul 19.5.0 (`a424fdb`), deci `--frozen-lockfile` pica și înainte. La globalsearch a mai fost nevoie de `1c6e077` (install curat în Dockerfile — vezi REPORT.md, store pnpm 9 vs 10 → două instanțe React → #423).
 - [ ] **Unpin chatbot + searchlib** (de bifat în PR-ul `volto19→develop`): după release-urile **majore** ale `volto-eea-chatbot`/`volto-searchlib` (breaking: fără Yarn, fără Volto 17) — scoate override-urile din globalsearch/policy, pune versiunile npm, regen lock și retestează. Alternativă de discutat la PR: merge în ordine (întâi release-urile, apoi bump) sau păstrarea pin-urilor până la release.
-- [ ] **Mini-val fail-fast** (2 rămase): importul stale `cypress-fail-fast`
-      (fără plugin înregistrat + fără dependință declarată) există în:
-      `volto-block-image-cards`, `volto-eea-chatbot`. Închise 2026-10-17, toate
-      check-urile Jenkins verzi: batch A — `volto-anchors` (`eb350f8`),
-      `volto-controlpanel` (`a4f118d`), `volto-flourish` (`3444c74`); batch B —
+- [x] **Mini-val fail-fast** (toate cele 13 închise, 2026-10-17): importul
+      stale `cypress-fail-fast` — batch A: `volto-anchors` (`eb350f8`),
+      `volto-controlpanel` (`a4f118d`), `volto-flourish` (`3444c74`); batch B:
       `volto-embed` (`90d1719`), `volto-nextcloud-video-block` (`938a583`),
-      `volto-redmine-helpdesk` (`e6a419d`); batch C — `volto-eea-kitkat`
+      `volto-redmine-helpdesk` (`e6a419d`); batch C: `volto-eea-kitkat`
       (`f0a6d29`), `volto-widget-theme-picker` (`5c2a92c`),
       `volto-block-data-table` (`e767ef2`), `volto-block-toc` (`4c6a0d4`),
-      `volto-embed-static-content` (`6de1b7f`).
-- [x] **Unit tests preexistente reparate** (batch C): `volto-block-data-table`
-      (praguri coverage fără teste), `volto-block-toc` (CJS `require` → ESM
-      imports), `volto-embed-static-content` (mock Popup funcțional + uuid mock
-      + prag branch 2%).
+      `volto-embed-static-content` (`6de1b7f`); batch D: `volto-block-image-cards`
+      (`1b91f9c`), `volto-eea-chatbot` (`de370ce`). Toate check-urile Jenkins verzi.
+- [x] **Datorii de test/CI reparate în valul red→green** (2026-10-17, batch D+E):
+      `volto-editing-progress` (selector modal Save `283ebae`), `volto-taxonomy`
+      / `volto-block-style` / `volto-plotlycharts` / `volto-banner` /
+      `volto-datahub` (`react-portal` nedeclarat), `volto-widget-temporal-coverage`
+      (`lodash.debounce`), `volto-block-divider` (conflict markers comise),
+      `volto-eea-chatbot` (35 lint warnings: `2e43ac7`; `no-console` oprit
+      documentat până la release), `volto-plotlycharts` (timeout build 1200 +
+      heap 8G `daebbef`).
+
 - [ ] **`volto-eea-website-theme` #395** — V19 lint (2 warnings
       `react/jsx-no-target-blank`; migrarea `33945b3` a pierdut override-ul
       `allowReferrer: true` din develop) + V18 build `ERR_PNPM_WORKSPACE_PKG_NOT_FOUND`
       (`@plone/babel-preset-razzle: "workspace:*"` nu există în core-ul V18; de
       pin-uit la `1.0.1` sau scos + regen lock). Diagnostic în sesiunea 2026-10-17.
+      În plus, V19 build va cere fix-ul de focus variables din design-system
+      (vezi mai jos).
+- [ ] **Design-system: release + unpin** — publicat ≤1.61.5 nu definește
+      `@innerFocusShadow`/`@outerFocusOutline` cerute de Volto 19.5.0; fix-ul e
+      doar pe branch-ul DS `volto19` (`973ebb1f6`). `volto-datahub` e deblocat
+      prin pin git (`fd7fd5c`) + scos `prepare` din pachetul DS (`6c28303ea`);
+      după release, scoate pin-ul din datahub (ca la chatbot/searchlib).
+- [x] **PR-uri deschise în valul red→green**: 21 (fiecare repo verde fără PR:
+      anchors #45, controlpanel #15, flourish #17, embed #88, nextcloud #39,
+      redmine #30, kitkat #251, widget-theme-picker #23, block-data-table #20,
+      block-toc #53, embed-static-content #27, block-image-cards #77,
+      editing-progress #37, taxonomy #46, block-divider #44, chatbot #45,
+      banner #46, widget-temporal-coverage #43, block-style #118, datahub #83,
+      plotlycharts #208).
 - [ ] De documentat de ce `/Plone/cypress` dispare înainte de cleanup-ul din afterEach (subagent local pe citation, în curs).
 
 

@@ -238,6 +238,31 @@ Batch C (5 repo-uri), aceeași clasă + fix-uri colaterale:
 | `volto-block-toc` | `43c93b1`, `9f79644` (+ `4c6a0d4` style) | import stale + ESM imports în `withEEASideMenu.test.jsx` (CJS `require` ocolea aliasul vitest) | V18/V19 integrare 4/4, unit 35 |
 | `volto-embed-static-content` | `703a55d`, `3cd4e28` (+ `6de1b7f` style) | import stale + mock Popup funcțional (ignora `open`) + `vitest.uuid.mock.js` + prag branch 5→2 (măsurat 2.61%) | V18/V19 integrare 2/2, unit 16 |
 
-`jenkins-stage-scan.sh` pe toate: `none`. Rămân 2 repo-uri cu import stale
-(`volto-block-image-cards`, `volto-eea-chatbot`); `volto-eea-website-theme` #395
-(lint + `@plone/babel-preset-razzle` în V18) e diagnosticat în `TODO.md`.
+`jenkins-stage-scan.sh` pe toate: `none`.
+
+## Val red→green — batch D + E (2026-10-17)
+
+Batch D (5): `volto-block-image-cards` (`1b91f9c`, import stale);
+`volto-editing-progress` (`b281892`, `283ebae` — selectorul vechi
+`.actions .ui.basic.circular.primary.right.floated.button` nu mai există;
+modalul folosește `.ui.modal .actions button[aria-label="Save"]` în 18/19);
+`volto-taxonomy` (`05b1bdd`, `react-portal` nedeclarat → build V18);
+`volto-block-divider` (`c660805`, conflict markers comise în `commands.js`);
+`volto-eea-chatbot` (`de370ce`, `2e43ac7` — import stale + 35 lint warnings).
+
+Batch E (5): `volto-banner` (`24c2893`, `react-portal`); `volto-block-style`
+(`75013d9`, `0231dba` — `react-portal` + task `getVoltoVersion` neînregistrat
+și branch mort V16); `volto-plotlycharts` (`f35c605`, `438304a`, `0d4b1f2`,
+`daebbef` — `react-portal`, `vitest.uuid.mock.js`, `check-ci` 600→1200,
+heap `--max-old-space-size=8192` pentru SSR V18); `volto-widget-temporal-coverage`
+(`d672ca6`, `lodash.debounce`); `volto-datahub` (`43bb889`, `e50a168`,
+`997785c`, `fd7fd5c` — `react-portal`, ignore lint `@eeacms/search`, pin
+chatbot/searchlib, pin design-system git după ce build-ul V19 a dezvăluit
+`@innerFocusShadow is undefined`).
+
+Design-system: `6c28303ea` — `prepare` mutat în `husky:install` + root prepare,
+ca pachetul să fie instalabil din git (precedent chatbot/searchlib).
+
+Toate cele 10 au `Jenkins` aggregate `success` și stage-scan `none`. PR-uri
+`volto19→develop` deschise pentru toate (21 în sesiune: 19 + datahub #83,
+plotlycharts #208).
