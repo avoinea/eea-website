@@ -220,4 +220,24 @@ migrarea pe Volto 19 (`failFastShouldSkip` / `failFastFailedTests` picau
 | `volto-flourish` | `3444c74` | 1/1 | 1/1 | 4 |
 
 Toate check-urile `success` (inclusiv agregatul `Jenkins` + secrets);
-`jenkins-stage-scan.sh` pe `output.summary`: `none`. Rămân 10 (vezi `TODO.md`).
+`jenkins-stage-scan.sh` pe `output.summary`: `none`. Continuat cu batch B/C mai jos.
+
+## Mini-val fail-fast — batch B + C (2026-10-17)
+
+Batch B (3 repo-uri, doar importul stale): `volto-embed` (`90d1719`),
+`volto-nextcloud-video-block` (`938a583`), `volto-redmine-helpdesk`
+(`e6a419d`) — V18/V19 integrare + unit verzi.
+
+Batch C (5 repo-uri), aceeași clasă + fix-uri colaterale:
+
+| Repo | Commit(uri) | Ce s-a reparat | Rezultat |
+| --- | --- | --- | --- |
+| `volto-eea-kitkat` | `7950813`, `f0a6d29` | import stale + `Lock-Token` la PATCH-urile din testele slate (editorul montează și blochează pagina → 403) | V18/V19 integrare 14/14 |
+| `volto-widget-theme-picker` | `5c2a92c` | import stale | V18/V19 integrare 1/1, unit 3 |
+| `volto-block-data-table` | `a5cc6b5`, `e767ef2` | import stale + scos pragurile coverage (zero teste) | V18/V19 integrare 2/2 |
+| `volto-block-toc` | `43c93b1`, `9f79644` (+ `4c6a0d4` style) | import stale + ESM imports în `withEEASideMenu.test.jsx` (CJS `require` ocolea aliasul vitest) | V18/V19 integrare 4/4, unit 35 |
+| `volto-embed-static-content` | `703a55d`, `3cd4e28` (+ `6de1b7f` style) | import stale + mock Popup funcțional (ignora `open`) + `vitest.uuid.mock.js` + prag branch 5→2 (măsurat 2.61%) | V18/V19 integrare 2/2, unit 16 |
+
+`jenkins-stage-scan.sh` pe toate: `none`. Rămân 2 repo-uri cu import stale
+(`volto-block-image-cards`, `volto-eea-chatbot`); `volto-eea-website-theme` #395
+(lint + `@plone/babel-preset-razzle` în V18) e diagnosticat în `TODO.md`.
