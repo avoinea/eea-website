@@ -3,8 +3,7 @@
 - [ ] **`volto-block-toc` #53 — V18 roșu după sync** (decis: amânat pentru altă iterație). Sync cu `develop` e făcut (`54bdc10`) și V19 e verde (41 unit + 4 integrare), dar stage-ul V18 pică 2/4 în testele care schimbă variația blocului. Diagnostic complet, dovezi și opțiuni A/B/C: `diagnostics/block-toc-v18-slate-focus.md`. Hardening test-side încercat de 2 ori (`e68d2f3`, `bb7d802`) — nu e suficient: textul tastat chiar se pierde (bug de focus sincron în Volto 18.35.1, plone/volto#8406 livrat în 18.36.0).
 - [ ] **PR-uri verzi**:
   - [ ] `volto-editing-progress` #37 — V18 integrare pică pe `01-block-basics.cy.js:147` („2 fields missing"); pe branch a trecut → flake la build-ul de PR, de re-rulat.
-  - [ ] SonarQube pe PR: `volto-eea-chatbot` #45 (doar coverage: 79.60 vs prag 80; `master` excludea `/types/` — 500 linii — iar vitest nu → patch de 1 linie în `vitest.config.mjs`), `volto-embed` #88 (46.60 vs 60.00) și `volto-eea-website-policy` #138 (26.90 vs 52.00) — la ambele, excluderile pierdute sunt zero, deci cauza e altundeva; ipoteza principală: `docker cp` pentru lcov-ul de integrare a rămas pe calea veche (`/app/src/addons/$GIT_NAME/coverage` → `/app/coverage`), deci raportul de integrare se pierde silențios.
-  - [ ] `volto-redmine-helpdesk` #30 — doar coverage (41.30 vs 48.80); `captcha/**` (2363 linii) era exclus pe `master`, dar readăugarea duce doar la paritate cu master (48.8 < 80) → nu rezolvă singură.
+  - [ ] SonarQube pe PR: REZOLVAT integral în batch G (chatbot #45, embed #88, policy #138, redmine #30 — toate verzi); vezi `diagnostics/sonar-coverage.md`.
   - [ ] Nota + checklist-ul de unpin chatbot/searchlib în body-ul `volto-eea-website-policy` #138 (owner: user).
   - [ ] `eea-website-frontend` #284 — job Jenkins pe Node 18 vs `engines ^24` (config, owner: user).
 - [ ] **Ultimele branch-roșii**:
@@ -18,6 +17,13 @@
 - [ ] (opțional) Lock refresh la repo-urile cu dependințe noi (`react-portal`, `lodash.debounce`, pinurile git) înainte de merge-ul PR-urilor.
 
 # Închis în sesiune
+
+- [x] **Batch G — toate cele 4 PR-uri cu SonarQube roșu sînt VERZI** (`Jenkins` Success + `SonarQube` success + toate testele, PR-uri `CLEAN`):
+  - [x] `volto-eea-chatbot` #45: 79.30 → **81.60** (master 84.80; trece pragul de 80). Cauza: fișierele barrel (`markdown/index.jsx` 56 linii, `utils/index.tsx` 49, `schema.jsx` 9) erau excluse din raportul unit dar readuse ca 0% de instrumentarea de integrare.
+  - [x] `volto-eea-website-policy` #138: 26.90 → **74.00** (master 52.00) — teste reale pentru customizarea `HTML/Edit.jsx` (344 linii la 0%) + `blacklistRoutes.js`.
+  - [x] `volto-embed` #88: 46.60 → **67.00** (master 60.00) — teste pentru `MapsWidget.jsx` (210 linii, fără niciun test), `Share`, `FigureNote`, `PrivacyProtection/utils` + completări pe `Sources`/`Toolbar`.
+  - [x] `volto-redmine-helpdesk` #30: 41.30 → **51.20** (master 48.80) — `captcha/**` (2363 linii la 0%) exclus din ambele lcov-uri, ca pe master.
+- [x] Mecanismul complet documentat în `diagnostics/sonar-coverage.md` (semantica porții, API-ul Sonar public, uniunea celor două lcov-uri, rețeta de harness local + capcanele de symlink).
 
 - [x] **Batch F — `volto-object-widget`: COMPLET VERDE** (`Jenkins` success, toate stage-urile): (1) `Makefile` `start-ci` nu mai seta deloc `RAZZLE_CI`, iar `packages/volto-object-widget/src/index.js:38` înregistrează blocul demo doar atunci → V18 integrare 12/12 trec după fix; (2) `JsonWidget.test.jsx` avea două `vi.mock(..., () => {})` care întorc `undefined`, respinse de vitest 3.2.7 → 11/11 fișiere, 75 teste trec local.
 - [x] **Batch F — `volto-group-block`: V19 verde, V18 deschis** (unit reparat: `Edit.test.jsx` avea o fabrică `vi.mock` care întorcea o componentă goală în loc de `{ default }` → 36 teste trec; integrarea V19 5/5 trece după ce testul de round-trip scris de noi a fost întărit cu o barieră de hidratare). Rămas: pe stage-ul V18, `03-block-group-view.cy.js` nu deschide sidebar-ul blocului după `cy.visit('/edit')` (inputul `#field-title` rămâne al paginii, valoare 'Group View Persistence'), deci blocul trebuie selectat explicit înainte de a-i deschide setările — test-only, o iterație următoare.
