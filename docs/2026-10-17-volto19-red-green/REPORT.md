@@ -97,3 +97,37 @@ Toate 4: `Jenkins Success`, `SonarQube success`, PR `MERGEABLE`/`CLEAN`. Metoda 
 | `1f1231e` | `razzle-dev-utils` în `devDependencies` la rădăcină (build-ul V19 cădea pe fallback-ul nedeclarat din `razzle.extend.js`) |
 
 Rezultat: `Jenkins Success`, V18 integrare 2, V19 integrare 2, V19 unit **303** (era roșu de la începutul campaniei). Detalii: `diagnostics/searchlib-unit-and-build.md`.
+
+---
+
+# Sesiunea 4 (2026-10-18): batch H — group-block, editing-progress, theme
+
+## Metrici
+
+| | Înainte | După |
+| --- | --- | --- |
+| Dashboard roșii | 10 | **4** (`countup` skip, `block-toc` V18 amânat, `slate-zotero` produs, `theme` V18 hang) |
+| Dashboard verzi | 57 | **59** |
+
+## Batch H
+
+| Repo | Commit-uri | Rezultat |
+| --- | --- | --- |
+| `group-block` | `db9458d`, `df1af90` | **verde complet**: V18 5/5, V19 5/5, unit 36. Test-only: în ciclul 2 selectează `.block.group:not(.inner)` — `.block.group` prindea wrapper-ul interior `ui drag block inner group` (fără onClick/`selected`), nu wrapper-ul Volto selectabil. |
+| `editing-progress` | `0f02968` | **verde complet**: V18 5/5, V19 5/5, unit 74. `cy.intercept('PATCH', '**/@controlpanels/**')` + `cy.wait`; aserțiuni pe `.ep-sidenav-btn`/`.sidenav-ol--ep` cu timeout 10s (în loc de `.progress__title`, DOM-ul lui workflow-progress). |
+| `theme` #395 | `b11c034`, `e68934e`, `f95e9f4`, `dcb0b69`, `44d1ce9`, `1ad6096` | **V19 complet verde**: unit 637/637, integrare 23/23. V18: imaginea se construiește (pin `@plone/babel-preset-razzle@1.0.1`), dar integrarea expiră la `timeout -s 9 1800` (exit 137). |
+
+## Theme — cele 6 cauze
+
+1. `@plone/babel-preset-razzle@workspace:*` nu există în workspace-ul Volto 18 → pin registry `1.0.1` (imaginea V18 se construiește).
+2. `vitest.setup.jsx` importa eager `@plone/volto/components`, care captura `Loadable`-ul real înainte de `vi.mock`-ul per-fișier → mock global + `__setLoadables()`; 337 unhandled rejections + 5 teste picate.
+3. `Image/Edit.test.jsx` aserta `[data-testid=volto-image]` din mock-ul de barrel, dar `config.getComponent({name:'Image'})` întoarce componenta reală → aserțiune pe `.image-block-container img` (are deja clasa `large`).
+4. `10-object-browser-selection-limit.cy.js` importa `../../src/...` (rădăcina repo-ului, inexistentă) → `../../packages/volto-eea-website-theme/src/...`.
+5. `07-lead-image.cy.js` naviga înainte de PATCH-ul de control panel → `cy.intercept` + `cy.wait`.
+6. `01-block-basics.cy.js` folosea selectorii V19 (`.field-wrapper-align`, `#blockform-fieldset-styling`) și pe V18 → fallback pe `.align-buttons`; plus restaurate `defaultCommandTimeout`, `chromeWebSecurity`, `video` din configul EEA pre-migrare.
+
+CI: `Makefile test-ci` are acum `--reporter=default` lîngă junit, deci eșecurile apar în consola Jenkins (înainte check-ul raporta „No test results found").
+
+## Rămas
+
+- `theme` V18 integrare: timeout pe primul spec; `develop` (pre-migrare) avea V18 integrare verde (23 teste), deci e o regresie de migrare. Ipoteze și pași în `diagnostics/theme-v18-integration-hang.md`.

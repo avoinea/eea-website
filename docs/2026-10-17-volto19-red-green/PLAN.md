@@ -12,7 +12,8 @@
 - [x] **Faza 8 — batch F**: `object-widget` (`20705d6` RAZZLE_CI + `fc8a5fc` vi.mock → verde complet), `group-block` (`6d0c076` vi.mock + `5edc69c` barieră de hidratare → V19 verde), `theme #395` (`cda9236` lint + `eca6cc9`/`a1f2c07` pin A/B → lint verde, V18 image deschis).
 - [x] **Faza 9 — coverage (batch G)**: `redmine` #30 (`f4bb8d5`), `chatbot` #45 (`e0d32d0` + `db5e20b`), `policy` #138 (`c012de6`, teste), `embed` #88 (`d30623f`, teste) — toate verzi.
 - [x] **Faza 10 — `volto-searchlib`**: `01ef5f4` (SearchInput + TopFilterLayout), `f6ed9e3` (`require` → import ESM în ChatbotAnswer), `1f1231e` (`razzle-dev-utils` în root devDeps) → verde complet.
-- [ ] **Faza 11 — ultimele 5**: `group-block` V18 (test-only), `theme #395` V18 image (rută alternativă la pin), `editing-progress` #37, `slate-zotero` V19, plus verificarea `block-toc` dacă se acceptă V18-roșu.
+- [x] **Faza 11 — ultimele 5 (sesiunea 4)**: `group-block` V18 (test-only, `df1af90` → verde complet), `editing-progress` #37 (`0f02968` → verde complet), `theme #395` V19 (pin `1.0.1`, mock global `Loadable`, import spec 10, race PATCH spec 07 → unit 637 + integrare 23 verzi). Rămas: `theme` V18 integrare (hang) și `slate-zotero` V19 (produs).
+- [ ] **Faza 12 — `theme` V18 integrare**: timeout `-s 9 1800` pe primul spec; diagnostic și pași în `diagnostics/theme-v18-integration-hang.md`. Apoi `slate-zotero` (necesită aprobare produs) și `block-toc` V18 (amânat de user).
 
 ## Operațional
 
@@ -25,3 +26,5 @@
 - **Oracol Sonar** (fără login): `curl -s "https://sonarqube.eea.europa.eu/api/measures/component?component=<proiect>&pullRequest=<nr>&metricKeys=coverage,line_coverage,branch_coverage,lines_to_cover,uncovered_lines"` și `.../measures/component_tree?...&qualifiers=FIL&ps=500`. Vezi `diagnostics/sonar-coverage.md`.
 - **Harness local pentru unit/coverage**: `core/` copiat în repo (gitignored) + `node_modules` al core-ului linkat + providerul `@vitest/coverage-istanbul` luat din npm în `/tmp` și linkat în `frontend/node_modules/@vitest/`; addon-urile surori se **copiază** (`rsync`), nu se linkează (Vite le respinge). Rețeta completă: `diagnostics/sonar-coverage.md`.
 - **Push**: Jenkins poate pusha „style: Automated code fix" pe `volto19` → `git fetch && git rebase origin/volto19` înainte de push (întâlnit la group-block). Hook-ul local `lint-staged` nu e instalat → `--no-verify` după ce rulăm manual eslint+prettier.
+- **Harness local theme (sesiunea 4)**: `packages/volto-eea-website-theme/vitest.local.config.mjs` (untracked, în `.git/info/exclude`) lărgește `fs.allow` la `frontend/` și aliasează `@eeacms/volto-eea-design-system` la sursa locală; rularea completă local dă 59/61 suite (2 artefacte de alias) vs. CI 61/61.
+- **Vizibilitate CI unit (theme)**: `Makefile test-ci` folosește `--reporter=default --reporter=junit --outputFile.junit=junit.xml`; eșecurile apar în tail-ul summary-ului agregat `Jenkins` (GitHub trunchiază ~2.5 KB/stagiu). `check-run.output.text` conține arborele de timpi pe stagii (util pentru a distinge timeout de test).

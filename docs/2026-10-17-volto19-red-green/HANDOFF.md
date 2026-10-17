@@ -2,33 +2,27 @@
 
 ## Stare
 
-Campania red→green Volto 19: **dashboard 57 verzi / 10 roșii** (de la 50/15 la finalul sesiunii 2).
-În sesiunea 3 s-au închis: sync-ul celor 2 PR-uri rămase în urmă față de `develop`, batch F (object-widget complet,
-group-block V19, theme lint), batch G (**toate cele 4 PR-uri cu SonarQube roșu**) și `volto-searchlib` (unit + integrare).
-Toate commit-urile sunt pe branch-urile `volto19` (vezi `REPORT.md`); docs pe `main`.
+Campania red→green Volto 19: **dashboard 59 verzi / 4 roșii** (57/10 la finalul sesiunii 3).
+În sesiunea 4 s-au închis complet `group-block` și `editing-progress`, iar `theme` e verde pe V19
+(unit 637 + integrare 23). Rămîn: `theme` V18 integrare (hang), `block-toc` V18 (amânat), `slate-zotero`
+V19 (produs) și `countup` (skip).
 
-Branch-uri/PR-uri de referință: `chatbot` #45 `db5e20b`, `policy` #138 `c012de6`, `embed` #88 `d30623f`,
-`redmine` #30 `f4bb8d5`, `block-data-table` #20 `f7823d3`, `searchlib` `1f1231e`, `object-widget` `fc8a5fc`,
-`group-block` `5edc69c`, `theme` `a1f2c07`, `block-toc` `bb7d802`.
+Branch-uri/PR-uri de referință: `group-block` `df1af90`, `editing-progress` `0f02968`, `theme` `1ad6096`,
+`chatbot` #45 `db5e20b`, `policy` #138 `c012de6`, `embed` #88 `d30623f`, `redmine` #30 `f4bb8d5`,
+`block-data-table` #20 `f7823d3`, `searchlib` `1f1231e`, `object-widget` `fc8a5fc`.
 
 ## Ce face sesiunea următoare (primii pași)
 
-1. **Merge la PR-urile verzi** (decizia userului): `chatbot` #45, `policy` #138, `embed` #88, `redmine` #30,
-   `block-data-table` #20 — toate `MERGEABLE`/`CLEAN`. După merge, verifică dacă mai e nevoie de unpin-urile
-   din `TODO.md`.
-2. **Ultimele 5 roșii acționabile**, în ordinea dificultății:
-   - `group-block` V18: test-only, selectarea explicită a blocului în ciclul 2 din `03-block-group-view.cy.js`
-     (V19 e verde; pe 18.35.1 sidebar-ul rămâne pe tab-ul Document după `cy.visit('/edit')`).
-   - `editing-progress` #37 V18: `01-block-basics.cy.js:147` („2 fields missing"); pe branch trece → de re-rulat,
-     apoi de reprodus local cu harness-ul.
-   - `theme` #395 V18 image: pinul în addon **strică** stage-ul V19 unit (A/B verificat) → încearcă
-     `@plone/babel-preset-razzle` (registry) în `package.json`-ul rădăcină + scos `workspace:*` din addon;
-     apoi V18 integrare (timeout 1800 — dacă expiră, e problemă de durată, nu de test).
-   - `slate-zotero` V19 integrare 2/9 (comportament de produs, nu test).
-   - `block-toc` V18: amânat de user; dacă se reia, diagnosticul e complet în
-     `diagnostics/block-toc-v18-slate-focus.md` (bug de focus sincron în Volto 18.35.1, plone/volto#8406).
-3. **Amânate de user** (nu le atinge fără confirmare): `countup`, cele 3 `collective/*` (authomatic, rss-provider,
-   subsites), `eea-website-frontend` #284.
+1. **`theme` V18 integrare** — singurul blocaj rămas din batch-ul H. `timeout -s 9 1800` (exit 137) pe
+   `01-block-basics.cy.js`; pe `develop` (pre-migrare) V18 integrarea trecea (23 teste), deci e regresie de
+   migrare. Ipotezele și pașii (repro local amd64 emulat, consola Jenkins, bisect pe `33945b3`) sînt în
+   `diagnostics/theme-v18-integration-hang.md`.
+2. **`slate-zotero` V19 integrare 2/9** — comportament de produs; necesită aprobarea userului pentru
+   schimbări de produs.
+3. **`block-toc` V18** — amânat de user; diagnostic complet în `diagnostics/block-toc-v18-slate-focus.md`
+   (bug de focus sincron în Volto 18.35.1, plone/volto#8406).
+4. **Amânate de user** (nu le atinge fără confirmare): `countup`, cele 3 `collective/*` (authomatic,
+   rss-provider, subsites), `eea-website-frontend` #284.
 
 ## Capcane de mediu (verificate în sesiunile 2–3)
 

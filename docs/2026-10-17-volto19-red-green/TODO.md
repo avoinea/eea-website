@@ -2,13 +2,13 @@
 
 - [ ] **`volto-block-toc` #53 — V18 roșu după sync** (decis: amânat pentru altă iterație). Sync cu `develop` e făcut (`54bdc10`) și V19 e verde (41 unit + 4 integrare), dar stage-ul V18 pică 2/4 în testele care schimbă variația blocului. Diagnostic complet, dovezi și opțiuni A/B/C: `diagnostics/block-toc-v18-slate-focus.md`. Hardening test-side încercat de 2 ori (`e68d2f3`, `bb7d802`) — nu e suficient: textul tastat chiar se pierde (bug de focus sincron în Volto 18.35.1, plone/volto#8406 livrat în 18.36.0).
 - [ ] **PR-uri verzi**:
-  - [ ] `volto-editing-progress` #37 — V18 integrare pică pe `01-block-basics.cy.js:147` („2 fields missing"); pe branch a trecut → flake la build-ul de PR, de re-rulat.
+  - [x] `volto-editing-progress` #37 — REZOLVAT: `01-block-basics.cy.js` așteaptă PATCH-ul de control panel și asertează pe `.ep-sidenav-btn` / `.sidenav-ol--ep` (nu pe `.progress__title` al workflow-progress). V18 5/5, V19 5/5, unit 74.
   - [ ] SonarQube pe PR: REZOLVAT integral în batch G (chatbot #45, embed #88, policy #138, redmine #30 — toate verzi); vezi `diagnostics/sonar-coverage.md`.
   - [ ] Nota + checklist-ul de unpin chatbot/searchlib în body-ul `volto-eea-website-policy` #138 (owner: user).
   - [ ] `eea-website-frontend` #284 — job Jenkins pe Node 18 vs `engines ^24` (config, owner: user).
 - [ ] **Ultimele branch-roșii**:
-  - [ ] `volto-group-block` — V18: selectează explicit blocul înainte de a-i deschide setările în ciclul 2 (`03-block-group-view.cy.js`, test-only).
-  - [ ] `volto-eea-website-theme` #395 — V18 image: mută `@plone/babel-preset-razzle` (registry) în `package.json`-ul rădăcină și scoate `workspace:*` din addon (hoist pattern-ul `*babel-preset-razzle` există deja în `.npmrc`), sau pin + regen lockfile cu core complet; apoi V18 integrare (timeout 1800).
+  - [x] `volto-group-block` — REZOLVAT: V18+V19 integrare 5/5, unit 36. `selectGroupBlock()` selectează wrapper-ul `.block.group:not(.inner)` înainte de a deschide setările (`.block.group` prindea și wrapper-ul interior `ui drag block inner group`).
+  - [ ] `volto-eea-website-theme` #395 — V19 COMPLET VERDE (unit 637, integrare 23) după: mock global `Loadable` în `vitest.setup.jsx` (337 unhandled rejections), aserțiune pe `<img>`-ul real în `Image/Edit.test.jsx`, importul corect în `10-object-browser-selection-limit.cy.js`, așteptarea PATCH-ului în `07-lead-image.cy.js`, selectorii V18 în `01-block-basics.cy.js`. RĂMÎNE: integrarea V18 expiră la `timeout -s 9 1800` (exit 137) — diagnostic și ipoteze în `diagnostics/theme-v18-integration-hang.md`.
   - [x] `volto-object-widget` — REZOLVAT: migrarea pierduse `RAZZLE_CI=true` din `Makefile` (`develop` îl seta de 2×), iar `src/index.js:38` înregistrează blocul demo doar atunci → 1 test pica și lăsa fixture-ul `/Plone/cypress` în urmă, cascadă în celelalte 11 (400 „id invalid - it is already in use"); plus `vi.mock` care întorcea `undefined` în `JsonWidget.test.jsx`.
   - [x] `volto-searchlib` — REZOLVAT (vezi „Închis în sesiune").
   - [ ] `volto-slate-zotero` (V19 integrare: 2/9 — comportament de produs).

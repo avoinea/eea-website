@@ -1,8 +1,8 @@
-# Campania „red → green" Volto 19 (2026-10-17, sesiunile 2–3)
+# Campania „red → green" Volto 19 (2026-10-17 → 18, sesiunile 2–4)
 
-**Status: 57 verzi / 10 roșii** (35/32 la începutul sesiunii 2, 50/15 la finalul ei). Toate cele 4 PR-uri cu
-SonarQube roșu sînt verzi, `volto-searchlib` e verde, iar cele 2 PR-uri rămase în urmă față de `develop`
-au fost sincronizate.
+**Status: 59 verzi / 4 roșii** (35/32 la începutul sesiunii 2, 50/15 la finalul ei, 57/10 la finalul sesiunii 3).
+`group-block` și `editing-progress` sînt complete verzi; `theme` e verde pe V19 (unit 637 + integrare 23),
+dar integrarea V18 încă expiră la timeout.
 
 ## Fapte cheie
 
@@ -16,8 +16,14 @@ au fost sincronizate.
   Mecanismul complet în `diagnostics/sonar-coverage.md`.
 - **`volto-searchlib` verde** (era roșu de la începutul campaniei): unit 303 + integrare 2+2;
   trei cauze în `diagnostics/searchlib-unit-and-build.md`.
+- **Batch H (sesiunea 4)**: `group-block` **verde complet** (V18+V19 integrare 5, unit 36),
+  `editing-progress` **verde complet** (V18+V19 integrare 5, unit 74), `theme` #395 V19 **verde** (unit 637,
+  integrare 23) — rămîne doar integrarea V18 (timeout, diagnostic în
+  `diagnostics/theme-v18-integration-hang.md`).
+- **CI mai vizibil**: `theme` `Makefile test-ci` folosește acum și `--reporter=default`, deci eșecurile de unit
+  apar în consola Jenkins (înainte check-ul zicea „No test results found").
 - PR-uri verzi & `MERGEABLE`: chatbot #45, policy #138, embed #88, redmine #30, block-data-table #20;
-  branch-uri verzi: object-widget, searchlib, group-block (V19 — V18 încă roșu).
+  branch-uri verzi: object-widget, searchlib, group-block, editing-progress.
 - Docs canonice: `docs/2026-10-16-volto19-coverage-and-migration/{TODO,REPORT}.md`; DS `6c28303ea`; datahub `fd7fd5c`.
 
 ## Fișiere
@@ -31,3 +37,4 @@ au fost sincronizate.
   rețeta de harness local).
 - `diagnostics/block-toc-v18-slate-focus.md` — regresia V18 de după sync (bug de focus în Volto 18.35.1).
 - `diagnostics/searchlib-unit-and-build.md` — cele 3 cauze de la searchlib.
+- `diagnostics/theme-v18-integration-hang.md` — de ce integrarea V18 a temei expiră și ce s-a încercat.
