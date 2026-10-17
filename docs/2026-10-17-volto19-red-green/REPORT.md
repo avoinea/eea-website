@@ -49,3 +49,51 @@ anchors #45, controlpanel #15, flourish #17, embed #88, nextcloud #39, redmine #
 
 - `docs/2026-10-16-volto19-coverage-and-migration/{TODO,REPORT}.md`: `cff4f50` (batch A), `5a94a84` (B+C), `35ad3f9` (red→green D+E).
 - Acest folder: handoff-ul sesiunii.
+
+---
+
+# Sesiunea 3 (2026-10-17 → 18): sync, batch F, coverage (G), searchlib
+
+## Metrici
+
+| | Înainte | După |
+| --- | --- | --- |
+| Dashboard roșii | 15 | **10** |
+| Dashboard verzi | 50 | **57** |
+| Coverage Sonar (PR-uri) | chatbot 79.30 / policy 26.90 / embed 46.60 / redmine 41.30 | **81.60 / 74.00 / 67.00 / 51.20** |
+
+## Sync cu `develop` (singurele 2 PR-uri cu `behind > 0` din 59)
+
+| Repo | Commit-uri | Rezultat |
+| --- | --- | --- |
+| `block-data-table` #20 | `f7823d3` | **verde complet**, PR `MERGEABLE` |
+| `block-toc` #53 | `54bdc10` (merge), `bb7d802` (hardening) | V19 verde (41 unit + 4 integrare), V18 roșu (2/4) — diagnostic în `diagnostics/block-toc-v18-slate-focus.md` |
+
+## Batch F
+
+| Repo | Commit-uri | Rezultat |
+| --- | --- | --- |
+| `object-widget` | `20705d6` (`RAZZLE_CI=true` în `start-ci`), `fc8a5fc` (`vi.mock` care întorcea `undefined`) | **verde complet** (V18 integrare 12/12, unit 11 fișiere) |
+| `group-block` | `6d0c076` (fabrică `vi.mock` fără `default`), `5edc69c` (barieră de hidratare în test) | V19 verde (unit 36 + integrare 5/5), V18 roșu pe un test |
+| `theme` #395 | `cda9236` (override `react/jsx-no-target-blank`), `eca6cc9` + `a1f2c07` (pin `@plone/babel-preset-razzle` A/B) | lint verde; V18 image încă roșu |
+
+## Batch G — coverage (SonarQube)
+
+| PR | Înainte | După | master | Fix |
+| --- | --- | --- | --- | --- |
+| `chatbot` #45 `e0d32d0`+`db5e20b` | 79.30 | **81.60** | 84.80 | excluderi oglindite în `vitest.config.mjs` **și** `.coverage.babel.config.js` (types + index/schema barrel) |
+| `policy` #138 `c012de6` | 26.90 | **74.00** | 52.00 | teste reale: `HTML/Edit.jsx` (344 linii la 0%) + `blacklistRoutes.js` |
+| `embed` #88 `d30623f` | 46.60 | **67.00** | 60.00 | teste reale: `MapsWidget.jsx` (210 linii, fără test), `Share`, `FigureNote`, `PrivacyProtection/utils`, completări `Sources`/`Toolbar` |
+| `redmine` #30 `f4bb8d5` | 41.30 | **51.20** | 48.80 | `captcha/**` (2363 linii la 0%) exclus din ambele lcov-uri, ca pe master |
+
+Toate 4: `Jenkins Success`, `SonarQube success`, PR `MERGEABLE`/`CLEAN`. Metoda (semantica porții, API-ul public, uniunea celor două lcov-uri, harness-ul local) în `diagnostics/sonar-coverage.md`.
+
+## `volto-searchlib`
+
+| Commit | Fix |
+| --- | --- |
+| `01ef5f4` | `SearchInput.test.jsx` + `TopFilterLayout.test.jsx`: `jest.mock` nehoistat → `vi.hoisted`/`vi.mock`; mock direct pe `Image`-ul din Volto; atomii jotai reali |
+| `f6ed9e3` | `ChatbotAnswer.test.jsx`: `require('@eeacms/volto-eea-chatbot')` → import ESM (mock-uit) — `require` ocolea fabrica și încărca pachetul real prin loader-ul Node |
+| `1f1231e` | `razzle-dev-utils` în `devDependencies` la rădăcină (build-ul V19 cădea pe fallback-ul nedeclarat din `razzle.extend.js`) |
+
+Rezultat: `Jenkins Success`, V18 integrare 2, V19 integrare 2, V19 unit **303** (era roșu de la începutul campaniei). Detalii: `diagnostics/searchlib-unit-and-build.md`.
