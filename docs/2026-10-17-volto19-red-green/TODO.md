@@ -8,15 +8,17 @@
   - [ ] `eea-website-frontend` #284 — job Jenkins pe Node 18 vs `engines ^24` (config, owner: user).
 - [ ] **Ultimele branch-roșii**:
   - [ ] `volto-group-block` — V18: selectează explicit blocul înainte de a-i deschide setările în ciclul 2 (`03-block-group-view.cy.js`, test-only).
-  - [ ] `volto-eea-website-theme` #395 — V18 image: mută `@plone/babel-preset-razzle` (registry) în `package.json`-ul rădăcină și scoate `workspace:*` din addon (hoist pattern-ul `*babel-preset-razzle` există deja în `.npmrc`), sau pin + regen lockfile cu core complet; apoi V18 integrare (timeout 1800).
-  - [ ] `volto-object-widget` — cauză confirmată: migrarea a pierdut `RAZZLE_CI=true` din `Makefile` (`develop` îl seta de 2×), iar `packages/volto-object-widget/src/index.js:38` înregistrează blocul demo doar atunci → 1 test pică și lasă fixture-ul `/Plone/cypress` în urmă, ceea ce cascadează în celelalte 11 (400 „id invalid - it is already in use").
-  - [ ] `volto-searchlib` (V19 unit sh exit 2 — consola Jenkins e auth-gated; reprodus local parțial, dar 2 din eșecuri sunt artefacte de harness, imaginea CI include addon-uri surori), `volto-slate-zotero` (V19 integrare: 2/9 — comportament de produs), `volto-eea-website-theme` #395 (V18 `@plone/babel-preset-razzle: workspace:*` → altă rută decât pinul în pachetul addonului; V18 integrare cu `timeout 1800` depășit).
+  - [ ] `volto-eea-website-theme` #395 — V18 image: mută `@plone/babel-preset-razzle` (registry) în `package.json`-ul rădăcină și scoate `workspace:*` din addon (hoist pattern-ul `*babel-preset-razzle` există deja în `.npmrc`), sau pin + regen lockfile cu core complet; apoi V18 integrare (timeout 1800).  - [ ] `volto-object-widget` — cauză confirmată: migrarea a pierdut `RAZZLE_CI=true` din `Makefile` (`develop` îl seta de 2×), iar `packages/volto-object-widget/src/index.js:38` înregistrează blocul demo doar atunci → 1 test pică și lasă fixture-ul `/Plone/cypress` în urmă, ceea ce cascadează în celelalte 11 (400 „id invalid - it is already in use").
+  - [x] `volto-searchlib` — REZOLVAT (vezi „Închis în sesiune").
+  - [ ] `volto-slate-zotero` (V19 integrare: 2/9 — comportament de produs).
 - [ ] **Design-system: release + unpin** — scoate pinul DS din `volto-datahub` (`fd7fd5c`) după release (fix focus variables e pe branch-ul `volto19`, `973ebb1f6`).
 - [ ] **Unpin chatbot + searchlib** — după release-urile majore, scoate override-urile din globalsearch/policy/datahub.
 - [ ] **Repo `collective/*`** (authomatic, rss-provider, subsites): decizie user — PR / push / skip.
 - [ ] (opțional) Lock refresh la repo-urile cu dependințe noi (`react-portal`, `lodash.debounce`, pinurile git) înainte de merge-ul PR-urilor.
 
 # Închis în sesiune
+
+- [x] **`volto-searchlib`: branch COMPLET VERDE** (era roșu de la începutul campaniei). Trei cauze distincte, toate reparate: (1) `jest.mock`/`jest.fn` nehoistate sub vitest în `SearchInput.test.jsx` (4 teste) și `TopFilterLayout.test.jsx`; (2) `require('@eeacms/volto-eea-chatbot')` în corpul testelor din `ChatbotAnswer.test.jsx` — ocolea fabrica `vi.mock` și încărca pachetul real prin loader-ul Node, care pica pe importul de director `./ChatBlock` (11 teste); (3) build-ul V19 al integrării: `razzle-dev-utils/makeLoaderFinder` nedeclarat de nimeni (pe V18 se rezolva prin razzle-ul din core, pe V19 nu mai există) → adăugat în `devDependencies` la rădăcină. Rezultat: unit 303, integrare 2+2, Jenkins `Success`. Detalii: `diagnostics/searchlib-unit-and-build.md`.
 
 - [x] **Batch G — toate cele 4 PR-uri cu SonarQube roșu sînt VERZI** (`Jenkins` Success + `SonarQube` success + toate testele, PR-uri `CLEAN`):
   - [x] `volto-eea-chatbot` #45: 79.30 → **81.60** (master 84.80; trece pragul de 80). Cauza: fișierele barrel (`markdown/index.jsx` 56 linii, `utils/index.tsx` 49, `schema.jsx` 9) erau excluse din raportul unit dar readuse ca 0% de instrumentarea de integrare.
