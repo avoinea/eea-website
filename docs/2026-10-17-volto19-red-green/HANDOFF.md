@@ -7,6 +7,10 @@ Campania red→green Volto 19: **dashboard 60 verzi / 3 roșii** (57/10 la final
 V19 (unit 637 + integrare 23). Rămîn: `theme` V18 integrare (hang), `block-toc` V18 (amânat de user) și
 `countup` (skip).
 
+Oprire la cererea userului după sesiunea 4. **Nu s-au făcut merge-uri** (decizie user: totul se lucrează pe
+branch-urile `volto19`). Toate commit-urile de mai jos sînt deja pushuite pe `volto19`; docs pe `main`
+(`403d06a`).
+
 Branch-uri/PR-uri de referință: `group-block` `df1af90`, `editing-progress` `0f02968`, `slate-zotero`
 `0d9f518`, `theme` `1ad6096`, `chatbot` #45 `db5e20b`, `policy` #138 `c012de6`, `embed` #88 `d30623f`,
 `redmine` #30 `f4bb8d5`, `block-data-table` #20 `f7823d3`, `searchlib` `1f1231e`, `object-widget` `fc8a5fc`.
@@ -22,8 +26,9 @@ Branch-uri/PR-uri de referință: `group-block` `df1af90`, `editing-progress` `0
 3. **Amânate de user** (nu le atinge fără confirmare): `countup`, cele 3 `collective/*` (authomatic,
    rss-provider, subsites), `eea-website-frontend` #284.
 
-## Capcane de mediu (verificate în sesiunile 2–3)
+## Capcane de mediu (verificate în sesiunile 2–4)
 
+- **Harness local integrare (zotero)**: backend `eeacms/plone-backend:latest` (`SITE=Plone`, `PROFILES=eea.kitkat:testing`), frontend din `frontend/core/packages/volto` cu Node 24 (engines `^24`) și `NODE_OPTIONS="--dns-result-order=ipv4first --max-old-space-size=16384"` — altfel razzle leagă bundle-ul client pe IPv6 (`[::1]:3001`) și Cypress nu hidratează. Rețeta completă: `diagnostics/slate-zotero-v19.md`.
 - **Sonar e citibil fără login**: `https://sonarqube.eea.europa.eu/api/measures/component?component=<proiect>&pullRequest=<nr>` (și `branch=master`, `component_tree` pentru defalcare pe fișiere). De aici vin cifrele exacte, nu din check-run-uri. Un singur `metricKeys` invalid → eroare pentru tot request-ul.
 - **Poarta Sonar** trece dacă `PR >= master` **sau** `PR >= 80`; metrica combină linii + branchuri, iar Sonar unește **două** lcov-uri (unit + integrare cypress) → excluderile trebuie puse în `vitest.config.mjs` **și** în `.coverage.babel.config.js`. Detalii: `diagnostics/sonar-coverage.md`.
 - **Harness local pentru unit/coverage**: copiază `core/packages/volto` în repo (gitignored) și leagă `node_modules` al core-ului; providerul `@vitest/coverage-istanbul` nu e instalat în `frontend/` — ia-l din npm în `/tmp` și leagă-l simbolic în `frontend/node_modules/@vitest/`. Addon-urile surori se **copiază** (`rsync`), nu se linkează (Vite respinge symlink-urile care ies din repo și mesajele sînt înșelătoare). `vitest` scrie raportul de coverage doar dacă run-ul se termină cu succes.
