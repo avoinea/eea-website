@@ -2,26 +2,24 @@
 
 ## Stare
 
-Campania red→green Volto 19: **dashboard 59 verzi / 4 roșii** (57/10 la finalul sesiunii 3).
-În sesiunea 4 s-au închis complet `group-block` și `editing-progress`, iar `theme` e verde pe V19
-(unit 637 + integrare 23). Rămîn: `theme` V18 integrare (hang), `block-toc` V18 (amânat), `slate-zotero`
-V19 (produs) și `countup` (skip).
+Campania red→green Volto 19: **dashboard 60 verzi / 3 roșii** (57/10 la finalul sesiunii 3).
+În sesiunea 4 s-au închis complet `group-block`, `editing-progress` și `slate-zotero`, iar `theme` e verde pe
+V19 (unit 637 + integrare 23). Rămîn: `theme` V18 integrare (hang), `block-toc` V18 (amânat de user) și
+`countup` (skip).
 
-Branch-uri/PR-uri de referință: `group-block` `df1af90`, `editing-progress` `0f02968`, `theme` `1ad6096`,
-`chatbot` #45 `db5e20b`, `policy` #138 `c012de6`, `embed` #88 `d30623f`, `redmine` #30 `f4bb8d5`,
-`block-data-table` #20 `f7823d3`, `searchlib` `1f1231e`, `object-widget` `fc8a5fc`.
+Branch-uri/PR-uri de referință: `group-block` `df1af90`, `editing-progress` `0f02968`, `slate-zotero`
+`0d9f518`, `theme` `1ad6096`, `chatbot` #45 `db5e20b`, `policy` #138 `c012de6`, `embed` #88 `d30623f`,
+`redmine` #30 `f4bb8d5`, `block-data-table` #20 `f7823d3`, `searchlib` `1f1231e`, `object-widget` `fc8a5fc`.
 
 ## Ce face sesiunea următoare (primii pași)
 
-1. **`theme` V18 integrare** — singurul blocaj rămas din batch-ul H. `timeout -s 9 1800` (exit 137) pe
+1. **`theme` V18 integrare** — singurul blocaj acționabil rămas. `timeout -s 9 1800` (exit 137) pe
    `01-block-basics.cy.js`; pe `develop` (pre-migrare) V18 integrarea trecea (23 teste), deci e regresie de
    migrare. Ipotezele și pașii (repro local amd64 emulat, consola Jenkins, bisect pe `33945b3`) sînt în
    `diagnostics/theme-v18-integration-hang.md`.
-2. **`slate-zotero` V19 integrare 2/9** — comportament de produs; necesită aprobarea userului pentru
-   schimbări de produs.
-3. **`block-toc` V18** — amânat de user; diagnostic complet în `diagnostics/block-toc-v18-slate-focus.md`
+2. **`block-toc` V18** — amânat de user; diagnostic complet în `diagnostics/block-toc-v18-slate-focus.md`
    (bug de focus sincron în Volto 18.35.1, plone/volto#8406).
-4. **Amânate de user** (nu le atinge fără confirmare): `countup`, cele 3 `collective/*` (authomatic,
+3. **Amânate de user** (nu le atinge fără confirmare): `countup`, cele 3 `collective/*` (authomatic,
    rss-provider, subsites), `eea-website-frontend` #284.
 
 ## Capcane de mediu (verificate în sesiunile 2–3)

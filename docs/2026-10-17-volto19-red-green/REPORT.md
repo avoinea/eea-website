@@ -131,3 +131,13 @@ CI: `Makefile test-ci` are acum `--reporter=default` lîngă junit, deci eșecur
 ## Rămas
 
 - `theme` V18 integrare: timeout pe primul spec; `develop` (pre-migrare) avea V18 integrare verde (23 teste), deci e o regresie de migrare. Ipoteze și pași în `diagnostics/theme-v18-integration-hang.md`.
+
+## `volto-slate-zotero` — V19 integrare verde
+
+| Commit | Fix |
+| --- | --- |
+| `39223bd` | spec 08: `waitForSidebarCitationCount(1)` înainte de save — widgetul comite citația abia după ce React procesează răspunsul, iar save-ul prematur trimitea footnote gol |
+| `0d9f518` | produs: `ZoteroDataWrapper` ignoră răspunsurile `/collections/top` întîrziate cît timp userul e într-o colecție — al doilea fetch (declanșat de refresh-ul setărilor) repopula lista cu colecții-fantomă, `openLibraryItem(0)` nimerea o colecție și cardul de preview nu apărea |
+
+Rezultat: V18 9/9, V19 9/9, unit 35, `Jenkins Success`. Diagnostic + rețeta de repro
+local (Node 24, `NODE_OPTIONS=--dns-result-order=ipv4first`) în `diagnostics/slate-zotero-v19.md`.

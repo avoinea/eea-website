@@ -11,7 +11,7 @@
   - [ ] `volto-eea-website-theme` #395 — V19 COMPLET VERDE (unit 637, integrare 23) după: mock global `Loadable` în `vitest.setup.jsx` (337 unhandled rejections), aserțiune pe `<img>`-ul real în `Image/Edit.test.jsx`, importul corect în `10-object-browser-selection-limit.cy.js`, așteptarea PATCH-ului în `07-lead-image.cy.js`, selectorii V18 în `01-block-basics.cy.js`. RĂMÎNE: integrarea V18 expiră la `timeout -s 9 1800` (exit 137) — diagnostic și ipoteze în `diagnostics/theme-v18-integration-hang.md`.
   - [x] `volto-object-widget` — REZOLVAT: migrarea pierduse `RAZZLE_CI=true` din `Makefile` (`develop` îl seta de 2×), iar `src/index.js:38` înregistrează blocul demo doar atunci → 1 test pica și lăsa fixture-ul `/Plone/cypress` în urmă, cascadă în celelalte 11 (400 „id invalid - it is already in use"); plus `vi.mock` care întorcea `undefined` în `JsonWidget.test.jsx`.
   - [x] `volto-searchlib` — REZOLVAT (vezi „Închis în sesiune").
-  - [ ] `volto-slate-zotero` (V19 integrare: 2/9 — comportament de produs).
+  - [x] `volto-slate-zotero` — REZOLVAT: `39223bd` (`waitForSidebarCitationCount(1)` înainte de save în spec 08) + `0d9f518` (produs: `ZoteroDataWrapper` ignoră răspunsurile `/collections/top` întîrziate cît timp userul e într-o colecție). V18 9/9, V19 9/9, unit 35; diagnostic în `diagnostics/slate-zotero-v19.md`.
 - [ ] **Design-system: release + unpin** — scoate pinul DS din `volto-datahub` (`fd7fd5c`) după release (fix focus variables e pe branch-ul `volto19`, `973ebb1f6`).
 - [ ] **Unpin chatbot + searchlib** — după release-urile majore, scoate override-urile din globalsearch/policy/datahub.
 - [ ] **Repo `collective/*`** (authomatic, rss-provider, subsites): decizie user — PR / push / skip.

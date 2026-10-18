@@ -12,8 +12,8 @@
 - [x] **Faza 8 — batch F**: `object-widget` (`20705d6` RAZZLE_CI + `fc8a5fc` vi.mock → verde complet), `group-block` (`6d0c076` vi.mock + `5edc69c` barieră de hidratare → V19 verde), `theme #395` (`cda9236` lint + `eca6cc9`/`a1f2c07` pin A/B → lint verde, V18 image deschis).
 - [x] **Faza 9 — coverage (batch G)**: `redmine` #30 (`f4bb8d5`), `chatbot` #45 (`e0d32d0` + `db5e20b`), `policy` #138 (`c012de6`, teste), `embed` #88 (`d30623f`, teste) — toate verzi.
 - [x] **Faza 10 — `volto-searchlib`**: `01ef5f4` (SearchInput + TopFilterLayout), `f6ed9e3` (`require` → import ESM în ChatbotAnswer), `1f1231e` (`razzle-dev-utils` în root devDeps) → verde complet.
-- [x] **Faza 11 — ultimele 5 (sesiunea 4)**: `group-block` V18 (test-only, `df1af90` → verde complet), `editing-progress` #37 (`0f02968` → verde complet), `theme #395` V19 (pin `1.0.1`, mock global `Loadable`, import spec 10, race PATCH spec 07 → unit 637 + integrare 23 verzi). Rămas: `theme` V18 integrare (hang) și `slate-zotero` V19 (produs).
-- [ ] **Faza 12 — `theme` V18 integrare**: timeout `-s 9 1800` pe primul spec; diagnostic și pași în `diagnostics/theme-v18-integration-hang.md`. Apoi `slate-zotero` (necesită aprobare produs) și `block-toc` V18 (amânat de user).
+- [x] **Faza 11 — ultimele 5 (sesiunea 4)**: `group-block` V18 (test-only, `df1af90` → verde complet), `editing-progress` #37 (`0f02968` → verde complet), `theme #395` V19 (pin `1.0.1`, mock global `Loadable`, import spec 10, race PATCH spec 07 → unit 637 + integrare 23 verzi), `slate-zotero` (`39223bd` + `0d9f518` → V18 9/9, V19 9/9, unit 35). Rămas: `theme` V18 integrare (hang).
+- [ ] **Faza 12 — `theme` V18 integrare**: timeout `-s 9 1800` pe primul spec; diagnostic și pași în `diagnostics/theme-v18-integration-hang.md`. Apoi `block-toc` V18 (amânat de user).
 
 ## Operațional
 
@@ -28,3 +28,4 @@
 - **Push**: Jenkins poate pusha „style: Automated code fix" pe `volto19` → `git fetch && git rebase origin/volto19` înainte de push (întâlnit la group-block). Hook-ul local `lint-staged` nu e instalat → `--no-verify` după ce rulăm manual eslint+prettier.
 - **Harness local theme (sesiunea 4)**: `packages/volto-eea-website-theme/vitest.local.config.mjs` (untracked, în `.git/info/exclude`) lărgește `fs.allow` la `frontend/` și aliasează `@eeacms/volto-eea-design-system` la sursa locală; rularea completă local dă 59/61 suite (2 artefacte de alias) vs. CI 61/61.
 - **Vizibilitate CI unit (theme)**: `Makefile test-ci` folosește `--reporter=default --reporter=junit --outputFile.junit=junit.xml`; eșecurile apar în tail-ul summary-ului agregat `Jenkins` (GitHub trunchiază ~2.5 KB/stagiu). `check-run.output.text` conține arborele de timpi pe stagii (util pentru a distinge timeout de test).
+- **Harness local integrare (zotero, sesiunea 4)**: backend `eeacms/plone-backend:latest` (`SITE=Plone`, `PROFILES=eea.kitkat:testing`), frontend din `frontend/core/packages/volto` cu Node 24 (engines `^24`) și `NODE_OPTIONS="--dns-result-order=ipv4first --max-old-space-size=16384"` (altfel razzle leagă bundle-ul client pe IPv6 și Cypress nu hidratează). Rețeta completă: `diagnostics/slate-zotero-v19.md`.
