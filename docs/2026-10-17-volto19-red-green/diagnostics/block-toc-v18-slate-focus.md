@@ -3,6 +3,17 @@
 Repo: `eea/volto-block-toc`, branch `volto19`, PR #53 (`chore: Volto 19 support` → `develop`).
 Related: `volto-block-data-table` PR #20 (same sync, **fully green**) — see REPORT.md.
 
+**Status: REZOLVAT** (sesiunea 6): `Jenkins Success`, V19 unit 44 + integrare 4/4, V18 integrare 4/4,
+`SonarQube success`, PR #53 `MERGEABLE`. Lanțul complet, în ordine:
+
+1. **Infra**: `eeacms/frontend-builder:18` livra Volto **18.35.1**, iar 18.36.0 (cu fix-ul de focus
+   `plone/volto#8406`) nu era în imagine. Imaginea a fost urcată la 18.36.0 în `eea/frontend-builder`
+   18.x (`7cb8c2e`) — rețeta în `diagnostics/frontend-builder-18-image.md`.
+2. **Sync cu `develop`** (`a99d9a2`): fix-urile autorului (`61a11f0` wait după `{enter}`, `c5c77ca`
+   helper-e conștiente de text-node-uri split) au reparat testele care schimbau variația.
+3. **Cursa rămasă pe 18.36.0** (2/4 în CI, ~1/6 local): retype mărginit (3 încercări) în
+   `addHeading` (`30384bd`), cu aserțiunea strictă păstrată.
+
 ## Context
 
 Both PRs were `CONFLICTING` against `develop` (the only two of the 59 open `volto19` PRs with
@@ -65,38 +76,39 @@ Both failing tests are the ones that **switch the block variation from the sideb
 variation passes. Before the merge the same suite passed 4/4 on both stages
 (`4c6a0d4`: `Volto 18 / Integration tests :: passed: 4`).
 
-## Root cause (working hypothesis)
+## Root cause (confirmed in session 6)
 
-On Volto 18.35.1 `@plone/volto-slate` `SlateEditor.componentDidUpdate` calls `ReactEditor.focus()`
-synchronously and force-selects `Editor.start(editor)`, and the `value`-changed branch does
-`Transforms.select(editor, Editor.end(editor, []))`. Volto 19.5.0 has `handlePointerDown` +
-`pendingPointerSelection` (upstream plone/volto#8406, shipped in **18.36.0**, absent here) and
-`scheduleFocus` (rAF-deferred focus), which is why the same test is green on 19 and red on 18 —
-this is the same core bug diagnosed for `volto-slate-label`
-(`docs/2026-10-16-volto19-coverage-and-migration/diagnostics/slate-label.md`).
+Two layers, both confirmed with local repro on the emulated amd64 V18 image (`toc-v18-local`):
 
-Develop's new `TocView` adds a store subscription (`useSelector` with
-`config.settings.toc.contextSelector`) and renders a placeholder **instead of** the variation
-renderer while the ToC is empty. The variation switch + the extra render path is what now trips
-18.35.1's synchronous focus/selection: the block re-renders while the heading is being typed and the
-Slate value snaps back to the pre-typing state.
+1. **Volto 18.35.1 focus/selection bug**. `@plone/volto-slate` `SlateEditor.componentDidUpdate` calls
+   `ReactEditor.focus()` synchronously and force-selects `Editor.start(editor)`; Volto 19.5.0 /
+   18.36.0 have `handlePointerDown` + `pendingPointerSelection` (plone/volto#8406) and
+   `scheduleFocus`. On 18.35.1 the variations that switch from the sidebar failed 2/4; on 18.36.0
+   the same specs pass. `plone/frontend-builder:18` was frozen at 18.35.1 (upstream only published
+   `-buildtest` tags for 18.36.0), which is why the EEA V18 stage stayed red.
+2. **Form-state / SlateEditor `value` race on 18.36.0** (author's diagnosis, reproduced): the ToC block
+   re-renders on every entry change, and `SlateEditor.componentDidUpdate` resets its children to the
+   `value` prop whenever that prop differs from `internalValue`. A re-render carrying a pre-typing
+   snapshot therefore drops the text typed into a freshly inserted block.
 
-Not verified: the exact re-render trigger (whether `contextSelector` is configured by another add-on
-inside the CI container, which would make `shallowEqual` fail on a fresh nested object and re-render
-the ToC block on every store dispatch).
+Bisect (local, 18.36.0): 8 headings **without** the ToC block → 5/5 runs green; with the ToC block →
+~1/6 runs loses the text. The strict `should('contain.text')` assertion added in `bb7d802` is what
+makes the loss visible instead of a confusing `wholeText` crash.
 
-## Options (decision pending)
+## Resolution (what was actually done)
 
-- **(A)** Leave PR #53 red on the Volto 18 stage, documented here. V19 is green and the PR is
-  mergeable; the V18 stage only guards the "previous Volto" support matrix.
-- **(B)** Ask the feature author (Laszlo Cseh) to make the ToC block render less aggressively on
-  update (e.g. do not subscribe to the store when `settings.toc.contextSelector` is undefined).
-- **(C)** Product change in `TocView.jsx` from our side — needs the user's explicit approval
-  (campaign rule: no product code without approval).
-
-Test-side hardening was tried first (2 CI cycles) and is **not** sufficient: the text itself is lost,
-so no selector change can fix it. The stricter assertion from `bb7d802` is kept — it must not go
-silent again.
+- **`a99d9a2`** — merge `develop` → `volto19`; kept the author's Cypress helpers/wait, moved the new
+  `DefaultTocRenderer.test.jsx` into `packages/volto-block-toc/src/Block/variations/` (runs as-is
+  under vitest, no `jest.*`), kept 9.0.2.
+- **`eea/frontend-builder` 18.x `7cb8c2e`** — `ARG VOLTO_VERSION=18.36.0` + `git fetch/checkout` of the
+  bundled core checkout (no-op when the base image already ships it). Docker Hub rebuilt `:18`
+  automatically ~8 min after the push; verified `18.36.0` + `pendingPointerSelection` in the image.
+- **`30384bd`** — bounded retype in `addHeading` (max 3 attempts, only when the text is missing).
+  Test-only; the strict assertion and `setSelection` still fail the test if the text never commits.
+  Local: 8/8 runs green.
+- Rejected: (a) leaving V18 red and merging anyway; (b) product change in `TocView` from our side —
+  the remaining race is in Volto 18's `SlateEditor`/`Form` state handling, not in the ToC block, and
+  product code needs the user's explicit approval (campaign rule).
 
 ## Environment notes
 

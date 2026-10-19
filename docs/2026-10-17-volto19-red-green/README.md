@@ -1,17 +1,22 @@
 # Campania „red → green" Volto 19 (2026-10-17 → 19, sesiunile 2–5)
 
-**Status: 60 verzi / 3 roșii** (35/32 la începutul sesiunii 2, 50/15 la finalul ei, 57/10 la finalul sesiunii 3, 59/4 după batch-ul H).
-`group-block`, `editing-progress` și `slate-zotero` sînt complete verzi; `theme` e verde pe V19 (unit 637 + integrare 23),
-dar integrarea V18 încă expiră la timeout. Rămîn și `block-toc` V18 (amânat de user) și `countup` (skip).
+**Status: 61 verzi / 2 roșii** (35/32 la începutul sesiunii 2, 50/15 la finalul ei, 57/10 la finalul sesiunii 3, 59/4 după batch-ul H, 60/3 după sesiunea 5).
+`group-block`, `editing-progress`, `slate-zotero` și **`block-toc` #53** (sesiunea 6) sînt complete verzi; `theme` e verde pe V19
+(unit 637 + integrare 23), dar integrarea V18 încă expiră la timeout. Rămîn `theme` V18 și `countup` (skip).
 
 Sesiunea 5 a reprodus hang-ul V18 al temei local și l-a izolat la `cy.getSlate().click()` pe pagină goală — nu e infra,
 e o buclă de JS în browser. Detalii: `diagnostics/theme-v18-integration-hang.md`.
 
+Sesiunea 6 a adus `block-toc` #53 la verde complet pe ambele matrițe. Cauza reală a eșecului V18 nu era testul, ci
+**imaginea**: `eeacms/frontend-builder:18` livra Volto 18.35.1, iar fix-ul de focus Slate (`plone/volto#8406`) e în 18.36.0.
+Imaginea a fost urcată în `eea/frontend-builder` 18.x (`7cb8c2e`), plus merge `develop` și un retype mărginit pentru cursa
+rămasă de re-render. Detalii: `diagnostics/block-toc-v18-slate-focus.md`, `diagnostics/frontend-builder-18-image.md`.
+
 ## Fapte cheie
 
 - **Sync `volto19` ← `develop`** la singurele 2 PR-uri cu `behind > 0` (din 59): `block-data-table` #20
-  (**verde complet**) și `block-toc` #53 (V19 verde, V18 roșu — amânat la cererea userului;
-  diagnostic în `diagnostics/block-toc-v18-slate-focus.md`).
+  (**verde complet**) și `block-toc` #53 (două merge-uri: `54bdc10`, `a99d9a2`; **verde complet** din sesiunea 6,
+  după ce imaginea V18 a fost urcată la 18.36.0 — `diagnostics/block-toc-v18-slate-focus.md`).
 - **Batch F**: `object-widget` verde (`RAZZLE_CI` + `vi.mock` care întorcea `undefined`), `group-block` V19
   verde (unit + integrare), `theme #395` lint verde.
 - **Batch G — coverage (SonarQube)**: `chatbot` #45 79.30 → **81.60**, `policy` #138 26.90 → **74.00**,
@@ -41,7 +46,8 @@ e o buclă de JS în browser. Detalii: `diagnostics/theme-v18-integration-hang.m
 - [HANDOFF.md](HANDOFF.md) — pentru sesiunea următoare.
 - `diagnostics/sonar-coverage.md` — cum se calculează poarta Sonar și cum se repară (API public, două lcov-uri,
   rețeta de harness local).
-- `diagnostics/block-toc-v18-slate-focus.md` — regresia V18 de după sync (bug de focus în Volto 18.35.1).
+- `diagnostics/block-toc-v18-slate-focus.md` — regresia V18 de după sync: **rezolvată** (imaginea V18 la 18.36.0, merge `develop`, retype mărginit) + cele două straturi de cauză.
+- `diagnostics/frontend-builder-18-image.md` — de ce `eeacms/frontend-builder:18` livra 18.35.1, cum s-a urcat la 18.36.0 (`7cb8c2e`) și cum se verifică imaginea publicată.
 - `diagnostics/searchlib-unit-and-build.md` — cele 3 cauze de la searchlib.
 - `diagnostics/theme-v18-integration-hang.md` — de ce integrarea V18 a temei expiră: repro local (comenzi),
   tabelul de bisect, declanșatorul (`cy.getSlate().click()`) și următorii pași.

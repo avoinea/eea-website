@@ -1,6 +1,6 @@
 # TODO (deschis)
 
-- [ ] **`volto-block-toc` #53 — V18 roșu după sync** (decis: amânat pentru altă iterație). Sync cu `develop` e făcut (`54bdc10`) și V19 e verde (41 unit + 4 integrare), dar stage-ul V18 pică 2/4 în testele care schimbă variația blocului. Diagnostic complet, dovezi și opțiuni A/B/C: `diagnostics/block-toc-v18-slate-focus.md`. Hardening test-side încercat de 2 ori (`e68d2f3`, `bb7d802`) — nu e suficient: textul tastat chiar se pierde (bug de focus sincron în Volto 18.35.1, plone/volto#8406 livrat în 18.36.0).
+- [x] **`volto-block-toc` #53 — V18 reparat, PR complet verde** (sesiunea 6). Trei straturi: (1) imaginea `eeacms/frontend-builder:18` livra Volto 18.35.1, urcată la 18.36.0 în `eea/frontend-builder` 18.x `7cb8c2e`; (2) merge `develop` (`a99d9a2`) cu fix-urile autorului (`61a11f0` wait, `c5c77ca` helper-e split text nodes); (3) retype mărginit în `addHeading` (`30384bd`) pentru cursa rămasă de re-render (`SlateEditor` resetează `children` din `props.value`). Rezultat: `Jenkins Success`, V19 unit 44 + integrare 4/4, V18 4/4, `SonarQube success`, PR `MERGEABLE`. Detalii: `diagnostics/block-toc-v18-slate-focus.md`, `diagnostics/frontend-builder-18-image.md`.
 - [ ] **PR-uri verzi**:
   - [x] `volto-editing-progress` #37 — REZOLVAT: `01-block-basics.cy.js` așteaptă PATCH-ul de control panel și asertează pe `.ep-sidenav-btn` / `.sidenav-ol--ep` (nu pe `.progress__title` al workflow-progress). V18 5/5, V19 5/5, unit 74.
   - [ ] SonarQube pe PR: REZOLVAT integral în batch G (chatbot #45, embed #88, policy #138, redmine #30 — toate verzi); vezi `diagnostics/sonar-coverage.md`.
@@ -16,6 +16,8 @@
 - [ ] **Unpin chatbot + searchlib** — după release-urile majore, scoate override-urile din globalsearch/policy/datahub.
 - [ ] **Repo `collective/*`** (authomatic, rss-provider, subsites): decizie user — PR / push / skip.
 - [ ] (opțional) Lock refresh la repo-urile cu dependințe noi (`react-portal`, `lodash.debounce`, pinurile git) înainte de merge-ul PR-urilor.
+- [ ] **`eea/frontend-builder` 18.x — revizie `ARG VOLTO_VERSION`** (owner: user): pasul de upgrade din `Dockerfile` devine no-op când Plone republică `plone/frontend-builder:18` ≥ 18.36.0; atunci se șterge (sau se ține pentru a putea urca la 18.37+ dintr-o linie). Vezi `diagnostics/frontend-builder-18-image.md`.
+- [ ] **Upstream (Plone)**: cursa din `SlateEditor.componentDidUpdate` (`editor.children = props.value` la re-render cu snapshot pre-tastare) + `Form.onChangeFormData` care compune din closure — de raportat/propus upstream; pe V18 a fost mascată de retype-ul din test (`volto-block-toc` `30384bd`).
 
 # Închis în sesiune
 
@@ -32,7 +34,7 @@
 - [x] **Batch F — `volto-group-block`: V19 verde, V18 deschis** (unit reparat: `Edit.test.jsx` avea o fabrică `vi.mock` care întorcea o componentă goală în loc de `{ default }` → 36 teste trec; integrarea V19 5/5 trece după ce testul de round-trip scris de noi a fost întărit cu o barieră de hidratare). Rămas: pe stage-ul V18, `03-block-group-view.cy.js` nu deschide sidebar-ul blocului după `cy.visit('/edit')` (inputul `#field-title` rămâne al paginii, valoare 'Group View Persistence'), deci blocul trebuie selectat explicit înainte de a-i deschide setările — test-only, o iterație următoare.
 - [x] **Batch F — `volto-eea-website-theme` #395: parțial.** Lint rezolvat (override-ul `react/jsx-no-target-blank` cu `allowReferrer: true` restaurat din develop → stage-ul V19 ES lint verde). V18 `Build test image` rămâne roșu: cauza verificată e `@plone/babel-preset-razzle: workspace:*` (pachetul nu există în monorepo-ul Volto 18) — pinul `^1.0.1` repară imaginea, dar a stricat stage-ul V19 unit (A/B verificat: cu pin → `Unit tests` exit 2; după revert → verde), deci a fost revertat (`a1f2c07`) și are nevoie de altă rută (declarat în `package.json`-ul rădăcină, sau regenerat lockfile după pin). V18 integrare nu a apucat să ruleze din cauza imaginii; când imaginea a trecut, suita V18 a fost omorâtă de `timeout -s 9 1800` (exit 137).
 
-- [x] **Sync `volto19` cu `develop`** la singurele 2 PR-uri rămase în urmă din 59: `volto-block-data-table` #20 (**complet verde**, Jenkins Success + SonarQube OK) și `volto-block-toc` #53 (V19 verde, V18 deschis — vezi mai sus).
+- [x] **Sync `volto19` cu `develop`** la singurele 2 PR-uri rămase în urmă din 59: `volto-block-data-table` #20 (**complet verde**, Jenkins Success + SonarQube OK) și `volto-block-toc` #53 (**verde complet** din sesiunea 6 — V19 unit 44 + integrare 4/4, V18 4/4, `SonarQube` success; vezi mai sus).
 - [x] Diagnostic Sonar pe 4 PR-uri: toate sunt **doar coverage**, nu bugs (`volto-eea-chatbot`, `volto-embed`, `volto-eea-website-policy`, `volto-redmine-helpdesk`).
 - [x] 21 add-on-uri reparate (batch A–E), verzi pe branch (`Jenkins` success + stage-scan none).
 - [x] 21 PR-uri `volto19 → develop` deschise pentru toate repo-urile verzi fără PR.

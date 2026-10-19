@@ -67,7 +67,7 @@ anchors #45, controlpanel #15, flourish #17, embed #88, nextcloud #39, redmine #
 | Repo | Commit-uri | Rezultat |
 | --- | --- | --- |
 | `block-data-table` #20 | `f7823d3` | **verde complet**, PR `MERGEABLE` |
-| `block-toc` #53 | `54bdc10` (merge), `bb7d802` (hardening) | V19 verde (41 unit + 4 integrare), V18 roșu (2/4) — diagnostic în `diagnostics/block-toc-v18-slate-focus.md` |
+| `block-toc` #53 | `54bdc10` (merge), `bb7d802` (hardening), `a99d9a2` (2nd merge), `30384bd` (retype) | **verde complet în sesiunea 6**: V19 unit 44 + integrare 4/4, V18 4/4 — după ce imaginea V18 a fost urcată la 18.36.0; vezi „Sesiunea 6" mai jos |
 
 ## Batch F
 
@@ -161,3 +161,56 @@ Niciun commit de cod; repo-ul `volto-eea-website-theme` a rămas curat.
   thread). Următorul pas: repro în Chromium simplu cu `Debugger` activat înainte de navigare.
 - Detalii, comenzi de repro, tabelul de bisect și capcana de build (`.dockerignore` nu exclude
   `packages/*/node_modules`): `diagnostics/theme-v18-integration-hang.md`.
+
+---
+
+# Sesiunea 6 (2026-10-19): `volto-block-toc` #53 — verde complet + imaginea V18 la 18.36.0
+
+## Rezultat
+
+| Check | Înainte | După |
+| --- | --- | --- |
+| `Jenkins` (aggregate) | **fail** | **Success** |
+| Volto 19 / Unit | success (41) | success (**44**) |
+| Volto 19 / Integration | success (4) | success (4) |
+| Volto 18 / Integration | **fail 2/4** | **success 4/4** |
+| `SonarQube` | — | success |
+| PR #53 | `CONFLICTING` | `MERGEABLE` |
+
+## Lanțul cauzal (trei straturi, toate dovedite)
+
+1. **Imaginea V18 era în urmă.** `eeacms/frontend-builder:18` livra Volto **18.35.1** (label
+   `org.opencontainers.image.version`, imagine din 2026-08-18). `plone/frontend-builder:18` e înghețat
+   la 18.35.1 — pentru 18.36.0 upstream a publicat doar tag-uri `*-buildtest`, deci rebuild-ul simplu
+   nu ajuta. Fix în `eea/frontend-builder` 18.x `7cb8c2e` (`ARG VOLTO_VERSION=18.36.0` + fetch/checkout
+   al core-ului bundled). Docker Hub a republicat `:18` automat în ~8 min; verificat `18.36.0` +
+   `pendingPointerSelection` în imagine. Rețeta: `diagnostics/frontend-builder-18-image.md`.
+2. **Fix-urile autorului din `develop`** rezolvă testele care schimbau variația: `61a11f0`
+   (`cy.wait(1000)` după `{enter}`) + `c5c77ca` (helper-e de selecție conștiente de text-node-uri
+   split). Merge `a99d9a2`, conflicte rezolvate păstrând layout-ul monorepo; testul nou
+   `DefaultTocRenderer.test.jsx` rulează ca atare sub vitest (fără `jest.*`).
+3. **Cursa rămasă pe 18.36.0** — `SlateEditor.componentDidUpdate` resetează `editor.children` din
+   `props.value` când re-render-ul aduce un snapshot pre-tastare; blocul ToC se re-rendează la fiecare
+   schimbare de intrări. Bisect local: 8 heading-uri **fără** ToC → 5/5 verzi; cu ToC → ~1/6 rulări
+   pierde textul (CI: 2/4). Fix test-only `30384bd`: retype mărginit (3 încercări) în `addHeading`,
+   cu aserțiunea strictă păstrată. Local 8/8 verzi.
+
+## Dovezi locale (amd64 emulat)
+
+- Build addon V18 din imaginea nouă: `toc-v18-local` + `eeacms/plone-backend` (`PROFILES=eea.kitkat:testing`)
+  + `make start-ci` → `make cypress-ci` pe `01-toc-basics.cy.js`: **4/4** într-o rulare, 1/6 flake
+  înainte de `30384bd`, **8/8** după.
+- Bisect fără blocul ToC (8 heading-uri, același `addHeading`): **5/5** verzi.
+- Unit local: `pnpm --filter @eeacms/volto-block-toc exec vitest run` → **44 teste** (necesită
+  `server.fs.allow` lărgit; config-ul se așteaptă la un `core/` real în repo, nu la symlink-ul din
+  `frontend/core`).
+- Curățenie: containerele `theme-v18-*` din sesiunea 5 au fost oprite/șterse (eliberat ~7 GB).
+
+## Commit-uri
+
+| Repo | Commit | Ce face |
+| --- | --- | --- |
+| `eea/volto-block-toc` | `a99d9a2` | merge `develop` (helper-e + wait + test ToC title) |
+| `eea/volto-block-toc` | `f331fa6` | re-trigger CI pentru imaginea 18.36.0 |
+| `eea/volto-block-toc` | `30384bd` | retype mărginit în `addHeading` |
+| `eea/frontend-builder` | `7cb8c2e` | `18.x`: core bundled → 18.36.0 |
