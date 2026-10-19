@@ -2,7 +2,7 @@
 
 Repo: `frontend/packages/volto-eea-website-theme`, branch `volto19` (`1ad6096`).
 
-## Simptom
+## Simptom (CI)
 
 Stage-ul `Testing / Volto 18 / Integration tests` rulează
 `timeout -s 9 1800 docker exec … make cypress-ci` și e omorît după 30 min (exit 137).
@@ -16,38 +16,82 @@ Running:  01-block-basics.cy.js   (1 of 10)
 Nu se ajunge la al doilea spec și `cypress/reports` nu există la `docker cp` (deci spec-ul 1 nu se
 termină nici măcar o dată). Stagiile V19 (unit 637 + integrare 23) sînt verzi.
 
-## Ce s-a verificat
+## Cauza: buclă infinită de JS în browser (confirmat local, 2026-10-19)
 
-- **Nu e lipsa imaginii**: după pinul `@plone/babel-preset-razzle@1.0.1` (`b11c034`) imaginea V18 se
-  construiește (3 min) și `make start-ci` / `check-ci` trec (portul 3000 răspunde) înainte de Cypress.
-- **Nu e un test anume din spec-ul 1**: selectorii V19-only au fost înlocuiți cu fallback-uri V18
-  (`.align-buttons`) în `44d1ce9`, iar configul Cypress a fost adus la valorile EEA pre-migrare
-  (`defaultCommandTimeout: 8888`, `chromeWebSecurity: false`, `video: false`). Timeout-ul persistă.
-- **Nu e runner-ul**: alte add-on-uri (block-image-cards, chatbot) rulează V18 cu același
-  `eeacms/frontend-builder:18` + Cypress 13 + Chromium 149 în 3–7 min.
-- **Baseline**: pe `develop` (structura pre-migrare) integrarea V18 trecea (`passed: 23`, PR #411/#412).
-  Deci regresia apare în migrarea la structura Volto 19 (`33945b3`).
+Reprodus local pe imaginea V18 amd64 emulată: după `Running: 01-block-basics.cy.js` nu mai apare
+nimic, iar un renderer Chromium stă la **~110% CPU** pentru tot restul rulării. Nu e timeout de rețea,
+nu e backend, nu e imaginea.
 
-## Ipoteze (de testat în ordine)
+## Repro local (macOS arm64 + Docker Desktop, emulare amd64)
 
-1. **Freeze de browser din cauza aplicației V18 construite din structura migrată** — Cypress nu are
-   timeout pentru un renderer blocat; asta ar explica lipsa oricărui output. Suspecți: `razzle.extend.js`
-   mutat în `packages/<name>/` (rămîne cel din imaginea de bază), `babel.config.js` mutat la fel,
-   `volto.config.js` nou care înregistrează doar tema (imaginea de bază înregistra tot setul EEA).
-2. **Instrumentarea coverage** (`.coverage.babel.config.js`, `include: ['packages/*/src/**']`) — pe
-   `develop` pattern-ul nu prindea sursele temei (erau în `src/` la rădăcină), acum le prinde pe toate;
-   bundle-ul V18 instrumentat ar putea fi prea greu pentru browser.
-3. **Configurația de add-on pe V18** — tema depinde de design-system/group-block/block-toc etc.; pe V18
-   `volto.config.js` înregistrează doar tema. Pe V19 merge, dar V18 poate avea nevoie de lista explicită.
+Emularea merge (Rosetta); build-ul imaginii durează ~4 min, un spec ~40 s.
 
-## Pași propuși
+```bash
+cd frontend/packages/volto-eea-website-theme
+# capcană: `.dockerignore` exclude doar `node_modules` de la rădăcină, nu `packages/*/node_modules`;
+# dacă build-ul pornește din worktree, node_modules-urile V19 deja instalate o umbresc pe cea V18
+# (eșec: „react-portal doesn't exist”). De aceea, context curat:
+rsync -a --exclude '.git' --exclude node_modules --exclude core --exclude build \
+  --exclude coverage --exclude 'cypress/screenshots' --exclude 'cypress/videos' \
+  --exclude 'cypress/reports' ./ /tmp/theme-v18-ctx/
+cd /tmp/theme-v18-ctx
+docker build --platform linux/amd64 --build-arg VOLTO_VERSION=18 \
+  --build-arg ADDON_PATH=volto-eea-website-theme . -t theme-v18-local
+```
 
-1. Reproduce local cu imaginea amd64 (emulată): `docker build --build-arg VOLTO_VERSION=18 …` apoi
-   `start-ci` + `cypress-ci` pentru un singur spec; logurile containerului (`docker logs`) dau cauza.
-   Capcane: symlink-uri pnpm pe arm64 (vezi skill-ul campaniei).
-2. Dacă nu se poate local: acces la consola Jenkins (cookie de sesiune) pentru `docker logs` și pentru
-   ieșirea completă a lui Cypress.
-3. Bisect pe migrare: un build V18 pe `33945b3` (sau pe un commit intermediar) ar arăta dacă hang-ul
-   apare imediat după mutarea `babel.config.js` / `razzle.extend.js` / `volto.config.js`.
-4. Ca ultimă soluție, dacă e infrastructură/durată: mărirea timeout-ului din Jenkinsfile nu ajută dacă
-   spec-ul 1 nu se termină deloc; de preferat ar fi rularea pe spec-uri separate cu timeout per spec.
+```bash
+docker run --platform linux/amd64 -d --name theme-v18-plone \
+  -e SITE=Plone -e PROFILES=eea.kitkat:testing eeacms/plone-backend
+docker run --platform linux/amd64 --shm-size=4g --link theme-v18-plone:plone --name theme-v18-fe \
+  -e RAZZLE_INTERNAL_API_PATH=http://plone:8080/Plone \
+  --entrypoint=make --workdir=/app theme-v18-local start-ci      # pnpm build + start:prod, ~5 min
+docker exec --workdir=/app theme-v18-fe make check-ci
+docker exec --workdir=/app theme-v18-fe make cypress-ci \
+  CYPRESS_SPEC_PATTERN=/app/cypress/tests/01-block-basics.cy.js
+```
+
+Starea la finalul sesiunii 5: ambele containere rămîn **pornite**; imaginea `theme-v18-local` există.
+Curățenie: `docker rm -f theme-v18-fe theme-v18-plone && docker rmi theme-v18-local`.
+
+## Ce s-a exclus, cu dovezi
+
+| Probă | Conținut | Rezultat |
+| --- | --- | --- |
+| `99-smoke` | `cy.visit('/')` + `body` | trece în 1 s |
+| `90-p1-autologin` | `cy.autologin()` + cookie | trece în 0.9 s |
+| `92-p3-visit` | autologin + 2×`createContent` + `visit('/cypress/my-page/edit')` + `.block.inner` | trece în 2 s |
+| `70-a` | `clearSlateTitle` + `getSlateTitle().type()` + heading | trece |
+| `60-a` | **doar** `cy.getSlate().click()` | **hang** |
+| `60-b` | `cy.getSlate().click()` + `getSlateEditorAndType('Lorem ipsum.')` | hang |
+| `80-1` | titlu + toolbar slate + RSS link | hang |
+| `01` original | spec complet | hang |
+
+Mediul e sănătos: Chromium simplu încarcă pagina (CDP `Runtime.evaluate`, RTT 1–5 ms) — deci nu e
+build-ul V18, nu e Cypress+Chromium 149 în general.
+
+## Declanșatorul: `cy.getSlate().click()` pe pagină goală
+
+`SLATE_SELECTOR = '.content-area .slate-editor [contenteditable=true]'`. Un Document creat prin REST
+are doar blocul de titlu, deci `getSlate()` intră în fallback-ul din `cypress/support/commands.js:394-424`
+(adăugat în `ef848a8`, „Volto 18 support”): `.block.inner` `.click({force:true})` → `block-add-button`
+→ chooser „Text” → buton `.slate`. Acolo intră editorul în buclă. Nu e typing-ul, nu e widget-ul RSS.
+
+## Blocaj curent: stack-ul JS
+
+După ce bucla pornește, renderer-ul Cypress e ocupat; `Debugger.enable` (CDP) e legat de main thread,
+deci nu putem atașa debugger-ul „din mers” (`Debugger.pause` expiră). `/json/list` arată un singur
+target (runner-ul de pe `localhost:3000/__/`), fără target separat pentru AUT.
+
+## Pași următori
+
+1. **Izolare la nivel de click** (un run ~40 s fiecare): `cy.get('.block.inner').last().click({force:true})`
+   singur → apoi + `block-add-button` → apoi + chooser „Text” → apoi + butonul `.slate`.
+2. **Stack exact**: repro în Chromium simplu cu `Debugger` activat **înainte** de navigare (cookie
+   `auth_token` din `POST /Plone/@login`, conținut creat prin REST, click-uri prin CDP `Input`), apoi
+   `Debugger.pause` și mapare coloană → sursă prin sourcemap-ul din `build/static/js/*.map`.
+3. **Fix probabil test-side** (nu în aplicație): fie pre-crearea blocului text prin REST în
+   `slateBeforeEach` (fără chooser), fie calea V17 (`{enter}`/slash-command) în locul fallback-ului cu
+   `force: true`.
+
+Sondele folosite sînt doar în container (`/app/cypress/tests/6x|7x|8x|9x-*.cy.js`) și în `/tmp/probes/`
+pe host; repo-ul a rămas curat.

@@ -141,3 +141,23 @@ CI: `Makefile test-ci` are acum `--reporter=default` lîngă junit, deci eșecur
 
 Rezultat: V18 9/9, V19 9/9, unit 35, `Jenkins Success`. Diagnostic + rețeta de repro
 local (Node 24, `NODE_OPTIONS=--dns-result-order=ipv4first`) în `diagnostics/slate-zotero-v19.md`.
+
+---
+
+# Sesiunea 5 (2026-10-19): `theme` V18 — reprodus local
+
+Niciun commit de cod; repo-ul `volto-eea-website-theme` a rămas curat.
+
+- **Repro**: Docker Desktop pornit, imaginea V18 construită local (amd64 emulat, ~4 min), backend
+  `eeacms/plone-backend` + `make start-ci` în container. Spec-ul 01 se blochează identic ca în CI, cu
+  un renderer Chromium la ~110% CPU → **buclă infinită de JS în browser**, nu infra/timeout.
+- **Exclus cu dovezi**: mediul e sănătos (Chromium simplu încarcă pagina, RTT 1–5 ms), smoke spec
+  `cy.visit('/')` trece în 1 s, `autologin` + `createContent` + `visit('/cypress/my-page/edit')` +
+  `.block.inner` trec în 2 s.
+- **Izolat**: hang-ul apare la **`cy.getSlate().click()`** pe pagină goală — fallback-ul din
+  `cypress/support/commands.js:394-424` care creează un bloc Text prin `.block.inner`
+  `.click({force:true})` → `block-add-button` → chooser „Text” → `.slate`. Nu e typing-ul, nu e RSS.
+- **Blocaj**: stack-ul JS nu se poate lua „din mers” (după buclă, `Debugger.enable` e legat de main
+  thread). Următorul pas: repro în Chromium simplu cu `Debugger` activat înainte de navigare.
+- Detalii, comenzi de repro, tabelul de bisect și capcana de build (`.dockerignore` nu exclude
+  `packages/*/node_modules`): `diagnostics/theme-v18-integration-hang.md`.

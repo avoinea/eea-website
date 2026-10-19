@@ -1,8 +1,11 @@
-# Campania „red → green" Volto 19 (2026-10-17 → 18, sesiunile 2–4)
+# Campania „red → green" Volto 19 (2026-10-17 → 19, sesiunile 2–5)
 
 **Status: 60 verzi / 3 roșii** (35/32 la începutul sesiunii 2, 50/15 la finalul ei, 57/10 la finalul sesiunii 3, 59/4 după batch-ul H).
 `group-block`, `editing-progress` și `slate-zotero` sînt complete verzi; `theme` e verde pe V19 (unit 637 + integrare 23),
 dar integrarea V18 încă expiră la timeout. Rămîn și `block-toc` V18 (amânat de user) și `countup` (skip).
+
+Sesiunea 5 a reprodus hang-ul V18 al temei local și l-a izolat la `cy.getSlate().click()` pe pagină goală — nu e infra,
+e o buclă de JS în browser. Detalii: `diagnostics/theme-v18-integration-hang.md`.
 
 ## Fapte cheie
 
@@ -40,5 +43,6 @@ dar integrarea V18 încă expiră la timeout. Rămîn și `block-toc` V18 (amân
   rețeta de harness local).
 - `diagnostics/block-toc-v18-slate-focus.md` — regresia V18 de după sync (bug de focus în Volto 18.35.1).
 - `diagnostics/searchlib-unit-and-build.md` — cele 3 cauze de la searchlib.
-- `diagnostics/theme-v18-integration-hang.md` — de ce integrarea V18 a temei expiră și ce s-a încercat.
+- `diagnostics/theme-v18-integration-hang.md` — de ce integrarea V18 a temei expiră: repro local (comenzi),
+  tabelul de bisect, declanșatorul (`cy.getSlate().click()`) și următorii pași.
 - `diagnostics/slate-zotero-v19.md` — cele 2 curse (test + produs) și rețeta de repro local (Node 24, IPv4).
