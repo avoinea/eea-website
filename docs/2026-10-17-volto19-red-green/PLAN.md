@@ -16,6 +16,8 @@
 - [~] **Faza 12 — `theme` V18 integrare** (în lucru, sesiunea 5): reprodus local pe imaginea V18 amd64 emulată; cauza e o **buclă de JS în browser**, izolată la `cy.getSlate().click()` pe pagină goală (fallback-ul `getSlate()` creează blocul Text prin chooser). Rămîne: bisect la nivel de click → stack prin CDP (debugger activat înainte de navigare) → fix test-side. Comenzi, tabel de bisect și capcane în `diagnostics/theme-v18-integration-hang.md`.
 - [x] **Faza 13 — `block-toc` V18 + imaginea V18** (sesiunea 6): `eea/frontend-builder` 18.x `7cb8c2e` (core bundled 18.35.1 → **18.36.0**, cu `plone/volto#8406`), merge `develop` `a99d9a2`, retype mărginit `30384bd` → PR #53 **verde complet** (`Jenkins Success`, V19 unit 44 + integrare 4/4, V18 4/4, `SonarQube` success, `MERGEABLE`). Detalii: `diagnostics/block-toc-v18-slate-focus.md`, `diagnostics/frontend-builder-18-image.md`.
 
+- [x] **Faza 14 — `countup`** (sesiunea 7): `6493109` smoke de integrare (boot editor + bloc Image + save) după ce migrarea a lăsat scheletul Cypress fără spec → `Jenkins Success` pe ambele matrițe, `SonarQube` pass (89.8%, = master), PR #48 `CLEAN`.
+
 > Notă pentru `theme` V18: bug-ul de focus Slate care a ținut `block-toc` pe roșu e reparat de 18.36.0, deci
 > hang-ul temei se re-verifică pe imaginea nouă înainte de a mai investi în stack-ul prin CDP.
 

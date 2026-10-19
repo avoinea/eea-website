@@ -1,8 +1,8 @@
 # Campania „red → green" Volto 19 (2026-10-17 → 19, sesiunile 2–5)
 
-**Status: 61 verzi / 2 roșii** (35/32 la începutul sesiunii 2, 50/15 la finalul ei, 57/10 la finalul sesiunii 3, 59/4 după batch-ul H, 60/3 după sesiunea 5).
-`group-block`, `editing-progress`, `slate-zotero` și **`block-toc` #53** (sesiunea 6) sînt complete verzi; `theme` e verde pe V19
-(unit 637 + integrare 23), dar integrarea V18 încă expiră la timeout. Rămîn `theme` V18 și `countup` (skip).
+**Status: 62 verzi / 1 roșu** (35/32 la începutul sesiunii 2, 50/15 la finalul ei, 57/10 la finalul sesiunii 3, 59/4 după batch-ul H, 60/3 după sesiunea 5, 61/2 după sesiunea 6).
+`group-block`, `editing-progress`, `slate-zotero`, **`block-toc` #53** (sesiunea 6) și **`countup` #48** (sesiunea 7) sînt complete verzi; `theme` e verde pe V19
+(unit 637 + integrare 23), dar integrarea V18 încă expiră la timeout. Rămîne `theme` V18.
 
 Sesiunea 5 a reprodus hang-ul V18 al temei local și l-a izolat la `cy.getSlate().click()` pe pagină goală — nu e infra,
 e o buclă de JS în browser. Detalii: `diagnostics/theme-v18-integration-hang.md`.
@@ -11,6 +11,10 @@ Sesiunea 6 a adus `block-toc` #53 la verde complet pe ambele matrițe. Cauza rea
 **imaginea**: `eeacms/frontend-builder:18` livra Volto 18.35.1, iar fix-ul de focus Slate (`plone/volto#8406`) e în 18.36.0.
 Imaginea a fost urcată în `eea/frontend-builder` 18.x (`7cb8c2e`), plus merge `develop` și un retype mărginit pentru cursa
 rămasă de re-render. Detalii: `diagnostics/block-toc-v18-slate-focus.md`, `diagnostics/frontend-builder-18-image.md`.
+
+Sesiunea 7 a adus `countup` #48 la verde complet: migrarea Volto 19 lăsase scheletul Cypress fără niciun spec (develop/master
+n-au Cypress), deci stage-ul de integrare murea cu „Can't run because no spec files were found”. Fix: un smoke minimal
+(editorul pornește cu add-on-ul instalat + bloc Image adăugat și salvat), verificat local pe 19.5.0 și 18.36.0, 2/2 pe fiecare.
 
 ## Fapte cheie
 

@@ -214,3 +214,51 @@ Niciun commit de cod; repo-ul `volto-eea-website-theme` a rămas curat.
 | `eea/volto-block-toc` | `f331fa6` | re-trigger CI pentru imaginea 18.36.0 |
 | `eea/volto-block-toc` | `30384bd` | retype mărginit în `addHeading` |
 | `eea/frontend-builder` | `7cb8c2e` | `18.x`: core bundled → 18.36.0 |
+
+---
+
+# Sesiunea 7 (2026-10-19): `countup` — verde complet (smoke de integrare)
+
+## Diagnostic
+
+`@eeacms/countup` nu e un add-on cu UI: exportă `useCountUp` + `CountUp`, iar `applyConfig`
+returnează config-ul neschimbat. `develop` și `master` nu au **deloc** Cypress; branch-ul `volto19`
+a primit doar scheletul cookieplone (`cypress/support/*`, `cypress.config.js`) fără niciun spec, deci:
+
+```
+Can't run because no spec files were found.
+We searched for specs matching this glob pattern:
+  > /app/cypress/tests/**/*.{js,jsx,ts,tsx}
+make: *** [Makefile:162: cypress-ci] Error 1
+```
+
+Stage-ul `Integration tests` pica (exit 2) și bloca și stage-ul Sonar; check-urile per stagiu apareau
+totuși `success` (`No test results found`) — exact capcana documentată a campaniei, dezvăluită de
+`Jenkins = failure`.
+
+## Fix (`6493109`)
+
+`cypress/tests/01-block-basics.cy.js` — smoke minimal, în stilul `volto-block-data-table`:
+
+1. `Boots the edit UI` — `#toolbar-save`, `.blocks-form` și editorul de titlu există (add-on-ul instalat
+   nu strică boot-ul).
+2. `Add Block: Image` — adaugă blocul Image prin chooser (`Media` → `Image`), salvează, verifică
+   `.block.image` în view.
+
+Verificat local, din imagine amd64 construită din arborele repo-ului:
+
+| Matriță | Imagine | Rezultat |
+| --- | --- | --- |
+| Volto 19 | `eeacms/frontend-builder:19` (19.5.0) | 2/2 |
+| Volto 18 | `eeacms/frontend-builder:18` (18.36.0, după `7cb8c2e`) | 2/2 |
+
+## CI (PR #48)
+
+| Check | Rezultat |
+| --- | --- |
+| `Jenkins` / `jenkins/pr-merge` / `jenkins/branch` | success |
+| Volto 19 / Unit + Integration | success (unit 3, integrare 2/2) |
+| Volto 18 / Integration | success 2/2 |
+| `SonarQube` + `SonarQube Code Analysis` | success — coverage PR **89.8%**, identic cu master/develop |
+
+PR #48 (`chore: Volto 19 support` → `develop`) e `CLEAN`, `MERGEABLE`.

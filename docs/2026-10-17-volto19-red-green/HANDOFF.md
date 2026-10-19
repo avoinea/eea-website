@@ -25,7 +25,7 @@ sesiunea 4: `group-block` `df1af90`, `editing-progress` `0f02968`, `slate-zotero
 4. ~~Apoi `block-toc` V18~~ — **închis în sesiunea 6**: cauza era imaginea (`eeacms/frontend-builder:18` livra Volto 18.35.1), urcată la 18.36.0 în `eea/frontend-builder` 18.x `7cb8c2e`; plus merge `develop` `a99d9a2` și retype mărginit `30384bd` → PR #53 verde complet. Vezi `diagnostics/block-toc-v18-slate-focus.md` și `diagnostics/frontend-builder-18-image.md`.
 5. **Re-verifică `theme` V18 pe imaginea nouă** înainte de stack-ul prin CDP: hang-ul izolat în sesiunea 5 (`cy.getSlate().click()` pe pagină goală) poate fi chiar bug-ul de focus Slate reparat în 18.36.0.
 
-Amânate de user (nu le atinge fără confirmare): `countup`, cele 3 `collective/*` (authomatic, rss-provider,
+Amânate de user (nu le atinge fără confirmare): cele 3 `collective/*` (authomatic, rss-provider,
 subsites), `eea-website-frontend` #284.
 
 ## Stare locală (sesiunea 5)
