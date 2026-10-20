@@ -48,6 +48,20 @@ matrițe, fiecare ascunde ceva pe una din ele.
 > fișierul e importat de `LeadImageSidebar.jsx` → build-ul a picat
 > (`Can't resolve './schema' .../Blocks/LeadImage`, exit 1). Reparat în `94c2ae7`.
 
+## 3b. `SlateEditor` — REZOLVAT (bază 19.5, `b21bd2d`)
+
+Umbra a fost rebazată pe **19.5.0**, păstrînd doar delta EEA (69 linii):
+`getEditorValue`/`cloneDeep`, `resetNodes` în loc de `editor.children = value`, `spellCheck`,
+plus importuri absolute (o umbră stă în afara arborelui volto-slate). `handlePointerDown` +
+`pendingPointerSelection` sînt acum prezente (9 ocurențe) → #8406 nu mai e anulat pe niciuna din
+matrițe. `.diff` regenerat contra 19.5.0.
+
+Verificat local: eslint + prettier curate, **unit 625/625** (cele 2 suite care nu se încarcă local sînt
+artefacte cunoscute de harness: `src/index.test.js` aliasat la `@eeacms/volto-block-toc`, iar
+`Header.test.jsx` e JSX într-un `.js`), **V19 integrare 22/23** — pică doar `07-lead-image.cy.js`
+(comportamentul `plone.leadimage`), reprodus și cu `Form` din core 19.5 pus ca umbră → mediu/flaky,
+nu regresie de la această schimbare.
+
 ## 4. Status V18: hang-ul **persistă** pe 18.36.0
 
 - Imagine V18 construită din arbore (`theme-v18-cdp`), backend `eeacms/plone-backend`
@@ -58,6 +72,21 @@ matrițe, fiecare ascunde ceva pe una din ele.
   `Order/Item.jsx`): scoase → tot se blochează.
 - Înlocuirea tuturor umbrelor cu fișierele din core **nu se poate face** mecanic: fișierele din core au
   importuri relative (`./schema`, `../Container/Edit`) care nu se rezolvă din folderul de customizations.
+
+### Bisect V18 (toate negative, pe imaginea V18 construită din arbore)
+
+| Experiment | Rezultat |
+| --- | --- |
+| umbra `SlateEditor` scoasă din build | **tot se blochează** |
+| umbrele `Block/Edit.jsx`, `Form/BlocksToolbar.jsx`, `Form/Form.jsx`, `Block/Order/Item.jsx` scoase | **tot se blochează** |
+| `persistentHelper`-ul `Link` dezactivat în core (`plugins/Link/index.jsx`) | **tot se blochează** |
+| `editor/render.jsx` înlocuit cu fișierul din core 18.36 (import absolut la `slate.less`) | **tot se blochează** (~125% CPU, 12 procese chromium) |
+
+Deci `LinkEditor` din stack era simptom (orice componentă din arborele de render apare la pauză), nu
+cauza. Ipoteze rămase pentru sesiunea următoare: `applyConfig`-ul temei (înregistrări de plugin/block),
+interacțiunea cu `volto-eea-design-system` / `volto-block-style`, umbrele Volto de pe calea
+editorului (`Display`, `Toast`, `Widgets/ObjectBrowserWidget`, `Toolbar/More`), `withBlockExtension`,
+sau umbrele slate rămase (`TextBlockView`, `TableBlockView`, `utils/*`).
 
 ### Stack capturat (CDP, `Debugger.enable` înainte de navigare)
 
@@ -98,3 +127,13 @@ docker cp /tmp/cdp-loop.mjs theme-cdp:/tmp/ && docker exec theme-cdp node /tmp/c
 Capcane: `timeout` nu există pe macOS (folosește-l în container); comenzile CDP `Input.*` nu răspund cînd
 renderer-ul e blocat (nu le aștepta); `getScriptSource` întoarce gol după pauză — ia bundle-ul +
 `build/public/static/js/client.<hash>.js.map` din container și mapează offline.
+
+## 6. Stare la închiderea sesiunii 8
+
+- `volto-eea-website-theme` are **3 commit-uri locale nepusheiate**: `08967a2` (Form rebazat pe 18 de
+  către user), `94c2ae7` (fix build: restaurat `LeadImage/schema.js`), `b21bd2d` (SlateEditor pe 19.5).
+  Push-ul e amînat intenționat: ar declanșa un CI de ~38 min care se blochează oricum pe V18.
+- Decizia userului (sesiunea 8): **shadow-urile pleacă de la Volto 19** și se adaugă compatibilitatea V18
+  „ușor ușor"; la fel pentru `SlateEditor`.
+- Docker curățat (containere + imagini `theme-*`), build cache pruned; imaginile de bază
+  `eeacms/frontend-builder:18/19` rămîn pentru sesiunea următoare.

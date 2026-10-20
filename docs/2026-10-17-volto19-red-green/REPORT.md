@@ -304,3 +304,29 @@ A șters `LeadImage/schema.js` + `.diff` ca „leftover Volto 17", dar fișierul
   citește DOM în timpul render-ului.
 
 Detalii, comenzi de repro și capcane: `diagnostics/theme-shadows-audit.md`.
+
+## Sesiunea 8 (continuare): `SlateEditor` rebazat + bisect V18
+
+- **`b21bd2d`** — umbra `SlateEditor.jsx` rebazată pe **Volto 19.5** (era o copie 19.0–19.3):
+  păstrată doar delta EEA (69 linii: `getEditorValue`/`cloneDeep`, `resetNodes`, `spellCheck`,
+  importuri absolute), deci `handlePointerDown`/`pendingPointerSelection` (#8406) nu mai sînt anulate
+  pe niciuna din matrițe. `.diff` regenerat.
+  Verificat: eslint + prettier curate, unit **625/625** (cele 2 suite neîncărcabile local sînt artefacte
+  de harness cunoscute), V19 integrare **22/23** — pică doar `07-lead-image.cy.js` (behavior
+  `plone.leadimage`), reprodus și cu `Form` din core 19.5 → flaky de mediu, nu regresie.
+- **Bisect V18 (toate negative)**: scoasă umbra `SlateEditor` → tot se blochează; scoase umbrele
+  `Block/Edit`, `BlocksToolbar`, `Form`, `Order/Item` → tot; dezactivat `persistentHelper`-ul `Link`
+  din core → tot; `editor/render.jsx` din core 18.36 → tot (~125% CPU, 12 procese chromium). Deci
+  cadrul `LinkEditor` din stack era simptom, nu cauză.
+- **Stare**: `volto-eea-website-theme` are 3 commit-uri locale nepusheiate (`08967a2` Form pe baza 18
+  — al userului, `94c2ae7` fix build LeadImage schema, `b21bd2d` SlateEditor). Push amînat deliberat:
+  CI-ul ar dura ~38 min și se blochează oricum pe V18. Docker curățat (containere + imagini `theme-*`,
+  build cache pruned).
+
+## Sesiunea 8 (decizii de continuare)
+
+- **Shadow-urile pleacă de la Volto 19**, compatibilitatea V18 se adaugă incremental (decizie user).
+- Ordinea de rebazare: `ContentsItem` → `DefaultView` → `Form` → `Grid/View` → `DiffField` →
+  `NewsItemView` → `Block/Edit`.
+- Hang-ul V18: următoarele ipoteze (applyConfig, design-system/block-style, umbrele Volto de pe calea
+  editorului, `withBlockExtension`, umbrele slate rămase) — în `diagnostics/theme-shadows-audit.md`.

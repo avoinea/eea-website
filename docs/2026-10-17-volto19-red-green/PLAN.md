@@ -21,7 +21,8 @@
 > Notă pentru `theme` V18: bug-ul de focus Slate care a ținut `block-toc` pe roșu e reparat de 18.36.0, deci
 > hang-ul temei se re-verifică pe imaginea nouă înainte de a mai investi în stack-ul prin CDP.
 
-- [~] **Faza 15 — `theme` V18 + auditul umbrelor** (sesiunea 8): hang confirmat pe 18.36.0 (nu e `SlateEditor`, nu e calea de „add block"); stack CDP → `LinkEditor`/`useSelectionPosition`. Audit complet al umbrelor (7 cu bază V18 care ascund core 19, `SlateEditor` pe baza 19.0–19.3, 6 module EEA care nu sînt umbre). Detalii: `diagnostics/theme-shadows-audit.md`.
+- [~] **Faza 15 — `theme` V18 + auditul umbrelor** (sesiunea 8): audit complet (7 umbre cu bază V18 care ascund core 19, 6 module EEA care nu sînt umbre), `SlateEditor` rebazat pe 19.5 (`b21bd2d`, #8406 restaurat). Hang-ul V18 rămîne: bisect negativ pe `SlateEditor`, pe calea „add block", pe `persistentHelper`-ul `Link` și pe `render.jsx`. Detalii: `diagnostics/theme-shadows-audit.md`.
+- [ ] **Faza 16 — umbre V19-first** (decizie user, sesiunea 8): rebază pe 19.5, în ordine: `ContentsItem.jsx` (+228/-270), `DefaultView.jsx`, `Form.jsx` (+43/-3 — `withSaveAsDraft` dispare cît timp umbra e pe baza 18), `Grid/View.jsx`, `DiffField.jsx`, `NewsItemView.jsx`, `Block/Edit.jsx`; compatibilitatea V18 se adaugă incremental.
 
 ## Operațional
 

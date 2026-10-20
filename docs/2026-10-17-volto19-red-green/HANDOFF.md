@@ -74,3 +74,35 @@ subsites), `eea-website-frontend` #284.
 `volto19-green-campaign` (principal; scripturi în `.agents/skills/volto19-green-campaign/scripts/`),
 `plone-frontend-developer` (Vitest/coverage/Volto 19), `volto-cypress-writer` (selectori/flake Cypress),
 `handoff` la finalul sesiunii. Subagenți read-only (`scout`) pentru diagnostic; un singur writer per repo.
+
+## Stare la închiderea sesiunii 8 (2026-10-20)
+
+**Unde sîntem**: `volto-eea-website-theme` (branch `volto19`) are **3 commit-uri locale nepusheiate**:
+`b21bd2d` (SlateEditor rebazat pe 19.5 — verificat), `94c2ae7` (fix build: `LeadImage/schema.js`
+restaurat), `08967a2` (Form rebazat pe 18 — al userului; pe V19 pierde `withSaveAsDraft`).
+Push-ul e amînat intenționat: CI-ul durează ~38 min și se blochează oricum pe V18.
+
+**Primii pași concreți**:
+1. Rebasează umbrele **V19-first** (decizie user), în ordinea din `PLAN.md` Faza 16 — începe cu
+   `ContentsItem.jsx` (+228/-270 față de core 19.5), apoi `DefaultView.jsx` și `Form.jsx`.
+   Pentru fiecare: ia fișierul din `19.5.0`, re-aplică delta EEA din `.diff`, regenerează `.diff`,
+   rulează unit + cele două integrări.
+2. Hang-ul V18: bisect-ul e complet negativ pe `SlateEditor`, pe calea „add block", pe
+   `persistentHelper`-ul `Link` și pe `render.jsx`. Continuă cu ipotezele din
+   `diagnostics/theme-shadows-audit.md` §4 (applyConfig, design-system/block-style, umbrele Volto de pe
+   calea editorului, `withBlockExtension`, umbrele slate rămase).
+3. După ce V18 trece: push pe `volto19` (cele 3 commit-uri + fixurile) și urmărește PR #395.
+
+**Capcane de mediu (verificate în sesiunea 8)**:
+- Testul `07-lead-image.cy.js` pică local (behavior `plone.leadimage`) și cu `Form` din core 19.5 pus ca
+  umbră → flaky de mediu, nu regresie; în CI a trecut.
+- Unit local: `npx vitest run --config packages/volto-eea-website-theme/vitest.local.config.mjs` dă
+  625/625 cu 2 suite neîncărcabile (artefacte de alias/JSX); CI face 637.
+- Build-ul V18/V19 se face **din context curat** (`rsync` fără `node_modules`/`core`/`build`), altfel
+  `packages/*/node_modules` de V19 umbresc instalarea.
+- `timeout` nu există pe macOS — rulează-l în container (`docker exec ... sh -c 'timeout -s 9 ...'`).
+- CDP: `Debugger.enable` **înainte** de navigare; comenzile `Input.*` nu răspund cînd renderer-ul e
+  blocat (nu le aștepta); `getScriptSource` întoarce gol după pauză → ia bundle-ul + `.map` din container
+  și mapează offline (`/tmp/smap.py` din sesiunea 8).
+- Docker: containerele și imaginile `theme-*` au fost șterse; imaginile de bază
+  `eeacms/frontend-builder:18/19` rămîn. Reconstrucție: comenzile din `diagnostics/theme-shadows-audit.md` §5.
