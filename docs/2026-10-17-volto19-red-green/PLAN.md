@@ -21,6 +21,8 @@
 > Notă pentru `theme` V18: bug-ul de focus Slate care a ținut `block-toc` pe roșu e reparat de 18.36.0, deci
 > hang-ul temei se re-verifică pe imaginea nouă înainte de a mai investi în stack-ul prin CDP.
 
+- [~] **Faza 15 — `theme` V18 + auditul umbrelor** (sesiunea 8): hang confirmat pe 18.36.0 (nu e `SlateEditor`, nu e calea de „add block"); stack CDP → `LinkEditor`/`useSelectionPosition`. Audit complet al umbrelor (7 cu bază V18 care ascund core 19, `SlateEditor` pe baza 19.0–19.3, 6 module EEA care nu sînt umbre). Detalii: `diagnostics/theme-shadows-audit.md`.
+
 ## Operațional
 
 - Stare: `scripts/jenkins-spotcheck.sh`, dashboard `http://127.0.0.1:3210/api/status` (server local în `dashboard/`, untracked).

@@ -262,3 +262,45 @@ Verificat local, din imagine amd64 construită din arborele repo-ului:
 | `SonarQube` + `SonarQube Code Analysis` | success — coverage PR **89.8%**, identic cu master/develop |
 
 PR #48 (`chore: Volto 19 support` → `develop`) e `CLEAN`, `MERGEABLE`.
+
+---
+
+# Sesiunea 8 (2026-10-20): `theme` — auditul shadow-urilor + hang V18 pe 18.36.0
+
+## Auditul umbrelor (82 fișiere, 55 de producție)
+
+Comparație cu core la tag-urile exacte (`18.36.0`, `19.5.0`) și rezolvarea de extensie din
+`@plone/registry`. Concluzii:
+
+- **7 umbre au baza pe Volto 18** → ascund schimbările din core 19: `ContentsItem.jsx` (**+228/-270**),
+  `DefaultView.jsx` (+10/-37), `Form.jsx` (+43/-3, după `08967a2` dispare `withSaveAsDraft`),
+  `Grid/View.jsx` (+14/-11), `DiffField.jsx` (+12/-4), `NewsItemView.jsx` (+5/-3), `Block/Edit.jsx` (+10/-0).
+- **`SlateEditor.jsx` are baza pe 19.0–19.3** (are `scheduleFocus`, nu are
+  `handlePointerDown`/`pendingPointerSelection`) → anulează fix-ul `plone/volto#8406` pe **ambele**
+  matrițe (19.4+ și 18.36+).
+- **6 fișiere nu sînt umbre** (module noi EEA, `.diff` = `NO_UPSTREAM_FILE`), importate de umbrele
+  vecine: `blocksClipboardUtils.js`, `objectBrowserSelection.js`, `comments.less`, `View/style.less`,
+  `LanguageSwitcher.jsx`, `Blocks/LeadImage/schema.js`.
+- Restul umbrelor au baza pe 19 → pe build-ul V18 înlocuiesc core 18.36 (`server.jsx`, `History.jsx`,
+  `Html.jsx`, `Image/Image.jsx`, `Unauthorized`, `Toast`, `More`, `ObjectBrowserWidget`, `SlateEditor`).
+
+## Commit-ul local `08967a2` rupea build-ul
+
+A șters `LeadImage/schema.js` + `.diff` ca „leftover Volto 17", dar fișierul e importat de
+`LeadImageSidebar.jsx` (`import { LeadImageSchema } from './schema'`) → `start-ci` exit 1
+(`Can't resolve './schema'`). Reparat în **`94c2ae7`** (restaurat fișier + `.diff`).
+
+## Hang-ul V18: confirmat pe 18.36.0, stack capturat
+
+- Spec `01-block-basics.cy.js` pe imaginea V18 construită din arbore → kill după 300 s, container la
+  **113% CPU** (14 procese chromium).
+- Nu e umbra `SlateEditor` (scoasă → tot se blochează) și nu sînt umbrele din calea de adăugare bloc
+  (`Block/Edit.jsx`, `BlocksToolbar.jsx`, `Form.jsx`, `Order/Item.jsx`) — scoase, tot se blochează.
+- Înlocuirea umbrelor cu fișierele din core nu e posibilă mecanic (importuri relative).
+- CDP (`Debugger.enable` înainte de navigare, `/tmp/cdp-loop.mjs`) → bucla pornește la **click pe
+  `.block.inner`**, iar stack-ul mapat prin sourcemap arată ciclul
+  `react-dom → useSelectionPosition.js:13 → Link/index.jsx:52 (LinkEditor) → react-dom`.
+  `LinkEditor` e `slateSettings.persistentHelpers` randat de `SlateEditor` cînd blocul e selectat și
+  citește DOM în timpul render-ului.
+
+Detalii, comenzi de repro și capcane: `diagnostics/theme-shadows-audit.md`.

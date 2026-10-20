@@ -51,6 +51,7 @@ n-au Cypress), deci stage-ul de integrare murea cu „Can't run because no spec 
 - `diagnostics/sonar-coverage.md` — cum se calculează poarta Sonar și cum se repară (API public, două lcov-uri,
   rețeta de harness local).
 - `diagnostics/block-toc-v18-slate-focus.md` — regresia V18 de după sync: **rezolvată** (imaginea V18 la 18.36.0, merge `develop`, retype mărginit) + cele două straturi de cauză.
+- `diagnostics/theme-shadows-audit.md` — inventarul celor 82 de umbre din `theme` (bază V18 vs V19, ce ascund din core) + stack-ul CDP al hang-ului V18.
 - `diagnostics/frontend-builder-18-image.md` — de ce `eeacms/frontend-builder:18` livra 18.35.1, cum s-a urcat la 18.36.0 (`7cb8c2e`) și cum se verifică imaginea publicată.
 - `diagnostics/searchlib-unit-and-build.md` — cele 3 cauze de la searchlib.
 - `diagnostics/theme-v18-integration-hang.md` — de ce integrarea V18 a temei expiră: repro local (comenzi),
